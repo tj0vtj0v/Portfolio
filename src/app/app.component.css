@@ -9,6 +9,7 @@ app-footer {
     justify-content: center;
     text-align: center;
     background-color: rgba(31, 31, 31, 0.5);
+    padding-bottom: 20px;
 }
 
 .container {

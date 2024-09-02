@@ -18,6 +18,19 @@ nav {
     flex-direction: column;
 }
 
+.top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#login {
+    margin: 0;
+    padding: 5px 10px 5px 10px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
 #page_title {
     text-align: center;
 }
