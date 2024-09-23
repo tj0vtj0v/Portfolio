@@ -18,6 +18,8 @@
    - Private Projects
    - Hobbies
    - Friends & Family
+ - Impressions
+   - Images from everywhere
  - About
    - Contact
    - Impressum
