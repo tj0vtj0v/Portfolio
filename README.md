@@ -1,5 +1,3 @@
-
-# Portfolio
 # Portfolio
 
 ### Structure of my Portfolio - Website
