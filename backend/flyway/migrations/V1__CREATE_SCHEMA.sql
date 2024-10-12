@@ -1,1 +1,1 @@
-CREATE SCHEMA IF NOT EXISTS portfolio;
+CREATE SCHEMA IF NOT EXISTS authentication;

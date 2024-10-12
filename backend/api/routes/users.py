@@ -61,29 +61,6 @@ async def get_user_by_username(
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
-@router.patch("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Developer))])
-async def update_user(
-    username: str,
-    user: UserModifySchema,
-    transaction: DBTransaction,
-    user_dao: UserDao = Depends()
-) -> UserSchema:
-    """
-    Authorisation: at least 'Developer' is required
-    """
-
-    if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST.value, detail=f"role id #{user.role_id} does not exist")
-
-    try:
-        with transaction.start():
-            updated = user_dao.update(username, user)
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e)
-
-    return UserSchema.from_model(updated)
-
-
 @router.patch("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
 async def update_your_user(
     user: UserModifySchema,
@@ -101,6 +78,29 @@ async def update_your_user(
     try:
         with transaction.start():
             updated = user_dao.update(token.username, user)  # TODO: Errorhandling
+    except UserDao.UserNotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e)
+
+    return UserSchema.from_model(updated)
+
+
+@router.patch("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Developer))])
+async def update_user(
+    username: str,
+    user: UserModifySchema,
+    transaction: DBTransaction,
+    user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'Developer' is required
+    """
+
+    if not RoleSchema.validate_role_id(user.role_id):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST.value, detail=f"role id #{user.role_id} does not exist")
+
+    try:
+        with transaction.start():
+            updated = user_dao.update(username, user)
     except UserDao.UserNotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e)
 
@@ -136,24 +136,6 @@ async def create_user(
     return UserSchema.from_model(created)
 
 
-@router.delete("/{username}", status_code=HTTPStatus.NO_CONTENT.value,
-               dependencies=[Depends(get_and_validate_user(RoleEnum.Administrator))])
-async def delete_user(
-    username: str,
-    transaction: DBTransaction,
-    user_dao: UserDao = Depends()
-) -> None:
-    """
-    Authorisation: at least 'Administrator' is required
-    """
-
-    try:
-        with transaction.start():
-            user_dao.delete(username)
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
 @router.delete("/me", status_code=HTTPStatus.NO_CONTENT.value,
                dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
 async def delete_your_user(
@@ -168,5 +150,23 @@ async def delete_your_user(
     try:
         with transaction.start():
             user_dao.delete(token.username)
+    except UserDao.UserNotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+
+@router.delete("/{username}", status_code=HTTPStatus.NO_CONTENT.value,
+               dependencies=[Depends(get_and_validate_user(RoleEnum.Administrator))])
+async def delete_user(
+    username: str,
+    transaction: DBTransaction,
+    user_dao: UserDao = Depends()
+) -> None:
+    """
+    Authorisation: at least 'Administrator' is required
+    """
+
+    try:
+        with transaction.start():
+            user_dao.delete(username)
     except UserDao.UserNotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

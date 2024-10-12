@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import time
 from http import HTTPStatus
 from jose import jwt
 from hashlib import sha256
@@ -34,12 +35,11 @@ async def login(
 def _password_matches(data, user_dao: UserDao):
     target = user_dao.get_by_username(data.username).password
     current = sha256(data.password.encode()).hexdigest()
-    print(current)
     return target == current
 
 
 def _build_token(data: OAuth2PasswordRequestForm):
-    payload = {"username": data.username}#, "valid_to": (datetime.now() + timedelta(hours=1))}
-    print(type(JWT_SECRET), JWT_SECRET)
+    expiration_time = time.mktime((datetime.now() + timedelta(hours=1)).timetuple())
+    payload = {"username": data.username, "valid_to": str(expiration_time)}
     access_token = jwt.encode(payload, key=JWT_SECRET)
     return {"access_token": access_token, "token_type": "bearer"}

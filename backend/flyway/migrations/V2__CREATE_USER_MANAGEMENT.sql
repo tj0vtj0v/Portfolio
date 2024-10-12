@@ -1,3 +1,5 @@
+SET SEARCH_PATH TO authentication;
+
 CREATE TABLE t_role (
     id SERIAL PRIMARY KEY,
     priority INT,

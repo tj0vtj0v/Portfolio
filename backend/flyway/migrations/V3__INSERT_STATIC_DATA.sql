@@ -1,3 +1,5 @@
+SET SEARCH_PATH TO authentication;
+
 INSERT INTO t_role (priority, name)
 VALUES (1, 'User'),
        (2, 'Viewer'),
