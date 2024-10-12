@@ -3,10 +3,10 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from backend.api.router import router
-from backend import __name__, __version__
+from backend import __title__, __version__
 
 app = FastAPI(
-    title=__name__,
+    title=__title__,
     version=__version__,
     description="portfolio_api_poc",
     docs_url="/",
@@ -23,7 +23,7 @@ app.include_router(router)
 
 
 def main():
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", port=8000, reload=True)
 
 
 if __name__ == "__main__":
