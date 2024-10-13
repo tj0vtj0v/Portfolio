@@ -22,7 +22,7 @@ def get_and_validate_user(
                 status_code=HTTPStatus.UNAUTHORIZED.value,
                 detail="Insufficient permission")
 
-        if token.valid_to < datetime.now():
+        if token.ttl < datetime.now():
             raise HTTPException(
                 status_code=HTTPStatus.UNAUTHORIZED.value,
                 detail="Authorisation token expired"

@@ -128,7 +128,7 @@ async def create_user(
 
     try:
         with transaction.start():
-            created = user_dao.add(user)
+            created = user_dao.create(user)
     except IntegrityError:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST.value,
                             detail=f"E-Mail '{user.email}' are already existing")

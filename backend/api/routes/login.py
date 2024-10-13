@@ -11,13 +11,13 @@ from backend.settings.config import JWT_SECRET
 from backend.core.database.dao.user_dao import UserDao
 
 router = APIRouter(
-    tags=["login"]
+    tags=["authentication"]
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-@router.post("")
+@router.post("/login")
 async def login(
     data: OAuth2PasswordRequestForm = Depends(),
     user_dao: UserDao = Depends()
@@ -38,8 +38,8 @@ def _password_matches(data, user_dao: UserDao):
     return target == current
 
 
-def _build_token(data: OAuth2PasswordRequestForm):
-    expiration_time = time.mktime((datetime.now() + timedelta(hours=1)).timetuple())
-    payload = {"username": data.username, "valid_to": str(expiration_time)}
+def _build_token(data: OAuth2PasswordRequestForm, ttl_in_minutes: int = 60):
+    ttl = time.mktime((datetime.now() + timedelta(minutes=ttl_in_minutes)).timetuple())
+    payload = {"username": data.username, "TTL": str(ttl)}
     access_token = jwt.encode(payload, key=JWT_SECRET)
     return {"access_token": access_token, "token_type": "bearer"}

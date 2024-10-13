@@ -4,10 +4,10 @@ from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from backend.settings.config import DATABASE_PATH, DATABASE_SCHEMA
+from backend.settings.config import DATABASE_PATH
 
 __postgres_url = f'postgresql://postgres:postgres@{DATABASE_PATH}/postgres'
-__session = sessionmaker(create_engine(__postgres_url, connect_args={'options': f'-csearch_path={DATABASE_SCHEMA}'}), autocommit=False)
+__session = sessionmaker(create_engine(__postgres_url), autocommit=False)
 
 
 def get_db():

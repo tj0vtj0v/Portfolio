@@ -20,7 +20,7 @@ class UserDao:
 
         return user is not None
 
-    def add(self, user: UserModifySchema) -> User:
+    def create(self, user: UserModifySchema) -> User:
         to_add = User(
             username=user.username,
             password=sha256(user.password.encode()).hexdigest(),
