@@ -3,9 +3,9 @@ from http import HTTPStatus
 
 from fastapi import Depends, HTTPException
 
-from backend.api.schemas.role_schema import RoleEnum
+from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.auth.token import Token
-from backend.core.database.dao.user_dao import UserDao
+from backend.core.database.dao.authentication.user_dao import UserDao
 
 
 def get_and_validate_user(

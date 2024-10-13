@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 from backend.core.database.models import History
 from backend.core.database.session import DBSession
-from backend.api.schemas.history_schema import HistorySchema
+from backend.api.schemas.banking.history_schema import HistorySchema
 
 
 class HistoryDao:

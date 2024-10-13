@@ -5,11 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from backend.core.auth.token import Token
-from backend.core.database.dao.user_dao import UserDao
+from backend.core.database.dao.authentication.user_dao import UserDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
-from backend.api.schemas.user_schema import UserSchema, UserModifySchema
-from backend.api.schemas.role_schema import RoleSchema, RoleEnum
+from backend.api.schemas.authentication.user_schema import UserSchema, UserModifySchema
+from backend.api.schemas.authentication.role_schema import RoleSchema, RoleEnum
 
 router = APIRouter(
     tags=["users"]

@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 from backend.core.database.models import User
 from backend.core.database.session import DBSession
-from backend.api.schemas.user_schema import UserModifySchema
+from backend.api.schemas.authentication.user_schema import UserModifySchema
 
 
 class UserDao:

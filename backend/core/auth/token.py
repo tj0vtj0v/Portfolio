@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import Depends
 from jose import jwt
 
-from backend.api.routes.login import oauth2_scheme
+from backend.api.routes.authentication.login import oauth2_scheme
 from backend.settings.config import JWT_SECRET
 
 

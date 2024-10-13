@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
 from backend.settings.config import JWT_SECRET
-from backend.core.database.dao.user_dao import UserDao
+from backend.core.database.dao.authentication.user_dao import UserDao
 
 router = APIRouter(
     tags=["authentication"]

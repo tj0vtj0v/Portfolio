@@ -5,7 +5,7 @@ from http import HTTPStatus
 
 from backend.core.database.models import Transaction
 from backend.core.database.session import DBSession
-from backend.api.schemas.transaction_schema import TransactionSchema, TransactionModifySchema
+from backend.api.schemas.banking.transaction_schema import TransactionModifySchema
 
 
 class TransactionDao:
