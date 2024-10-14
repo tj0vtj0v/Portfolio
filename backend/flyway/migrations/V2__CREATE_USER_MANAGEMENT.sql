@@ -1,6 +1,6 @@
 SET SEARCH_PATH TO authentication;
 
-CREATE TABLE t_role
+CREATE TABLE IF NOT EXISTS t_role
 (
     id         SERIAL PRIMARY KEY,
     priority   INT,
@@ -9,7 +9,7 @@ CREATE TABLE t_role
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE t_user
+CREATE TABLE IF NOT EXISTS t_user
 (
     id         SERIAL PRIMARY KEY,
     password   CHAR(64),
@@ -24,7 +24,7 @@ CREATE TABLE t_user
 
 
 
-CREATE OR REPLACE FUNCTION update_modified_column()
+CREATE OR REPLACE FUNCTION update_timestamp()
     RETURNS TRIGGER AS
 $$
 BEGIN
@@ -35,14 +35,14 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE TRIGGER upd_t_user
+CREATE OR REPLACE TRIGGER upd_t_user
     BEFORE UPDATE
     ON t_user
     FOR EACH ROW
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE update_timestamp();
 
-CREATE TRIGGER upd_t_role
+CREATE OR REPLACE TRIGGER upd_t_role
     BEFORE UPDATE
     ON t_role
     FOR EACH ROW
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE update_timestamp();

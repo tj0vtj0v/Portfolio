@@ -1,17 +1,16 @@
 SET SEARCH_PATH TO banking;
 
-CREATE TABLE t_history
+CREATE TABLE IF NOT EXISTS t_history
 (
-    account    VARCHAR(22), -- added
+    id         SERIAL PRIMARY KEY, -- added
+    account    VARCHAR(22),        -- added
     date       DATE,
     amount     DECIMAL(9, 2),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-
-    PRIMARY KEY (account, date)
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE t_transaction
+CREATE TABLE IF NOT EXISTS t_transaction
 (
     id               SERIAL PRIMARY KEY,
     account          VARCHAR(22), -- added
@@ -34,7 +33,7 @@ CREATE TABLE t_transaction
 
 
 
-CREATE OR REPLACE FUNCTION update_modified_column()
+CREATE OR REPLACE FUNCTION update_timestamp()
     RETURNS TRIGGER AS
 $$
 BEGIN
@@ -45,14 +44,14 @@ $$ LANGUAGE plpgsql;
 
 
 
-CREATE TRIGGER upd_t_history
+CREATE OR REPLACE TRIGGER upd_t_history
     BEFORE UPDATE
     ON t_history
     FOR EACH ROW
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE update_timestamp();
 
-CREATE TRIGGER upd_t_transaction
+CREATE OR REPLACE TRIGGER upd_t_transaction
     BEFORE UPDATE
     ON t_transaction
     FOR EACH ROW
-EXECUTE PROCEDURE update_modified_column();
+EXECUTE PROCEDURE update_timestamp();

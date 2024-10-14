@@ -2,6 +2,7 @@ from datetime import date
 from typing import List
 
 from http import HTTPStatus
+from sqlalchemy.exc import IntegrityError
 
 from backend.core.database.models import History
 from backend.core.database.session import DBSession
@@ -21,6 +22,9 @@ class HistoryDao:
         return entry is not None
 
     def create(self, history: HistorySchema) -> History:
+        if self.exists(history.account, history.date):
+            raise IntegrityError(f"Account and Date pair '{history.account}, {history.date}' already exists.")
+
         to_add = History(
             account=history.account,
             date=history.date,
@@ -61,6 +65,9 @@ class HistoryDao:
         return entry
 
     def update(self, iban: str, entry_date: date, update: HistorySchema) -> History:
+        if self.exists(update.account, update.date):
+            raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists.")
+
         to_update: History = self.get_entry(iban, entry_date)
 
         to_update.account = update.account

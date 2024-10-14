@@ -1,9 +1,10 @@
 from typing import Annotated, Optional
 from datetime import datetime, date
 
-from sqlalchemy import String, ForeignKey
-from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy import String, Date, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, registry, Mapped, mapped_column, relationship
+from sqlalchemy.schema import PrimaryKeyConstraint
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 str_3 = Annotated[str, 3]
 str_16 = Annotated[str, 16]
@@ -20,6 +21,7 @@ class Base(DeclarativeBase):
         type_annotation_map={
             # definition for the ORM-Model
             datetime: TIMESTAMP(timezone=True),
+            date: Date,
             str_3: String(3),
             str_16: String(16),
             str_22: String(22),
@@ -63,16 +65,17 @@ class User(Base):
 # Banking tables
 class History(Base):
     __tablename__ = "t_history"
-    __table_args__ = {'schema': 'banking'}
+    __table_args__ = {'schema': 'banking', 'extend_existing': True}
 
-    account: Mapped[str_22] = mapped_column(primary_key=True, nullable=False)
-    date: Mapped[date] = mapped_column(primary_key=True, nullable=False)
+    id: Mapped[serial_pk]
+    account: Mapped[str_22]
+    date: Mapped[date]
     amount: Mapped[float]
 
 
 class Transaction(Base):
     __tablename__ = "t_history"
-    __table_args__ = {'schema': 'banking'}
+    __table_args__ = {'schema': 'banking', 'extend_existing': True}
 
     id: Mapped[serial_pk]
     account: Mapped[str_22]
