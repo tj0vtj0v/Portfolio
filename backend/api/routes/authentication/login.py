@@ -10,23 +10,24 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from backend.settings.config import JWT_SECRET
 from backend.core.database.dao.authentication.user_dao import UserDao
 
-router = APIRouter(
-    tags=["authentication"]
-)
+router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 @router.post("/login")
 async def login(
-    data: OAuth2PasswordRequestForm = Depends(),
-    user_dao: UserDao = Depends()
+        data: OAuth2PasswordRequestForm = Depends(),
+        user_dao: UserDao = Depends()
 ):
-    if _password_matches(data, user_dao):
-        return _build_token(data)
+    try:
+        if _password_matches(data, user_dao):
+            return _build_token(data)
+    except UserDao.UserNotFoundException:
+        pass
 
     raise HTTPException(
-        status_code=HTTPStatus.UNAUTHORIZED.value,
+        status_code=HTTPStatus.UNAUTHORIZED,
         detail="Incorrect username or password",
         headers={"WWW-Authenticate": "Bearer"},
     )
