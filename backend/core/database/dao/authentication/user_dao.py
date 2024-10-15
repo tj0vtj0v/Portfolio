@@ -78,11 +78,9 @@ class UserDao:
         return users
 
     def get_all(self) -> List[User]:
-        users = (self.db_session
-                 .query(User)
-                 .all())
-
-        return users
+        return (self.db_session
+                .query(User)
+                .all())
 
     def update(self, username: str, update: UserModifySchema) -> User:
         to_update: User = self.get_by_username(username)
