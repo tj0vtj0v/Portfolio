@@ -23,7 +23,7 @@ class HistoryDao:
 
     def create(self, history: HistorySchema) -> History:
         if self.exists(history.account, history.date):
-            raise IntegrityError(f"Account and Date pair '{history.account}, {history.date}' already exists.")
+            raise IntegrityError(f"Account and Date pair '{history.account}, {history.date}' already exists")
 
         to_add = History(
             account=history.account,
@@ -39,6 +39,11 @@ class HistoryDao:
         return (self.db_session
                 .query(History.account)
                 .distinct(History.account)
+                .all())
+
+    def get_complete_history(self) -> List[History]:
+        return (self.db_session
+                .query(History)
                 .all())
 
     def get_by_account(self, iban: str) -> List[History]:
@@ -66,7 +71,7 @@ class HistoryDao:
 
     def update(self, iban: str, entry_date: date, update: HistorySchema) -> History:
         if self.exists(update.account, update.date):
-            raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists.")
+            raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists")
 
         to_update: History = self.get_entry(iban, entry_date)
 
