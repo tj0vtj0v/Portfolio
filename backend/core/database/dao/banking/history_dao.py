@@ -70,7 +70,7 @@ class HistoryDao:
         if self.exists(update.account, update.date):
             raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists")
 
-        to_update: History = self.get_entry(iban, entry_date)
+        to_update = self.get_entry(iban, entry_date)
 
         to_update.account = update.account
         to_update.date = update.date
@@ -79,7 +79,7 @@ class HistoryDao:
         return to_update
 
     def delete(self, iban: str, entry_date: date) -> None:
-        to_delete: History = self.get_entry(iban, entry_date)
+        to_delete = self.get_entry(iban, entry_date)
         self.db_session.delete(to_delete)
 
     class EntryNotFoundException(Exception):

@@ -82,7 +82,7 @@ class TransactionDao:
         return entry
 
     def update(self, id: int, update: TransactionModifySchema) -> Transaction:
-        to_update: Transaction = self.get_by_id(id)
+        to_update = self.get_by_id(id)
 
         to_update.account = update.account
         to_update.amount = update.amount
@@ -102,7 +102,7 @@ class TransactionDao:
         return to_update
 
     def delete(self, id: int) -> None:
-        to_delete: Transaction = self.get_by_id(id)
+        to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
 
     class IdNotFoundException(Exception):

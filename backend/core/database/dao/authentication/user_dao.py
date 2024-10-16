@@ -83,7 +83,7 @@ class UserDao:
                 .all())
 
     def update(self, username: str, update: UserModifySchema) -> User:
-        to_update: User = self.get_by_username(username)
+        to_update = self.get_by_username(username)
 
         to_update.username = update.username
         to_update.password = sha256(update.password.encode()).hexdigest()
@@ -95,7 +95,7 @@ class UserDao:
         return to_update
 
     def delete(self, username: str) -> None:
-        to_delete: User = self.get_by_username(username)
+        to_delete = self.get_by_username(username)
         self.db_session.delete(to_delete)
 
     class UserNotFoundException(Exception):
