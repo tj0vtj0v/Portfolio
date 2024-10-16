@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.get("/devices", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_all_accounts(
+async def get_all_devices(
         proximity_dao: ProximityDao = Depends()
 ) -> List[str]:
     """
@@ -89,7 +89,7 @@ async def create_proximity(
 
 @router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
                dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
-async def delete_transaction(
+async def delete_proximity(
         id: int,
         transaction: DBTransaction,
         proximity_dao: ProximityDao = Depends()
