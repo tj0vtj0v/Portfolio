@@ -3,7 +3,6 @@ from datetime import datetime, date
 
 from sqlalchemy import String, Date, ForeignKey
 from sqlalchemy.orm import DeclarativeBase, registry, Mapped, mapped_column, relationship
-from sqlalchemy.schema import PrimaryKeyConstraint
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 str_3 = Annotated[str, 3]

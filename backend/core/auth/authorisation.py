@@ -9,11 +9,11 @@ from backend.core.database.dao.authentication.user_dao import UserDao
 
 
 def get_and_validate_user(
-    role: RoleEnum
+        role: RoleEnum
 ):
     def check_function(
-        token: Token = Depends(),
-        user_dao: UserDao = Depends()
+            token: Token = Depends(),
+            user_dao: UserDao = Depends()
     ):
         user_role = user_dao.get_by_username(token.username).role
 
