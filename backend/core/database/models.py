@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 str_3 = Annotated[str, 3]
 str_16 = Annotated[str, 16]
+str_17 = Annotated[str, 17]
 str_22 = Annotated[str, 22]
 str_32 = Annotated[str, 32]
 str_64 = Annotated[str, 64]
@@ -23,6 +24,7 @@ class Base(DeclarativeBase):
             date: Date,
             str_3: String(3),
             str_16: String(16),
+            str_17: String(17),
             str_22: String(22),
             str_32: String(32),
             str_64: String(64),
@@ -91,3 +93,13 @@ class Transaction(Base):
     peeraccount: Mapped[str_32]
     peerbic: Mapped[str_16]
     peerid: Mapped[str_64]
+
+
+class Proximity(Base):
+    __tablename__ = "t_proximity"
+    __table_args__ = {'schema': 'proximity'}
+
+    id: Mapped[serial_pk]
+    device: Mapped[str_17]
+    timestamp: Mapped[datetime]
+    responsetime: Mapped[float]
