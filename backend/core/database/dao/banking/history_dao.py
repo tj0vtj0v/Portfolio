@@ -41,22 +41,19 @@ class HistoryDao:
                 .distinct(History.account)
                 .all())
 
-    def get_complete_history(self) -> List[History]:
-        return (self.db_session
-                .query(History)
-                .all())
+    def get_all_with(self, iban: str = None, entry_date: date = None, amount: float = None) -> List[History]:
+        query = self.db_session.query(History)
 
-    def get_by_account(self, iban: str) -> List[History]:
-        return (self.db_session
-                .query(History)
-                .where(History.account == iban)
-                .all())
+        if iban is not None:
+            query.where(History.account == iban)
 
-    def get_by_date(self, entry_date: date):
-        return (self.db_session
-                .query(History)
-                .where(History.date == entry_date)
-                .all())
+        if entry_date is not None:
+            query.where(History.date == entry_date)
+
+        if amount is not None:
+            query.where(History.amount == amount)
+
+        return query.all()
 
     def get_entry(self, iban: str, entry_date: date) -> History:
         entry = (self.db_session
