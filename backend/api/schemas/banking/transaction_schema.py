@@ -25,7 +25,6 @@ class TransactionSchema(BaseModel):
 
 
 class TransactionModifySchema(TransactionSchema):
-    id: int
     bdate: date
     vdate: date
     postingtext: str

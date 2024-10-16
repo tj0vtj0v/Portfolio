@@ -40,6 +40,36 @@ class TransactionDao:
                 .distinct(Transaction.account)
                 .all())
 
+    def get_all_with(self,
+                     iban: str = None,
+                     amount: float = None,
+                     currencycode: str = None,
+                     transaction_date: date = None,
+                     peer: str = None,
+                     reasonforpayment: str = None
+                     ) -> List[Transaction]:
+        query = self.db_session.query(Transaction)
+
+        if iban is not None:
+            query.where(Transaction.account == iban)
+
+        if amount is not None:
+            query.where(Transaction.amount == amount)
+
+        if currencycode is not None:
+            query.where(Transaction.currencycode == currencycode)
+
+        if transaction_date is not None:
+            query.where(Transaction.date == transaction_date)
+
+        if peer is not None:
+            query.where(Transaction.peer == peer)
+
+        if reasonforpayment is not None:
+            query.where(Transaction.reasonforpayment == reasonforpayment)
+
+        return query.all()
+
     def get_by_id(self, id: int) -> Transaction:
         entry = (self.db_session
                  .query(Transaction)
@@ -51,28 +81,9 @@ class TransactionDao:
 
         return entry
 
-    def get_by_account(self, iban: str) -> List[Transaction]:
-        return (self.db_session
-                .query(Transaction)
-                .where(Transaction.account == iban)
-                .all())
-
-    def get_by_date(self, entry_date: date) -> List[Transaction]:
-        return (self.db_session
-                .query(Transaction)
-                .where(Transaction.date == entry_date)
-                .all())
-
-    def get_by_peer(self, peer: str) -> List[Transaction]:
-        return (self.db_session
-                .query(Transaction)
-                .where(Transaction.peer == peer)
-                .all())
-
     def update(self, id: int, update: TransactionModifySchema) -> Transaction:
         to_update: Transaction = self.get_by_id(id)
 
-        to_update.id = update.id
         to_update.account = update.account
         to_update.amount = update.amount
         to_update.currencycode = update.currencycode
