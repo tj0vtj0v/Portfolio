@@ -10,13 +10,13 @@ from backend.api.schemas.banking.history_schema import HistorySchema
 
 
 class HistoryDao:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
-    def exists(self, account: str, entry_date: date) -> bool:
+    def exists(self, iban: str, entry_date: date) -> bool:
         entry = (self.db_session
                  .query(History)
-                 .where(History.date == entry_date, History.account == account)
+                 .where(History.date == entry_date, History.account == iban)
                  .one_or_none())
 
         return entry is not None
@@ -41,7 +41,11 @@ class HistoryDao:
                 .distinct(History.account)
                 .all())
 
-    def get_all_with(self, iban: str = None, entry_date: date = None, amount: float = None) -> List[History]:
+    def get_all_with(self,
+                     iban: str = None,
+                     entry_date: date = None,
+                     amount: float = None
+                     ) -> List[History]:
         query = self.db_session.query(History)
 
         if iban is not None:
@@ -62,11 +66,15 @@ class HistoryDao:
                  .one_or_none())
 
         if entry is None:
-            raise HistoryDao.EntryNotFoundException(f"Entry from iban '{iban}' at date '{entry_date}' not found")
+            raise HistoryDao.NotFoundException(f"Entry from iban '{iban}' at date '{entry_date}' not found")
 
         return entry
 
-    def update(self, iban: str, entry_date: date, update: HistorySchema) -> History:
+    def update(self,
+               iban: str,
+               entry_date: date,
+               update: HistorySchema
+               ) -> History:
         if self.exists(update.account, update.date):
             raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists")
 
@@ -82,7 +90,7 @@ class HistoryDao:
         to_delete = self.get_entry(iban, entry_date)
         self.db_session.delete(to_delete)
 
-    class EntryNotFoundException(Exception):
+    class NotFoundException(Exception):
         def __init__(self, detail: str):
             self.status_code = HTTPStatus.NOT_FOUND
             self.detail = detail

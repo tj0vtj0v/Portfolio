@@ -10,7 +10,7 @@ class ProximitySchema(BaseModel):
     responsetime: float
 
     @staticmethod
-    def from_model(proximity: Proximity):
+    def from_model(proximity: Proximity) -> "ProximitySchema":
         return ProximitySchema(
             device=proximity.device,
             timestamp=proximity.timestamp,

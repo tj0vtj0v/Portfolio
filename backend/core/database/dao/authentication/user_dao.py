@@ -9,7 +9,7 @@ from backend.api.schemas.authentication.user_schema import UserModifySchema
 
 
 class UserDao:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
     def exists(self, username: str) -> bool:
@@ -34,27 +34,27 @@ class UserDao:
 
         return to_add
 
-    def get_by_id(self, user_id: int) -> User:
-        user = (self.db_session
-                .query(User)
-                .where(User.id == user_id)
-                .one_or_none())
+    def get_all_with(self,
+                     first_name: str = None,
+                     last_name: str = None,
+                     email: str = None,
+                     role_name: str = None
+                     ) -> List[User]:
+        query = self.db_session.query(User)
 
-        if user is None:
-            raise UserDao.UserNotFoundException(f"User with id #{user_id} not found")
+        if first_name is not None:
+            query = query.where(User.first_name == first_name)
 
-        return user
+        if last_name is not None:
+            query = query.where(User.last_name == last_name)
 
-    def get_by_email(self, email: str) -> User:
-        user = (self.db_session
-                .query(User)
-                .where(User.email == email)
-                .one_or_none())
+        if email is not None:
+            query = query.where(User.email == email)
 
-        if user is None:
-            raise UserDao.UserNotFoundException(f"User with email '{email}' not found")
+        if role_name is not None:
+            query = query.where(User.role.name == role_name)
 
-        return user
+        return query.all()
 
     def get_by_username(self, username: str) -> User:
         user = (self.db_session
@@ -63,24 +63,9 @@ class UserDao:
                 .one_or_none())
 
         if user is None:
-            raise UserDao.UserNotFoundException(f"User with username '{username}' not found")
+            raise UserDao.NotFoundException(f"User with username '{username}' not found")
 
         return user
-
-    def get_by_role_name(self, role_name: str) -> List[User]:
-        users = (self.db_session
-                 .query(User)
-                 # .join(Role, Role.id == User.role_id)
-                 # .where(Role.name == role_name)
-                 .where(User.role.name == role_name)
-                 .all())
-
-        return users
-
-    def get_all(self) -> List[User]:
-        return (self.db_session
-                .query(User)
-                .all())
 
     def update(self, username: str, update: UserModifySchema) -> User:
         to_update = self.get_by_username(username)
@@ -98,7 +83,7 @@ class UserDao:
         to_delete = self.get_by_username(username)
         self.db_session.delete(to_delete)
 
-    class UserNotFoundException(Exception):
+    class NotFoundException(Exception):
         def __init__(self, detail: str):
             self.status_code = HTTPStatus.NOT_FOUND
             self.detail = detail

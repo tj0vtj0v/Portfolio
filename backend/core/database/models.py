@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, registry, Mapped, mapped_column, rel
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 str_3 = Annotated[str, 3]
+str_8 = Annotated[str, 8]
 str_16 = Annotated[str, 16]
 str_17 = Annotated[str, 17]
 str_22 = Annotated[str, 22]
@@ -19,10 +20,10 @@ serial_pk = Annotated[int, mapped_column(primary_key=True, nullable=False, autoi
 class Base(DeclarativeBase):
     registry = registry(
         type_annotation_map={
-            # definition for the ORM-Model
             datetime: TIMESTAMP(timezone=True),
             date: Date,
             str_3: String(3),
+            str_8: String(8),
             str_16: String(16),
             str_17: String(17),
             str_22: String(22),
@@ -60,7 +61,7 @@ class User(Base):
     username: Mapped[str_16]
     role_id: Mapped[int] = mapped_column(ForeignKey('authentication.t_role.id'))
 
-    role: Mapped[Optional[Role]] = relationship()
+    role: Mapped[Optional["Role"]] = relationship()
 
 
 # Banking tables
@@ -95,6 +96,7 @@ class Transaction(Base):
     peerid: Mapped[str_64]
 
 
+# Proximity table
 class Proximity(Base):
     __tablename__ = "t_proximity"
     __table_args__ = {'schema': 'proximity'}
@@ -103,3 +105,97 @@ class Proximity(Base):
     device: Mapped[str_17]
     timestamp: Mapped[datetime]
     responsetime: Mapped[float]
+
+
+# Hayday tables
+class Item(Base):
+    __tablename__ = "t_item"
+    __table_args__ = {'schema': 'hayday'}
+
+    id: Mapped[serial_pk]
+    source_id: Mapped[int]
+    ingredients_id: Mapped[int]
+    name: Mapped[str_32]
+    level: Mapped[int]
+    production_time: Mapped[float]
+    mastered_time: Mapped[float]
+    experience: Mapped[int]
+    default_price: Mapped[int]
+    maximum_price: Mapped[int]
+
+    source: Mapped[Optional["Source"]] = relationship()
+    ingredients: Mapped[Optional["Ingredient"]] = relationship()
+
+
+class Ingredient(Base):
+    __tablename__ = "t_ingredient"
+    __table_args__ = {'schema': 'hayday'}
+
+    id: Mapped[serial_pk]
+    ingredient_1_id: Mapped[int]
+    quantity_1: Mapped[float]
+    ingredient_2_id: Mapped[int]
+    quantity_2: Mapped[float]
+    ingredient_3_id: Mapped[int]
+    quantity_3: Mapped[float]
+    ingredient_4_id: Mapped[int]
+    quantity_4: Mapped[float]
+
+    ingredient_1: Mapped[Optional["Item"]] = relationship()
+    ingredient_2: Mapped[Optional["Item"]] = relationship()
+    ingredient_3: Mapped[Optional["Item"]] = relationship()
+    ingredient_4: Mapped[Optional["Item"]] = relationship()
+
+
+class Source(Base):
+    __tablename__ = "t_ingredient"
+    __table_args__ = {'schema': 'hayday'}
+
+    id: Mapped[serial_pk]
+    name: Mapped[str_32]
+
+
+class Evaluation(Base):
+    __tablename__ = "t_ingredient"
+    __table_args__ = {'schema': 'hayday'}
+
+    item_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    complete_time: Mapped[float]
+    no_crops_time: Mapped[float]
+    profit: Mapped[float]
+    complete_experience: Mapped[int]
+
+    item: Mapped[Optional["Item"]] = relationship()
+
+
+class MagicNumber(Base):
+    __tablename__ = "t_ingredient"
+    __table_args__ = {'schema': 'hayday'}
+
+    level: Mapped[int] = mapped_column(primary_key=True, nullable=False)
+    number: Mapped[int]
+
+
+class AnimalSteps(Base):
+    __tablename__ = "t_ingredient"
+    __table_args__ = {'schema': 'hayday'}
+
+    id: Mapped[serial_pk]
+    name: Mapped[str_32]
+    level: Mapped[int]
+    experience: Mapped[int]
+    cooldown: Mapped[float]
+    step_value: Mapped[int]
+
+
+class OreOccurrence(Base):
+    __tablename__ = "t_ore_occurrence"
+    __table_args__ = {'schema': 'hayday'}
+
+    tool: Mapped[str_8] = mapped_column(primary_key=True, nullable=False)
+    silver: Mapped[int]
+    gold: Mapped[int]
+    platinum: Mapped[int]
+    iron: Mapped[int]
+    coal: Mapped[int]
+    diamond: Mapped[int]

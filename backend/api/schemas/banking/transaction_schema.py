@@ -1,3 +1,5 @@
+from webbrowser import Error
+
 from pydantic import BaseModel
 from datetime import date
 
@@ -13,7 +15,7 @@ class TransactionSchema(BaseModel):
     reasonforpayment: str
 
     @staticmethod
-    def from_model(transaction: Transaction):
+    def from_model(transaction: Transaction) -> "TransactionSchema":
         return TransactionSchema(
             account=transaction.account,
             amount=transaction.amount,
@@ -33,3 +35,7 @@ class TransactionModifySchema(TransactionSchema):
     peeraccount: str
     peerbic: str
     peerid: str
+
+    @staticmethod
+    def from_model(transaction: Transaction) -> Error:
+        raise NotImplementedError()

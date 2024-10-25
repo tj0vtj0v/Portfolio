@@ -10,7 +10,7 @@ from backend.api.schemas.proximity.proximity_schema import ProximitySchema
 
 
 class ProximityDao:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
     def exists(self, device: str, timestamp: datetime) -> bool:
@@ -23,8 +23,7 @@ class ProximityDao:
 
     def create(self, proximity: ProximitySchema) -> Proximity:
         if self.exists(proximity.device, proximity.timestamp):
-            raise IntegrityError(
-                f"Device and timestamp pair '{proximity.device}, {proximity.timestamp}' already exists")
+            raise IntegrityError(f"Device and Timestamp pair '{proximity.device}, {proximity.timestamp}' already exists")
 
         to_add = Proximity(
             device=proximity.device,
@@ -67,7 +66,7 @@ class ProximityDao:
                  .one_or_none())
 
         if entry is None:
-            raise ProximityDao.IdNotFoundException(f"Entry with id '{id}' not found")
+            raise ProximityDao.NotFoundException(f"Entry with id '{id}' not found")
 
         return entry
 
@@ -84,11 +83,11 @@ class ProximityDao:
 
         return to_update
 
-    def delete(self, id) -> None:
+    def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
 
-    class IdNotFoundException(Exception):
+    class NotFoundException(Exception):
         def __init__(self, detail: str):
             self.status_code = HTTPStatus.NOT_FOUND
             self.detail = detail

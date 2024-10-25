@@ -14,8 +14,27 @@ from backend.api.schemas.banking.history_schema import HistorySchema
 router = APIRouter()
 
 
+@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+async def create_entry(
+        history: HistorySchema,
+        transaction: DBTransaction,
+        history_dao: HistoryDao = Depends()
+):
+    """
+    Authorisation: at least 'Editor' is required
+    """
+
+    try:
+        with transaction.start():
+            created = history_dao.create(history)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
+
+    return HistorySchema.from_model(created)
+
+
 @router.get("/accounts", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_all_accounts(
+async def get_accounts(
         history_dao: HistoryDao = Depends()
 ) -> List[str]:
     """
@@ -58,31 +77,12 @@ async def update_entry(
     try:
         with transaction.start():
             updated = history_dao.update(account, entry_date, history)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.detail)
-    except HistoryDao.EntryNotFoundException as e:
+    except HistoryDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return HistorySchema.from_model(updated)
-
-
-@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
-async def create_entry(
-        history: HistorySchema,
-        transaction: DBTransaction,
-        history_dao: HistoryDao = Depends()
-):
-    """
-    Authorisation: at least 'Editor' is required
-    """
-
-    try:
-        with transaction.start():
-            created = history_dao.create(history)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.detail)
-
-    return HistorySchema.from_model(created)
 
 
 @router.delete("", status_code=HTTPStatus.NO_CONTENT, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
@@ -99,5 +99,5 @@ async def delete_entry(
     try:
         with transaction.start():
             history_dao.delete(account, entry_date)
-    except HistoryDao.EntryNotFoundException as e:
+    except HistoryDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

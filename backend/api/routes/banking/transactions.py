@@ -13,8 +13,24 @@ from backend.api.schemas.banking.transaction_schema import TransactionModifySche
 router = APIRouter()
 
 
+@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+async def create_transaction(
+        transaction_entry: TransactionModifySchema,
+        transaction: DBTransaction,
+        transaction_dao: TransactionDao = Depends()
+) -> TransactionSchema:
+    """
+    Authorisation: at least 'Editor' is required
+    """
+
+    with transaction.start():
+        created = transaction_dao.create(transaction_entry)
+
+    return TransactionSchema.from_model(created)
+
+
 @router.get("/accounts", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_all_accounts(
+async def get_accounts(
         transaction_dao: TransactionDao = Depends()
 ) -> List[str]:
     """
@@ -61,26 +77,10 @@ async def update_transaction(
     try:
         with transaction.start():
             updated = transaction_dao.update(id, transaction_entry)
-    except TransactionDao.IdNotFoundException as e:
+    except TransactionDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return TransactionSchema.from_model(updated)
-
-
-@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
-async def create_transaction(
-        transaction_entry: TransactionModifySchema,
-        transaction: DBTransaction,
-        transaction_dao: TransactionDao = Depends()
-):
-    """
-    Authorisation: at least 'Editor' is required
-    """
-
-    with transaction.start():
-        created = transaction_dao.create(transaction_entry)
-
-    return TransactionSchema.from_model(created)
 
 
 @router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
@@ -97,5 +97,5 @@ async def delete_transaction(
     try:
         with transaction.start():
             transaction_dao.delete(id)
-    except TransactionDao.IdNotFoundException as e:
+    except TransactionDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

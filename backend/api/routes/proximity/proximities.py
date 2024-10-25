@@ -14,8 +14,27 @@ from backend.api.schemas.proximity.proximity_schema import ProximitySchema
 router = APIRouter()
 
 
+@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+async def create_proximity(
+        proximity: ProximitySchema,
+        transaction: DBTransaction,
+        proximity_dao: ProximityDao = Depends()
+):
+    """
+    Authorisation: at least 'Editor' is required
+    """
+
+    try:
+        with transaction.start():
+            created = proximity_dao.create(proximity)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
+
+    return ProximitySchema.from_model(created)
+
+
 @router.get("/devices", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_all_devices(
+async def get_devices(
         proximity_dao: ProximityDao = Depends()
 ) -> List[str]:
     """
@@ -60,31 +79,12 @@ async def update_proximity(
     try:
         with transaction.start():
             updated = proximity_dao.update(id, proximity)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.detail)
-    except ProximityDao.IdNotFoundException as e:
+    except ProximityDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return ProximitySchema.from_model(updated)
-
-
-@router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
-async def create_proximity(
-        proximity: ProximitySchema,
-        transaction: DBTransaction,
-        proximity_dao: ProximityDao = Depends()
-):
-    """
-    Authorisation: at least 'Editor' is required
-    """
-
-    try:
-        with transaction.start():
-            created = proximity_dao.create(proximity)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.detail)
-
-    return ProximitySchema.from_model(created)
 
 
 @router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
@@ -101,5 +101,5 @@ async def delete_proximity(
     try:
         with transaction.start():
             proximity_dao.delete(id)
-    except ProximityDao.IdNotFoundException as e:
+    except ProximityDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

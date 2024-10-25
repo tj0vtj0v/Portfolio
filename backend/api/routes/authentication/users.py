@@ -14,97 +14,6 @@ from backend.api.schemas.authentication.role_schema import RoleSchema, RoleEnum
 router = APIRouter()
 
 
-@router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
-async def get_all_users(
-        user_dao: UserDao = Depends()
-) -> List[UserSchema]:
-    """
-    Authorisation: at least 'Editor' is required
-    """
-
-    users = [UserSchema.from_model(user) for user in user_dao.get_all()]
-
-    return sorted(users, key=lambda user: user.username)
-
-
-@router.get("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
-async def get_your_user(
-        token: Token = Depends(),
-        user_dao: UserDao = Depends()
-) -> UserSchema:
-    """
-    Authorisation: at least 'User' is required
-    """
-
-    try:
-        user = user_dao.get_by_username(token.username)
-        return UserSchema.from_model(user)
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@router.get("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_user_by_username(
-        username: str,
-        user_dao: UserDao = Depends()
-) -> UserSchema:
-    """
-    Authorisation: at least 'Viewer' is required
-    """
-
-    try:
-        user = user_dao.get_by_username(username)
-        return UserSchema.from_model(user)
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e.detail)
-
-
-@router.patch("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
-async def update_your_user(
-        user: UserModifySchema,
-        transaction: DBTransaction,
-        token: Token = Depends(),
-        user_dao: UserDao = Depends()
-) -> UserSchema:
-    """
-    Authorisation: at least 'User' is required
-    """
-
-    if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
-
-    try:
-        with transaction.start():
-            updated = user_dao.update(token.username, user)  # TODO: Errorhandling
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e)
-
-    return UserSchema.from_model(updated)
-
-
-@router.patch("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Developer))])
-async def update_user(
-        username: str,
-        user: UserModifySchema,
-        transaction: DBTransaction,
-        user_dao: UserDao = Depends()
-) -> UserSchema:
-    """
-    Authorisation: at least 'Developer' is required
-    """
-
-    if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
-
-    try:
-        with transaction.start():
-            updated = user_dao.update(username, user)
-    except UserDao.UserNotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e)
-
-    return UserSchema.from_model(updated)
-
-
 @router.post("", status_code=HTTPStatus.CREATED)
 async def create_user(
         user: UserModifySchema,
@@ -134,6 +43,103 @@ async def create_user(
     return UserSchema.from_model(created)
 
 
+@router.get("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
+async def get_your_user(
+        token: Token = Depends(),
+        user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'User' is required
+    """
+
+    try:
+        user = user_dao.get_by_username(token.username)
+    except UserDao.NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+    return UserSchema.from_model(user)
+
+
+@router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+async def get_users(
+        user_dao: UserDao = Depends()
+) -> List[UserSchema]:
+    """
+    Authorisation: at least 'Editor' is required
+    """
+
+    users = [UserSchema.from_model(user) for user in user_dao.get_all_with()]
+
+    return sorted(users, key=lambda user: user.username)
+
+
+@router.get("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
+async def get_user_by_username(
+        username: str,
+        user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'Viewer' is required
+    """
+
+    try:
+        user = user_dao.get_by_username(username)
+    except UserDao.NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+    return UserSchema.from_model(user)
+
+
+@router.patch("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
+async def update_your_user(
+        user: UserModifySchema,
+        transaction: DBTransaction,
+        token: Token = Depends(),
+        user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'User' is required
+    """
+
+    if not RoleSchema.validate_role_id(user.role_id):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
+
+    try:
+        with transaction.start():
+            updated = user_dao.update(token.username, user)
+    except UserDao.NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e)
+
+    return UserSchema.from_model(updated)
+
+
+@router.patch("/{username}", dependencies=[Depends(get_and_validate_user(RoleEnum.Administrator))])
+async def update_user(
+        username: str,
+        user: UserModifySchema,
+        transaction: DBTransaction,
+        user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'Administrator' is required
+    """
+
+    if not RoleSchema.validate_role_id(user.role_id):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
+
+    try:
+        with transaction.start():
+            updated = user_dao.update(username, user)
+    except UserDao.NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e)
+
+    return UserSchema.from_model(updated)
+
+
 @router.delete("/me", status_code=HTTPStatus.NO_CONTENT,
                dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
 async def delete_your_user(
@@ -148,7 +154,7 @@ async def delete_your_user(
     try:
         with transaction.start():
             user_dao.delete(token.username)
-    except UserDao.UserNotFoundException as e:
+    except UserDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
@@ -166,5 +172,5 @@ async def delete_user(
     try:
         with transaction.start():
             user_dao.delete(username)
-    except UserDao.UserNotFoundException as e:
+    except UserDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

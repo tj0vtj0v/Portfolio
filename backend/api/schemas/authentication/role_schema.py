@@ -26,12 +26,12 @@ class RoleSchema(BaseModel):
     name: RoleNames
 
     @staticmethod
-    def from_model(role: Role):
+    def from_model(role: Role) -> "RoleSchema":
         return RoleSchema(
             priority=role.priority,
             name=role.name
         )
 
     @staticmethod
-    def validate_role_id(role_id: int):
+    def validate_role_id(role_id: int) -> bool:
         return role_id in range(1, len(RoleNames.__members__) + 1)

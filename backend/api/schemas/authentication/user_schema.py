@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
-from backend.api.schemas.authentication.role_schema import RoleSchema
 from backend.core.database.models import User
+from backend.api.schemas.authentication.role_schema import RoleSchema
 
 
-class UserBaseModel(BaseModel):
+class _UserBaseSchema(BaseModel):
     username: str
     password: str
     first_name: str
@@ -12,11 +12,11 @@ class UserBaseModel(BaseModel):
     email: str
 
 
-class UserSchema(UserBaseModel):
+class UserSchema(_UserBaseSchema):
     role: RoleSchema
 
     @staticmethod
-    def from_model(user: User):
+    def from_model(user: User) -> "UserSchema":
         return UserSchema(
             username=user.username,
             password=user.password,
@@ -27,5 +27,5 @@ class UserSchema(UserBaseModel):
         )
 
 
-class UserModifySchema(UserBaseModel):
+class UserModifySchema(_UserBaseSchema):
     role_id: int

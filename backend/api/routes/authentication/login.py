@@ -23,7 +23,7 @@ async def login(
     try:
         if _password_matches(data, user_dao):
             return _build_token(data)
-    except UserDao.UserNotFoundException:
+    except UserDao.NotFoundException:
         pass
 
     raise HTTPException(

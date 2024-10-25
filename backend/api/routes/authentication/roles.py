@@ -9,14 +9,14 @@ from backend.api.schemas.authentication.role_schema import RoleSchema, RoleEnum
 router = APIRouter()
 
 
-@router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Developer))])
-async def get_all_roles(
+@router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+async def get_roles(
         role_dao: RoleDao = Depends()
 ) -> List[RoleSchema]:
     """
-    Authorisation: at least 'Developer' is required
+    Authorisation: at least 'Editor' is required
     """
 
-    roles = [RoleSchema.from_model(role) for role in role_dao.get_all()]
+    roles = [RoleSchema.from_model(role) for role in role_dao.get_all_with()]
 
     return sorted(roles, key=lambda role: role.priority)

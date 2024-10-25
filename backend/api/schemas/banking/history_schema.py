@@ -10,7 +10,7 @@ class HistorySchema(BaseModel):
     date: date
 
     @staticmethod
-    def from_model(history: History):
+    def from_model(history: History) -> "HistorySchema":
         return HistorySchema(
             account=history.account,
             amount=history.amount,

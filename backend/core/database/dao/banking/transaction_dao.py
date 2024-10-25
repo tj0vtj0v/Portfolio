@@ -9,7 +9,7 @@ from backend.api.schemas.banking.transaction_schema import TransactionModifySche
 
 
 class TransactionDao:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
     def create(self, transaction: TransactionModifySchema) -> Transaction:
@@ -77,7 +77,7 @@ class TransactionDao:
                  .one_or_none())
 
         if entry is None:
-            raise TransactionDao.IdNotFoundException(f"Entry with id '{id}' not found")
+            raise TransactionDao.NotFoundException(f"Entry with id #{id} not found")
 
         return entry
 
@@ -105,7 +105,7 @@ class TransactionDao:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
 
-    class IdNotFoundException(Exception):
+    class NotFoundException(Exception):
         def __init__(self, detail: str):
             self.status_code = HTTPStatus.NOT_FOUND
             self.detail = detail

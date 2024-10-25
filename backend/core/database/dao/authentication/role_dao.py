@@ -7,8 +7,22 @@ from backend.core.database.session import DBSession
 
 
 class RoleDao:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
+
+    def get_all_with(self,
+                     name: str = None,
+                     priority: int = None
+                     ) -> List[Role]:
+        query = self.db_session.query(Role)
+
+        if name is not None:
+            query = query.where(Role.name == name)
+
+        if priority is not None:
+            query = query.where(Role.priority == priority)
+
+        return query.all()
 
     def get_by_id(self, role_id: int) -> Role:
         role = (self.db_session
@@ -17,40 +31,11 @@ class RoleDao:
                 .one_or_none())
 
         if not role:
-            raise RoleDao.RoleNotFoundException(f"Role with id #{role_id} not found")
+            raise RoleDao.NotFoundException(f"Role with id #{role_id} not found")
 
         return role
 
-    def get_by_name(self, name: str) -> Role:
-        role = (self.db_session
-                .query(Role)
-                .where(Role.name == name)
-                .one_or_none())
-
-        if not role:
-            raise RoleDao.RoleNotFoundException(f"Role with name '{name}' not found")
-
-        return role
-
-    def get_by_priority(self, priority: str) -> Role:
-        role = (self.db_session
-                .query(Role)
-                .where(Role.priority == priority)
-                .one_or_none())
-
-        if not role:
-            raise RoleDao.RoleNotFoundException(f"Role with priority '{priority}' not found")
-
-        return role
-
-    def get_all(self) -> List[Role]:
-        roles = (self.db_session
-                 .query(Role)
-                 .all())
-
-        return roles
-
-    class RoleNotFoundException(Exception):
+    class NotFoundException(Exception):
         def __init__(self, detail: str):
             self.status_code = HTTP_404_NOT_FOUND
             self.detail = detail
