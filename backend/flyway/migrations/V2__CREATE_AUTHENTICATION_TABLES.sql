@@ -3,8 +3,8 @@ SET SEARCH_PATH TO authentication;
 CREATE TABLE IF NOT EXISTS t_role
 (
     id         SERIAL PRIMARY KEY,
-    priority   INT,
-    name       VARCHAR(16),
+    priority   INT UNIQUE,
+    name       VARCHAR(16) UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
