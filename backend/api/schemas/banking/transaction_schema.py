@@ -1,5 +1,3 @@
-from webbrowser import Error
-
 from pydantic import BaseModel
 from datetime import date
 
@@ -37,5 +35,5 @@ class TransactionModifySchema(TransactionSchema):
     peerid: str
 
     @staticmethod
-    def from_model(transaction: Transaction) -> Error:
+    def from_model(transaction: Transaction) -> None:
         raise NotImplementedError()

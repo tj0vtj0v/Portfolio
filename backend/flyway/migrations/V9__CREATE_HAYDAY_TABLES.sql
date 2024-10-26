@@ -166,8 +166,8 @@ CREATE OR REPLACE TRIGGER upd_t_animal_steps
     FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
 
-CREATE OR REPLACE TRIGGER upd_t_ore_probability
+CREATE OR REPLACE TRIGGER upd_t_ore_occurrence
     BEFORE UPDATE
-    ON t_ore_probability
+    ON t_ore_occurrence
     FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();

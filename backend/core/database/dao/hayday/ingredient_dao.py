@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from backend.core.database.models import Ingredient
 from backend.core.database.session import DBSession
-from backend.api.schemas.hayday.ingredients_schema import IngredientsModifySchema
+from backend.api.schemas.hayday.item_ingredient_schema import IngredientsModifySchema
 
 
 class IngredientDao:

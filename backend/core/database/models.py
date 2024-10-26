@@ -67,7 +67,7 @@ class User(Base):
 # Banking tables
 class History(Base):
     __tablename__ = "t_history"
-    __table_args__ = {'schema': 'banking', 'extend_existing': True}
+    __table_args__ = {'schema': 'banking'}
 
     id: Mapped[serial_pk]
     account: Mapped[str_22]
@@ -76,8 +76,8 @@ class History(Base):
 
 
 class Transaction(Base):
-    __tablename__ = "t_history"
-    __table_args__ = {'schema': 'banking', 'extend_existing': True}
+    __tablename__ = "t_transaction"
+    __table_args__ = {'schema': 'banking'}
 
     id: Mapped[serial_pk]
     account: Mapped[str_22]
@@ -148,7 +148,7 @@ class Ingredient(Base):
 
 
 class Source(Base):
-    __tablename__ = "t_ingredient"
+    __tablename__ = "t_source"
     __table_args__ = {'schema': 'hayday'}
 
     id: Mapped[serial_pk]
@@ -156,7 +156,7 @@ class Source(Base):
 
 
 class Evaluation(Base):
-    __tablename__ = "t_ingredient"
+    __tablename__ = "t_evaluation"
     __table_args__ = {'schema': 'hayday'}
 
     item_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -169,7 +169,7 @@ class Evaluation(Base):
 
 
 class MagicNumber(Base):
-    __tablename__ = "t_ingredient"
+    __tablename__ = "t_magic_number"
     __table_args__ = {'schema': 'hayday'}
 
     level: Mapped[int] = mapped_column(primary_key=True, nullable=False)
@@ -177,7 +177,7 @@ class MagicNumber(Base):
 
 
 class AnimalSteps(Base):
-    __tablename__ = "t_ingredient"
+    __tablename__ = "t_animal_steps"
     __table_args__ = {'schema': 'hayday'}
 
     id: Mapped[serial_pk]

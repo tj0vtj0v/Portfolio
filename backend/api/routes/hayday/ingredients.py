@@ -7,7 +7,7 @@ from backend.core.database.dao.hayday.ingredient_dao import IngredientDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.role_schema import RoleEnum
-from backend.api.schemas.hayday.ingredients_schema import IngredientsSchema, IngredientsModifySchema
+from backend.api.schemas.hayday.item_ingredient_schema import IngredientsSchema, IngredientsModifySchema
 
 router = APIRouter()
 

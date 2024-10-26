@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 
 from backend.core.database.models import Evaluation
-from backend.core.database.models import Item
-from backend.api.schemas.hayday.item_schema import ItemSchema
+from backend.api.schemas.hayday.item_ingredient_schema import ItemSchema
 
 
 class _EvaluationBaseSchema(BaseModel):
@@ -13,7 +12,7 @@ class _EvaluationBaseSchema(BaseModel):
 
 
 class EvaluationSchema(_EvaluationBaseSchema):
-    item: Item
+    item: ItemSchema
 
     @staticmethod
     def from_model(evaluation: Evaluation) -> "EvaluationSchema":

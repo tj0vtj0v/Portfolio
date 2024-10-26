@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from backend.core.database.models import Item
 from backend.core.database.session import DBSession
-from backend.api.schemas.hayday.item_schema import ItemModifySchema
+from backend.api.schemas.hayday.item_ingredient_schema import ItemModifySchema
 
 
 class ItemDao:
