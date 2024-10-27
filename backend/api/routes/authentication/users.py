@@ -8,21 +8,53 @@ from backend.core.auth.token import Token
 from backend.core.database.dao.authentication.user_dao import UserDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
-from backend.api.schemas.authentication.user_schema import UserSchema, UserModifySchema
+from backend.api.schemas.authentication.user_schema import UserSchema, UserModifySchema, RestrictedUserModifySchema
 from backend.api.schemas.authentication.role_schema import RoleSchema, RoleEnum
 
 router = APIRouter()
 
 
 @router.post("", status_code=HTTPStatus.CREATED)
-async def create_user(
-        user: UserModifySchema,
+async def create_restricted_user(
+        user: RestrictedUserModifySchema,
         transaction: DBTransaction,
         user_dao: UserDao = Depends()
 ) -> UserSchema:
     """
     Authorisation: none
     """
+
+    if user_dao.exists(user.username):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=f"Username {user.username} already exists"
+        )
+
+    try:
+        with transaction.start():
+            created = user_dao.restricted_create(user)
+    except IntegrityError:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                            detail=f"E-Mail '{user.email}' are already existing")
+
+    return UserSchema.from_model(created)
+
+
+@router.post("/{username}", status_code=HTTPStatus.CREATED,
+             dependencies=[Depends(get_and_validate_user(RoleEnum.Administrator))])
+async def create_user(
+        username: str,
+        user: UserModifySchema,
+        transaction: DBTransaction,
+        user_dao: UserDao = Depends()
+) -> UserSchema:
+    """
+    Authorisation: at least 'Administrator' is required
+    """
+
+    if not username == user.username:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                            detail=f"username '{username}' and '{user.username}' have to match")
 
     if not RoleSchema.validate_role_id(user.role_id):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
@@ -92,7 +124,7 @@ async def get_user_by_username(
 
 @router.patch("/me", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
 async def update_your_user(
-        user: UserModifySchema,
+        user: RestrictedUserModifySchema,
         transaction: DBTransaction,
         token: Token = Depends(),
         user_dao: UserDao = Depends()
@@ -101,16 +133,13 @@ async def update_your_user(
     Authorisation: at least 'User' is required
     """
 
-    if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
-
     try:
         with transaction.start():
-            updated = user_dao.update(token.username, user)
+            updated = user_dao.restricted_update(token.username, user)
     except UserDao.NotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e)
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return UserSchema.from_model(updated)
 
@@ -133,9 +162,9 @@ async def update_user(
         with transaction.start():
             updated = user_dao.update(username, user)
     except UserDao.NotFoundException as e:
-        raise HTTPException(status_code=e.status_code, detail=e)
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e)
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return UserSchema.from_model(updated)
 

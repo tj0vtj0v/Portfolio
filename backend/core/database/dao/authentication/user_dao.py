@@ -3,9 +3,10 @@ from typing import List
 
 from http import HTTPStatus
 
+from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.models import User
 from backend.core.database.session import DBSession
-from backend.api.schemas.authentication.user_schema import UserModifySchema
+from backend.api.schemas.authentication.user_schema import UserModifySchema, RestrictedUserModifySchema
 
 
 class UserDao:
@@ -19,6 +20,20 @@ class UserDao:
                 .one_or_none())
 
         return user is not None
+
+    def restricted_create(self, user: RestrictedUserModifySchema) -> User:
+        to_add = User(
+            username=user.username,
+            password=sha256(user.password.encode()).hexdigest(),
+            last_name=user.last_name,
+            first_name=user.first_name,
+            email=user.email,
+            role_id=RoleEnum.User.value[1]
+        )
+
+        self.db_session.add(to_add)
+
+        return to_add
 
     def create(self, user: UserModifySchema) -> User:
         to_add = User(
@@ -67,7 +82,7 @@ class UserDao:
 
         return user
 
-    def update(self, username: str, update: UserModifySchema) -> User:
+    def restricted_update(self, username: str, update: RestrictedUserModifySchema) -> User:
         to_update = self.get_by_username(username)
 
         to_update.username = update.username
@@ -75,6 +90,12 @@ class UserDao:
         to_update.first_name = update.first_name
         to_update.last_name = update.last_name
         to_update.email = update.email
+
+        return to_update
+
+    def update(self, username: str, update: UserModifySchema) -> User:
+        to_update = self.restricted_update(username, update)
+
         to_update.role_id = update.role_id
 
         return to_update

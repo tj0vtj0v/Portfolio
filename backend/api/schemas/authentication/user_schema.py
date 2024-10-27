@@ -4,7 +4,7 @@ from backend.core.database.models import User
 from backend.api.schemas.authentication.role_schema import RoleSchema
 
 
-class _UserBaseSchema(BaseModel):
+class RestrictedUserModifySchema(BaseModel):
     username: str
     password: str
     first_name: str
@@ -12,7 +12,7 @@ class _UserBaseSchema(BaseModel):
     email: str
 
 
-class UserSchema(_UserBaseSchema):
+class UserSchema(RestrictedUserModifySchema):
     role: RoleSchema
 
     @staticmethod
@@ -27,5 +27,5 @@ class UserSchema(_UserBaseSchema):
         )
 
 
-class UserModifySchema(_UserBaseSchema):
+class UserModifySchema(RestrictedUserModifySchema):
     role_id: int
