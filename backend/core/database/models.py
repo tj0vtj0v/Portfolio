@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional, List
 from datetime import datetime, date
 
 from sqlalchemy import String, Date, ForeignKey
@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, registry, Mapped, mapped_column, rel
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 str_3 = Annotated[str, 3]
+str_6 = Annotated[str, 6]
 str_8 = Annotated[str, 8]
 str_16 = Annotated[str, 16]
 str_17 = Annotated[str, 17]
@@ -23,6 +24,7 @@ class Base(DeclarativeBase):
             datetime: TIMESTAMP(timezone=True),
             date: Date,
             str_3: String(3),
+            str_6: String(6),
             str_8: String(8),
             str_16: String(16),
             str_17: String(17),
@@ -48,6 +50,8 @@ class Role(Base):
     priority: Mapped[int]
     name: Mapped[str_16]
 
+    users: Mapped[Optional[List["User"]]] = relationship("User", back_populates="role")
+
 
 class User(Base):
     __tablename__ = "t_user"
@@ -61,7 +65,7 @@ class User(Base):
     username: Mapped[str_16]
     role_id: Mapped[int] = mapped_column(ForeignKey('authentication.t_role.id'))
 
-    role: Mapped[Optional["Role"]] = relationship()
+    role: Mapped[Optional["Role"]] = relationship("Role", back_populates="users")
 
 
 # Banking tables
@@ -70,7 +74,7 @@ class History(Base):
     __table_args__ = {'schema': 'banking'}
 
     id: Mapped[serial_pk]
-    account: Mapped[str_22]
+    account: Mapped[str_22]  # TODO refactor in own table
     date: Mapped[date]
     amount: Mapped[float]
 
@@ -80,7 +84,7 @@ class Transaction(Base):
     __table_args__ = {'schema': 'banking'}
 
     id: Mapped[serial_pk]
-    account: Mapped[str_22]
+    account: Mapped[str_22]  # TODO refactor in own table
     amount: Mapped[float]
     currencycode: Mapped[str_3]
     date: Mapped[date]
@@ -102,7 +106,7 @@ class Proximity(Base):
     __table_args__ = {'schema': 'proximity'}
 
     id: Mapped[serial_pk]
-    device: Mapped[str_17]
+    device: Mapped[str_17]  # TODO refactor in own table
     timestamp: Mapped[datetime]
     responsetime: Mapped[float]
 
@@ -113,8 +117,8 @@ class Item(Base):
     __table_args__ = {'schema': 'hayday'}
 
     id: Mapped[serial_pk]
-    source_id: Mapped[int]
-    ingredients_id: Mapped[int]
+    source_id: Mapped[int] = mapped_column(ForeignKey("hayday.t_source.id"))
+    ingredients_id: Mapped[int] = mapped_column(ForeignKey("hayday.t_ingredient.id"))
     name: Mapped[str_32]
     level: Mapped[int]
     production_time: Mapped[float]
@@ -123,8 +127,9 @@ class Item(Base):
     default_price: Mapped[int]
     maximum_price: Mapped[int]
 
-    source: Mapped[Optional["Source"]] = relationship()
-    ingredients: Mapped[Optional["Ingredient"]] = relationship()
+    source: Mapped[Optional["Source"]] = relationship("Source", back_populates="items")
+    ingredients: Mapped[Optional["Ingredient"]] = relationship("Ingredient", back_populates="items")
+    evaluation: Mapped[Optional["Evaluation"]] = relationship("Evaluation", back_populates="item")
 
 
 class Ingredient(Base):
@@ -141,10 +146,12 @@ class Ingredient(Base):
     ingredient_4_id: Mapped[int]
     quantity_4: Mapped[float]
 
-    ingredient_1: Mapped[Optional["Item"]] = relationship()
-    ingredient_2: Mapped[Optional["Item"]] = relationship()
-    ingredient_3: Mapped[Optional["Item"]] = relationship()
-    ingredient_4: Mapped[Optional["Item"]] = relationship()
+    ingredient_1: Mapped[Optional["Item"]] = relationship("Item", viewonly=True)
+    ingredient_2: Mapped[Optional["Item"]] = relationship("Item", viewonly=True)
+    ingredient_3: Mapped[Optional["Item"]] = relationship("Item", viewonly=True)
+    ingredient_4: Mapped[Optional["Item"]] = relationship("Item", viewonly=True)
+
+    items: Mapped[Optional[List["Item"]]] = relationship("Item", back_populates="ingredients")
 
 
 class Source(Base):
@@ -154,18 +161,21 @@ class Source(Base):
     id: Mapped[serial_pk]
     name: Mapped[str_32]
 
+    items: Mapped[Optional[List["Item"]]] = relationship("Item", back_populates="source")
+
 
 class Evaluation(Base):
     __tablename__ = "t_evaluation"
     __table_args__ = {'schema': 'hayday'}
 
-    item_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    item_id: Mapped[int] = mapped_column(ForeignKey("hayday.t_item.id"), primary_key=True, nullable=False,
+                                         autoincrement=True)
     complete_time: Mapped[float]
     no_crops_time: Mapped[float]
     profit: Mapped[float]
     complete_experience: Mapped[int]
 
-    item: Mapped[Optional["Item"]] = relationship()
+    item: Mapped[Optional["Item"]] = relationship("Item", back_populates="evaluation")
 
 
 class MagicNumber(Base):
