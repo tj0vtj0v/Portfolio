@@ -8,7 +8,7 @@ from backend.core.database.session import DBSession
 from backend.api.schemas.fuel.refuel_schema import RefuelModifySchema
 
 
-class RefuelDAO:
+class RefuelDao:
     def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
@@ -55,8 +55,7 @@ class RefuelDAO:
         refuel = (self.db_session
                   .query(Refuel)
                   .where(Refuel.id == id)
-                  .one_or_none()
-                  )
+                  .one_or_none())
 
         if refuel is None:
             raise self.NotFoundException(f"Refuel at id {id} not found")

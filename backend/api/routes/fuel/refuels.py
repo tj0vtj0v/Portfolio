@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
-from backend.core.database.dao.fuel.refuel_dao import RefuelDAO
+from backend.core.database.dao.fuel.refuel_dao import RefuelDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.fuel.refuel_schema import RefuelSchema, RefuelModifySchema
@@ -18,7 +18,7 @@ router = APIRouter()
 async def create_refuel(
         refuel: RefuelModifySchema,
         transaction: DBTransaction,
-        refuel_dao: RefuelDAO = Depends(),
+        refuel_dao: RefuelDao = Depends(),
 ) -> RefuelSchema:
     """
     Authorisation: at least 'Editor' is required
@@ -37,7 +37,7 @@ async def get_refuels(
         consumption: float = None,
         cost: float = None,
         fuel_type_name: str = None,
-        refuel_dao: RefuelDAO = Depends()
+        refuel_dao: RefuelDao = Depends()
 ) -> List[RefuelSchema]:
     """
     Authorisation: at least 'Viewer' is required
@@ -55,7 +55,7 @@ async def update_refuel(
         id: int,
         refuel: RefuelModifySchema,
         transaction: DBTransaction,
-        refuel_dao: RefuelDAO = Depends()
+        refuel_dao: RefuelDao = Depends()
 ) -> RefuelSchema:
     """
     Authorisation: at least 'Editor' is required
@@ -64,7 +64,7 @@ async def update_refuel(
     try:
         with transaction.start():
             updated = refuel_dao.update(id, refuel)
-    except RefuelDAO.NotFoundException as e:
+    except RefuelDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=str(e))
@@ -77,7 +77,7 @@ async def update_refuel(
 async def delete_refuel(
         id: int,
         transaction: DBTransaction,
-        refuel_dao: RefuelDAO = Depends()
+        refuel_dao: RefuelDao = Depends()
 ) -> None:
     """
     Authorisation: at least 'Editor' is required
@@ -86,5 +86,5 @@ async def delete_refuel(
     try:
         with transaction.start():
             refuel_dao.delete(id)
-    except RefuelDAO.NotFoundException as e:
+    except RefuelDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
