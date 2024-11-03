@@ -60,23 +60,23 @@ class ProximityDao:
 
         return query.all()
 
-    def get_by_id(self, id: int) -> Proximity:
+    def get_entry(self, device: str, timestamp: datetime) -> Proximity:
         entry = (self.db_session
                  .query(Proximity)
-                 .where(Proximity.id == id)
+                 .where(Proximity.device == device, Proximity.timestamp == timestamp)
                  .one_or_none())
 
         if entry is None:
-            raise NotFoundException(f"Entry with id #{id} not found")
+            raise NotFoundException(f"Entry from device '{device}' at date '{timestamp}' not found")
 
         return entry
 
-    def update(self, id: int, update: ProximitySchema) -> Proximity:
+    def update(self, device: str, timestamp: datetime, update: ProximitySchema) -> Proximity:
         if self.exists(update.device, update.timestamp):
             raise IntegrityError(
                 f"Device and timestamp pair '{update.device}, {update.timestamp}' already exists")
 
-        to_update = self.get_by_id(id)
+        to_update = self.get_entry(device, timestamp)
 
         to_update.device = update.device
         to_update.timestamp = update.timestamp
@@ -84,6 +84,6 @@ class ProximityDao:
 
         return to_update
 
-    def delete(self, id: int) -> None:
-        to_delete = self.get_by_id(id)
+    def delete(self, device: str, timestamp: datetime) -> None:
+        to_delete = self.get_entry(device, timestamp)
         self.db_session.delete(to_delete)

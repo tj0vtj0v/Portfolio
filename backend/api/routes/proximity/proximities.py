@@ -66,9 +66,10 @@ async def get_proximities(
     return sorted(proximities, key=lambda entry: (entry.timestamp, entry.device))
 
 
-@router.patch("/{id}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+@router.patch("", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_proximity(
-        id: int,
+        device: str,
+        timestamp: datetime,
         proximity: ProximitySchema,
         transaction: DBTransaction,
         proximity_dao: ProximityDao = Depends()
@@ -79,7 +80,7 @@ async def update_proximity(
 
     try:
         with transaction.start():
-            updated = proximity_dao.update(id, proximity)
+            updated = proximity_dao.update(device, timestamp, proximity)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
@@ -88,10 +89,11 @@ async def update_proximity(
     return ProximitySchema.from_model(updated)
 
 
-@router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
+@router.delete("", status_code=HTTPStatus.NO_CONTENT,
                dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def delete_proximity(
-        id: int,
+        device: str,
+        timestamp: datetime,
         transaction: DBTransaction,
         proximity_dao: ProximityDao = Depends()
 ) -> None:
@@ -101,6 +103,6 @@ async def delete_proximity(
 
     try:
         with transaction.start():
-            proximity_dao.delete(id)
+            proximity_dao.delete(device, timestamp)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
