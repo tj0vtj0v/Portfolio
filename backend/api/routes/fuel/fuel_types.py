@@ -57,6 +57,10 @@ async def update_fuel_type(
     Authorisation: at least 'Editor' is required
     """
 
+    if not name == fuel_type.name:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given names '{name}' and '{fuel_type.name}' have to match")
+
     try:
         with transaction.start():
             updated = fuel_type_dao.update(name, fuel_type)

@@ -74,6 +74,10 @@ async def update_magic_number(
     Authorisation: at least 'Editor' is required
     """
 
+    if not level == magic_number.level:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given levels #{level} and #{magic_number.level} have to match")
+
     try:
         with transaction.start():
             updated = magic_number_dao.update(level, magic_number)

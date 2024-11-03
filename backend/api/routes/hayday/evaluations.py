@@ -63,6 +63,10 @@ async def update_evaluation(
     Authorisation: at least 'Editor' is required
     """
 
+    if not name == evaluation.name:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given names '{name}' and '{evaluation.name}' have to match")
+
     try:
         with transaction.start():
             updated = evaluation_dao.update(name, evaluation)

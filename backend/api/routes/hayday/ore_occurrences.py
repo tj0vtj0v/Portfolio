@@ -75,6 +75,10 @@ async def update_ore_occurrence(
     Authorisation: at least 'Editor' is required
     """
 
+    if not tool == ore_occurrence.tool:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given tools '{tool}' and '{ore_occurrence.tool}' have to match")
+
     try:
         with transaction.start():
             updated = ore_occurrence_dao.update(tool, ore_occurrence)

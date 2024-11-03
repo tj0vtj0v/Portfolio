@@ -59,6 +59,10 @@ async def update_monthly_closing(
     Authorisation: at least 'Editor' is required
     """
 
+    if not entry_date == monthly_closing.date:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given dates '{entry_date}' and '{monthly_closing.date}' have to match")
+
     try:
         with transaction.start():
             updated = monthly_closing_dao.update(entry_date, monthly_closing)

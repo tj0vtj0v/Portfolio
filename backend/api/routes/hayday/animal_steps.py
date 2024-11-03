@@ -80,6 +80,10 @@ async def update_animal_step(
     Authorisation: at least 'Editor' is required
     """
 
+    if not name == animal_step.name:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given names '{name}' and '{animal_step.name}' have to match")
+
     try:
         with transaction.start():
             updated = animal_steps_dao.update(name, animal_step)

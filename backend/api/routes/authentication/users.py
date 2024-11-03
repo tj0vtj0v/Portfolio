@@ -55,7 +55,7 @@ async def create_user(
 
     if not username == user.username:
         raise HTTPException(status_code=HTTPStatus.CONFLICT,
-                            detail=f"Username '{username}' and '{user.username}' have to match")
+                            detail=f"Given usernames '{username}' and '{user.username}' have to match")
 
     if not RoleSchema.validate_role_id(user.role_id):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Role id #{user.role_id} does not exist")
@@ -134,6 +134,10 @@ async def update_your_user(
     Authorisation: at least 'User' is required
     """
 
+    if not token.username == user.username:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given usernames '{token.username}' and '{user.username}' have to match")
+
     try:
         with transaction.start():
             updated = user_dao.restricted_update(token.username, user)
@@ -155,6 +159,10 @@ async def update_user(
     """
     Authorisation: at least 'Administrator' is required
     """
+
+    if not username == user.username:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
+                            detail=f"Given usernames '{username}' and '{user.username}' have to match")
 
     if not RoleSchema.validate_role_id(user.role_id):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Role id #{user.role_id} does not exist")
