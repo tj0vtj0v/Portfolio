@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS t_expense
     reason      VARCHAR(32),
     amount      DECIMAL(9, 2),
     date        DATE,
-    account_id  INT,                -- renamed
-    category_id INT,                -- renamed
+    account_id  INT,                -- changed
+    category_id INT,                -- changed
     created_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at  TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
 

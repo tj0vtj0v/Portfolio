@@ -55,16 +55,6 @@ CREATE TABLE IF NOT EXISTS t_source
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-ALTER TABLE IF EXISTS t_item
-    ADD CONSTRAINT fk_source
-        FOREIGN KEY (source_id)
-            REFERENCES t_source (id);
-
-ALTER TABLE IF EXISTS t_item
-    ADD CONSTRAINT fk_ingredients
-        FOREIGN KEY (ingredients_id)
-            REFERENCES t_ingredient (id);
-
 CREATE TABLE IF NOT EXISTS t_evaluation
 (
     item_id             SERIAL PRIMARY KEY,
@@ -79,6 +69,16 @@ CREATE TABLE IF NOT EXISTS t_evaluation
         FOREIGN KEY (item_id)
             REFERENCES t_item (id)
 );
+
+ALTER TABLE IF EXISTS t_item
+    ADD CONSTRAINT fk_source
+        FOREIGN KEY (source_id)
+            REFERENCES t_source (id);
+
+ALTER TABLE IF EXISTS t_item
+    ADD CONSTRAINT fk_ingredients
+        FOREIGN KEY (ingredients_id)
+            REFERENCES t_ingredient (id);
 
 
 

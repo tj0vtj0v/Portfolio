@@ -1,6 +1,6 @@
 SET SEARCH_PATH TO authentication;
 
-CREATE TABLE IF NOT EXISTS t_role
+CREATE TABLE IF NOT EXISTS t_role -- added
 (
     id         SERIAL PRIMARY KEY,
     priority   INT UNIQUE,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS t_role
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS t_user
+CREATE TABLE IF NOT EXISTS t_user -- added
 (
     id         SERIAL PRIMARY KEY,
     password   CHAR(64),

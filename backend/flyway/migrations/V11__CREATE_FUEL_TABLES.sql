@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS t_refuel
     distance     DECIMAL(6, 1),
     consumption  DECIMAL(6, 2),
     cost         DECIMAL(6, 2),
-    fuel_type_id INT,
+    fuel_type_id INT, -- changed
     created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
