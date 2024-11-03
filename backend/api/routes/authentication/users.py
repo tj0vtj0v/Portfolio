@@ -26,7 +26,7 @@ async def create_restricted_user(
 
     if user_dao.exists(user.username):
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail=f"Username {user.username} already exists"
         )
 
@@ -34,7 +34,7 @@ async def create_restricted_user(
         with transaction.start():
             created = user_dao.restricted_create(user)
     except IntegrityError:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
                             detail=f"E-Mail '{user.email}' are already existing")
 
     return UserSchema.from_model(created)
@@ -53,7 +53,7 @@ async def create_user(
     """
 
     if not username == user.username:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
                             detail=f"username '{username}' and '{user.username}' have to match")
 
     if not RoleSchema.validate_role_id(user.role_id):
@@ -61,7 +61,7 @@ async def create_user(
 
     if user_dao.exists(user.username):
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail=f"Username {user.username} already exists"
         )
 
@@ -69,7 +69,7 @@ async def create_user(
         with transaction.start():
             created = user_dao.create(user)
     except IntegrityError:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+        raise HTTPException(status_code=HTTPStatus.CONFLICT,
                             detail=f"E-Mail '{user.email}' are already existing")
 
     return UserSchema.from_model(created)

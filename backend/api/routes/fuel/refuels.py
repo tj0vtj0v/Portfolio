@@ -18,7 +18,7 @@ router = APIRouter()
 async def create_refuel(
         refuel: RefuelModifySchema,
         transaction: DBTransaction,
-        refuel_dao: RefuelDao = Depends(),
+        refuel_dao: RefuelDao = Depends()
 ) -> RefuelSchema:
     """
     Authorisation: at least 'Editor' is required
@@ -67,7 +67,7 @@ async def update_refuel(
     except RefuelDao.NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=str(e))
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return RefuelSchema.from_model(updated)
 
