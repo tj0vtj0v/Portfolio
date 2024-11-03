@@ -4,6 +4,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.magic_number_dao import MagicNumberDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -56,7 +57,7 @@ async def get_magic_number_by_level(
 
     try:
         magic_number = magic_number_dao.get_by_level(level)
-    except MagicNumberDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return MagicNumberSchema.from_model(magic_number)
@@ -76,7 +77,7 @@ async def update_magic_number(
     try:
         with transaction.start():
             updated = magic_number_dao.update(level, magic_number)
-    except MagicNumberDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -98,5 +99,5 @@ async def delete_magic_number(
     try:
         with transaction.start():
             magic_number_dao.delete(level)
-    except MagicNumberDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

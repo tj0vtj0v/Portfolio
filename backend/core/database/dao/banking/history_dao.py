@@ -1,9 +1,9 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import History
 from backend.core.database.session import DBSession
 from backend.api.schemas.banking.history_schema import HistorySchema
@@ -13,10 +13,10 @@ class HistoryDao:
     def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
-    def exists(self, iban: str, entry_date: date) -> bool:
+    def exists(self, account: str, entry_date: date) -> bool:
         entry = (self.db_session
                  .query(History)
-                 .where(History.date == entry_date, History.account == iban)
+                 .where(History.date == entry_date, History.account == account)
                  .one_or_none())
 
         return entry is not None
@@ -42,14 +42,14 @@ class HistoryDao:
                 .all())
 
     def get_all_with(self,
-                     iban: str = None,
+                     account: str = None,
                      entry_date: date = None,
                      amount: float = None
                      ) -> List[History]:
         query = self.db_session.query(History)
 
-        if iban is not None:
-            query.where(History.account == iban)
+        if account is not None:
+            query.where(History.account == account)
 
         if entry_date is not None:
             query.where(History.date == entry_date)
@@ -59,26 +59,26 @@ class HistoryDao:
 
         return query.all()
 
-    def get_entry(self, iban: str, entry_date: date) -> History:
+    def get_entry(self, account: str, entry_date: date) -> History:
         entry = (self.db_session
                  .query(History)
-                 .where(History.date == entry_date, History.account == iban)
+                 .where(History.date == entry_date, History.account == account)
                  .one_or_none())
 
         if entry is None:
-            raise HistoryDao.NotFoundException(f"Entry from iban '{iban}' at date '{entry_date}' not found")
+            raise NotFoundException(f"Entry from account '{account}' at date '{entry_date}' not found")
 
         return entry
 
     def update(self,
-               iban: str,
+               account: str,
                entry_date: date,
                update: HistorySchema
                ) -> History:
         if self.exists(update.account, update.date):
             raise IntegrityError(f"Account and Date pair '{update.account}, {update.date}' already exists")
 
-        to_update = self.get_entry(iban, entry_date)
+        to_update = self.get_entry(account, entry_date)
 
         to_update.account = update.account
         to_update.date = update.date
@@ -86,11 +86,6 @@ class HistoryDao:
 
         return to_update
 
-    def delete(self, iban: str, entry_date: date) -> None:
-        to_delete = self.get_entry(iban, entry_date)
+    def delete(self, account: str, entry_date: date) -> None:
+        to_delete = self.get_entry(account, entry_date)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Evaluation
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.evaluation_schema import EvaluationModifySchema
@@ -46,19 +45,19 @@ class EvaluationDao:
 
         return query.all()
 
-    def get_by_id(self, id: int) -> Evaluation:
+    def get_by_name(self, name: str) -> Evaluation:
         evaluation = (self.db_session
                       .query(Evaluation)
-                      .where(Evaluation.item_id == id)
+                      .where(Evaluation.item.name == name)
                       .one_or_none())
 
         if evaluation is None:
-            raise EvaluationDao.NotFoundException(f"Evaluation with id #{id} not found")
+            raise NotFoundException(f"Evaluation with name '{name}' not found")
 
         return evaluation
 
-    def update(self, id: int, update: EvaluationModifySchema) -> Evaluation:
-        to_update = self.get_by_id(id)
+    def update(self, name: str, update: EvaluationModifySchema) -> Evaluation:
+        to_update = self.get_by_name(name)
 
         to_update.item_id = update.item_id
         to_update.complete_time = update.complete_time
@@ -68,11 +67,6 @@ class EvaluationDao:
 
         return to_update
 
-    def delete(self, id: int) -> None:
-        to_delete = self.get_by_id(id)
+    def delete(self, name: str) -> None:
+        to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

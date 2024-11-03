@@ -1,9 +1,8 @@
-from os.path import exists
 from typing import List
 
-from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import AnimalSteps
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.animal_steps_schema import AnimalStepsSchema
@@ -22,7 +21,7 @@ class AnimalStepsDao:
         return entry is not None
 
     def create(self, animal_step: AnimalStepsSchema) -> AnimalSteps:
-        if exists(animal_step.name):
+        if self.exists(animal_step.name):
             raise IntegrityError(f"Animal step with name '{animal_step.name}' is already exists")
 
         to_add = AnimalSteps(
@@ -66,12 +65,12 @@ class AnimalStepsDao:
                        .one_or_none())
 
         if animal_step is None:
-            raise AnimalStepsDao.NotFoundException(f"animal with name '{name}' not found")
+            raise NotFoundException(f"Animal with name '{name}' not found")
 
         return animal_step
 
     def update(self, name: str, update: AnimalStepsSchema) -> AnimalSteps:
-        if exists(update.name):
+        if self.exists(update.name):
             raise IntegrityError(f"Animal step with name '{update.name}' is already exists")
 
         to_update = self.get_by_name(name)
@@ -87,8 +86,3 @@ class AnimalStepsDao:
     def delete(self, name: str) -> None:
         to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

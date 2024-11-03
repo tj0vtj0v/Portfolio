@@ -4,6 +4,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.evaluation_dao import EvaluationDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -51,9 +52,9 @@ async def get_evaluations(
     return sorted(evaluations, key=lambda evaluation: (evaluation.complete_time, evaluation.profit))
 
 
-@router.patch("/{id}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+@router.patch("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_evaluation(
-        id: int,
+        name: str,
         evaluation: EvaluationModifySchema,
         transaction: DBTransaction,
         evaluation_dao: EvaluationDao = Depends()
@@ -64,8 +65,8 @@ async def update_evaluation(
 
     try:
         with transaction.start():
-            updated = evaluation_dao.update(id, evaluation)
-    except EvaluationDao.NotFoundException as e:
+            updated = evaluation_dao.update(name, evaluation)
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -73,10 +74,10 @@ async def update_evaluation(
     return EvaluationSchema.from_model(updated)
 
 
-@router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
+@router.delete("/{name}", status_code=HTTPStatus.NO_CONTENT,
                dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def delete_evaluation(
-        id: int,
+        name: str,
         transaction: DBTransaction,
         evaluation_dao: EvaluationDao = Depends()
 ) -> None:
@@ -86,6 +87,6 @@ async def delete_evaluation(
 
     try:
         with transaction.start():
-            evaluation_dao.delete(id)
-    except EvaluationDao.NotFoundException as e:
+            evaluation_dao.delete(name)
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

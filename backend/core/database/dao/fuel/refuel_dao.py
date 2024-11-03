@@ -1,8 +1,7 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Refuel
 from backend.core.database.session import DBSession
 from backend.api.schemas.fuel.refuel_schema import RefuelModifySchema
@@ -58,7 +57,7 @@ class RefuelDao:
                   .one_or_none())
 
         if refuel is None:
-            raise self.NotFoundException(f"Refuel at id {id} not found")
+            raise NotFoundException(f"Refuel at id {id} not found")
 
         return refuel
 
@@ -76,8 +75,3 @@ class RefuelDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

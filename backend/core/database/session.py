@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from backend.settings.config import DATABASE_PATH
 
-__postgres_url = f'postgresql://postgres:postgres@{DATABASE_PATH}/postgres'
+__postgres_url = f"postgresql://postgres:postgres@{DATABASE_PATH}/postgres"
 __session = sessionmaker(create_engine(__postgres_url), autocommit=False)
 
 

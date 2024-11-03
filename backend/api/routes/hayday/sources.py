@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
@@ -6,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.api.schemas.hayday.source_schema import SourceSchema
 from backend.core.auth.authorisation import get_and_validate_user
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.source_dao import SourceDao
 from backend.core.database.transaction import DBTransaction
 
@@ -31,6 +33,19 @@ async def create_source(
     return SourceSchema.from_model(created)
 
 
+@router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
+async def get_sources(
+        source_dao: SourceDao = Depends()
+) -> List[SourceSchema]:
+    """
+    Authorisation: at least 'User' is required
+    """
+
+    sources = [SourceSchema.from_model(source) for source in source_dao.get_all()]
+
+    return sorted(sources, key=lambda source: source.name)
+
+
 @router.get("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.User))])
 async def get_source_by_name(
         name: str,
@@ -42,7 +57,7 @@ async def get_source_by_name(
 
     try:
         source = source_dao.get_by_name(name)
-    except SourceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return SourceSchema.from_model(source)
@@ -62,7 +77,7 @@ async def update_source(
     try:
         with transaction.start():
             updated = source_dao.update(name, source)
-    except SourceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -84,5 +99,5 @@ async def delete_source(
     try:
         with transaction.start():
             source_dao.delete(name)
-    except SourceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

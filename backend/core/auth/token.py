@@ -11,7 +11,7 @@ class Token:
     username: str
     ttl: datetime
 
-    def __init__(self, data=Depends(oauth2_scheme)):
+    def __init__(self, data=Depends(oauth2_scheme)) -> None:
         decoded_data = jwt.decode(data, key=JWT_SECRET)
 
         self.username = decoded_data["username"]

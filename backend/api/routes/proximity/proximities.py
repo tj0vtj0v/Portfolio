@@ -5,6 +5,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.proximity.proximity_dao import ProximityDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -19,7 +20,7 @@ async def create_proximity(
         proximity: ProximitySchema,
         transaction: DBTransaction,
         proximity_dao: ProximityDao = Depends()
-):
+) -> ProximitySchema:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -79,7 +80,7 @@ async def update_proximity(
     try:
         with transaction.start():
             updated = proximity_dao.update(id, proximity)
-    except ProximityDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -93,7 +94,7 @@ async def delete_proximity(
         id: int,
         transaction: DBTransaction,
         proximity_dao: ProximityDao = Depends()
-):
+) -> None:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -101,5 +102,5 @@ async def delete_proximity(
     try:
         with transaction.start():
             proximity_dao.delete(id)
-    except ProximityDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

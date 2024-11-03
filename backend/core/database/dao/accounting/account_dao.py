@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Account
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.account_schema import AccountSchema
@@ -34,7 +33,7 @@ class AccountDao:
                    .one_or_none())
 
         if account is None:
-            raise AccountDao.NotFoundException(f"Account with name '{name}' not found")
+            raise NotFoundException(f"Account with name '{name}' not found")
 
         return account
 
@@ -49,8 +48,3 @@ class AccountDao:
     def delete(self, name: str) -> None:
         to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

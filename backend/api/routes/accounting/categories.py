@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.category_dao import CategoryDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.category_schema import CategorySchema
@@ -59,7 +60,7 @@ async def update_category(
     try:
         with transaction.start():
             updated = category_dao.update(name, category)
-    except CategoryDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -81,5 +82,5 @@ async def delete_category(
     try:
         with transaction.start():
             category_dao.delete(name)
-    except CategoryDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

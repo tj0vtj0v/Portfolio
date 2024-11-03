@@ -4,6 +4,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.animal_steps_dao import AnimalStepsDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -41,7 +42,7 @@ async def get_animal_steps(
         animal_steps_dao: AnimalStepsDao = Depends()
 ) -> List[AnimalStepsSchema]:
     """
-    Authorisation: at least 'Viewer' is required
+    Authorisation: at least 'User' is required
     """
 
     raw_data = animal_steps_dao.get_all_with(level, experience, cooldown, step_value)
@@ -57,12 +58,12 @@ async def get_animal_step_by_name(
         animal_steps_dao: AnimalStepsDao = Depends()
 ) -> AnimalStepsSchema:
     """
-    Authorisation: at least 'Viewer' is required
+    Authorisation: at least 'User' is required
     """
 
     try:
         animal_step = animal_steps_dao.get_by_name(name)
-    except AnimalStepsDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return AnimalStepsSchema.from_model(animal_step)
@@ -82,7 +83,7 @@ async def update_animal_step(
     try:
         with transaction.start():
             updated = animal_steps_dao.update(name, animal_step)
-    except AnimalStepsDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -104,5 +105,5 @@ async def delete_animal_step(
     try:
         with transaction.start():
             animal_steps_dao.delete(name)
-    except AnimalStepsDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

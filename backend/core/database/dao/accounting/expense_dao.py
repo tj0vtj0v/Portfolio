@@ -1,8 +1,7 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Expense
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.expense_schema import ExpenseModifySchema
@@ -58,7 +57,7 @@ class ExpenseDao:
                    .one_or_none())
 
         if expense is None:
-            raise self.NotFoundException(f"Expense with id #{id} not found")
+            raise NotFoundException(f"Expense with id #{id} not found")
 
         return expense
 
@@ -76,8 +75,3 @@ class ExpenseDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import OreOccurrence
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.ore_occurrence_schema import OreOccurrenceSchema
@@ -38,7 +37,7 @@ class OreOccurrenceDao:
                           .one_or_none())
 
         if ore_occurrence is None:
-            raise OreOccurrenceDao.NotFoundException(f"Ore occurrence for tool '{tool}' not found")
+            raise NotFoundException(f"Ore occurrence for tool '{tool}' not found")
 
         return ore_occurrence
 
@@ -58,8 +57,3 @@ class OreOccurrenceDao:
     def delete(self, tool: str) -> None:
         to_delete = self.get_by_tool(tool)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

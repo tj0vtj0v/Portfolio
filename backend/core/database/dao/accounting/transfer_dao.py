@@ -1,8 +1,6 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
-
 from backend.core.database.models import Transfer
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.transfer_schema import TransferModifySchema
@@ -70,8 +68,3 @@ class TransferDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

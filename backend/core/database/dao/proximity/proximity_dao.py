@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List
 
-from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Proximity
 from backend.core.database.session import DBSession
 from backend.api.schemas.proximity.proximity_schema import ProximitySchema
@@ -23,7 +23,8 @@ class ProximityDao:
 
     def create(self, proximity: ProximitySchema) -> Proximity:
         if self.exists(proximity.device, proximity.timestamp):
-            raise IntegrityError(f"Device and Timestamp pair '{proximity.device}, {proximity.timestamp}' already exists")
+            raise IntegrityError(
+                f"Device and Timestamp pair '{proximity.device}, {proximity.timestamp}' already exists")
 
         to_add = Proximity(
             device=proximity.device,
@@ -66,7 +67,7 @@ class ProximityDao:
                  .one_or_none())
 
         if entry is None:
-            raise ProximityDao.NotFoundException(f"Entry with id '{id}' not found")
+            raise NotFoundException(f"Entry with id #{id} not found")
 
         return entry
 
@@ -86,8 +87,3 @@ class ProximityDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

@@ -3,10 +3,10 @@ from typing import List
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.fuel.refuel_dao import RefuelDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.fuel.refuel_schema import RefuelSchema, RefuelModifySchema
@@ -64,10 +64,8 @@ async def update_refuel(
     try:
         with transaction.start():
             updated = refuel_dao.update(id, refuel)
-    except RefuelDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return RefuelSchema.from_model(updated)
 
@@ -86,5 +84,5 @@ async def delete_refuel(
     try:
         with transaction.start():
             refuel_dao.delete(id)
-    except RefuelDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

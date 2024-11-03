@@ -1,8 +1,6 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
-
 from backend.core.database.models import MonthlyClosing
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.monthly_closing_schema import MonthlyClosingSchema
@@ -28,7 +26,9 @@ class MonthlyClosingDao:
         return to_add
 
     def get_all(self) -> List[MonthlyClosing]:
-        return self.db_session.query(MonthlyClosing).all()
+        return (self.db_session
+                .query(MonthlyClosing)
+                .all())
 
     def get_by_date(self, entry_date: date) -> MonthlyClosing:
         monthly_closing = (self.db_session
@@ -57,8 +57,3 @@ class MonthlyClosingDao:
     def delete(self, entry_date: date) -> None:
         to_delete = self.get_by_date(entry_date)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

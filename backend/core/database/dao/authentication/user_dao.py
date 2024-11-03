@@ -1,9 +1,8 @@
 from hashlib import sha256
 from typing import List
 
-from http import HTTPStatus
-
 from backend.api.schemas.authentication.role_schema import RoleEnum
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import User
 from backend.core.database.session import DBSession
 from backend.api.schemas.authentication.user_schema import UserModifySchema, RestrictedUserModifySchema
@@ -78,7 +77,7 @@ class UserDao:
                 .one_or_none())
 
         if user is None:
-            raise UserDao.NotFoundException(f"User with username '{username}' not found")
+            raise NotFoundException(f"User with username '{username}' not found")
 
         return user
 
@@ -103,8 +102,3 @@ class UserDao:
     def delete(self, username: str) -> None:
         to_delete = self.get_by_username(username)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

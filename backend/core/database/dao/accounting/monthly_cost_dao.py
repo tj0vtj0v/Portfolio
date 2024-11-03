@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import MonthlyCost
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.monthly_cost_schema import MonthlyCostSchema
@@ -38,7 +37,7 @@ class MonthlyCostDao:
                         .one_or_none())
 
         if monthly_cost is None:
-            raise self.NotFoundException(f"Monthly cost with name '{name}' not found")
+            raise NotFoundException(f"Monthly cost with name '{name}' not found")
 
         return monthly_cost
 
@@ -53,8 +52,3 @@ class MonthlyCostDao:
     def delete(self, name: str) -> None:
         to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.account_dao import AccountDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.account_schema import AccountSchema
@@ -56,7 +57,7 @@ async def get_account_by_name(
 
     try:
         account = account_dao.get_by_name(name)
-    except AccountDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return AccountSchema.from_model(account)
@@ -76,7 +77,7 @@ async def update_account(
     try:
         with transaction.start():
             updated = account_dao.update(name, account)
-    except AccountDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -98,5 +99,5 @@ async def delete_account(
     try:
         with transaction.start():
             account_dao.delete(name)
-    except AccountDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

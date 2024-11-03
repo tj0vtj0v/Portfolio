@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import MagicNumber
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.magic_number_schema import MagicNumberSchema
@@ -33,7 +32,7 @@ class MagicNumberDao:
                         .one_or_none())
 
         if magic_number is None:
-            raise MagicNumberDao.NotFoundException(f"Magic-number at level #{level} not found")
+            raise NotFoundException(f"Magic-number at level #{level} not found")
 
         return magic_number
 
@@ -48,8 +47,3 @@ class MagicNumberDao:
     def delete(self, level: int) -> None:
         to_delete = self.get_by_level(level)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

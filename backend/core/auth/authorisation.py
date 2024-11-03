@@ -14,7 +14,7 @@ def get_and_validate_user(
     def check_function(
             token: Token = Depends(),
             user_dao: UserDao = Depends()
-    ):
+    ) -> None:
         user_role = user_dao.get_by_username(token.username).role
 
         if user_role.priority < role.value[1]:

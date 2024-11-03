@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.monthly_closing_dao import MonthlyClosingDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.monthly_closing_schema import MonthlyClosingSchema
@@ -24,8 +25,11 @@ async def create_monthly_closing(
     Authorisation: at least 'Editor' is required
     """
 
-    with transaction.start():
-        created = monthly_closing_dao.create(monthly_closing)
+    try:
+        with transaction.start():
+            created = monthly_closing_dao.create(monthly_closing)
+    except IntegrityError as e:
+        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return MonthlyClosingSchema.from_model(created)
 
@@ -58,7 +62,7 @@ async def update_monthly_closing(
     try:
         with transaction.start():
             updated = monthly_closing_dao.update(entry_date, monthly_closing)
-    except MonthlyClosingDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -80,5 +84,5 @@ async def delete_monthly_closing(
     try:
         with transaction.start():
             monthly_closing_dao.delete(entry_date)
-    except MonthlyClosingDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

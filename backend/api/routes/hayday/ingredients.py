@@ -3,6 +3,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.ingredient_dao import IngredientDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -42,7 +43,9 @@ async def get_ingredients(
 
     raw_data = ingredient_dao.get_all_with(ingredient_name_1, ingredient_name_2, ingredient_name_3, ingredient_name_4)
 
-    return [IngredientsSchema.from_model(ingredient) for ingredient in raw_data]
+    ingredients = [IngredientsSchema.from_model(ingredient) for ingredient in raw_data]
+
+    return sorted(ingredients, key=lambda ingredient: ingredient.name)
 
 
 @router.patch("/{id}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
@@ -59,7 +62,7 @@ async def update_ingredients(
     try:
         with transaction.start():
             updated = ingredient_dao.update(id, ingredient)
-    except IngredientDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return IngredientsSchema.from_model(updated)
@@ -79,5 +82,5 @@ async def delete_ingredients(
     try:
         with transaction.start():
             ingredient_dao.delete(id)
-    except IngredientDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

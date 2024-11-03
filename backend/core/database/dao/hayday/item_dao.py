@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Item
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.item_ingredient_schema import ItemModifySchema
@@ -59,7 +58,7 @@ class ItemDao:
                 .one_or_none())
 
         if item is None:
-            raise ItemDao.NotFoundException(f"Item with name '{name}' not found")
+            raise NotFoundException(f"Item with name '{name}' not found")
 
         return item
 
@@ -81,8 +80,3 @@ class ItemDao:
     def delete(self, name: str) -> None:
         to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

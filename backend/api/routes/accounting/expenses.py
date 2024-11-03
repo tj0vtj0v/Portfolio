@@ -3,10 +3,10 @@ from typing import List
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.expense_dao import ExpenseDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.expense_schema import ExpenseModifySchema, ExpenseSchema
@@ -64,10 +64,8 @@ async def update_expense(
     try:
         with transaction.start():
             updated = expense_dao.update(id, expense)
-    except ExpenseDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
-    except IntegrityError as e:
-        raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return ExpenseSchema.from_model(updated)
 
@@ -86,5 +84,5 @@ async def delete_expense(
     try:
         with transaction.start():
             expense_dao.delete(id)
-    except ExpenseDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

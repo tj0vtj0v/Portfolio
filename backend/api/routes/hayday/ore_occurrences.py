@@ -4,6 +4,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.ore_occurence_dao import OreOccurrenceDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -57,7 +58,7 @@ async def get_ore_occurrence_by_tool(
 
     try:
         ore_occurrence = ore_occurrence_dao.get_by_tool(tool)
-    except OreOccurrenceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return OreOccurrenceSchema.from_model(ore_occurrence)
@@ -77,7 +78,7 @@ async def update_ore_occurrence(
     try:
         with transaction.start():
             updated = ore_occurrence_dao.update(tool, ore_occurrence)
-    except OreOccurrenceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -99,5 +100,5 @@ async def delete_ore_occurrence(
     try:
         with transaction.start():
             ore_occurrence_dao.delete(tool)
-    except OreOccurrenceDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

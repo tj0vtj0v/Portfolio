@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.core.auth.token import Token
 from backend.core.database.dao.authentication.user_dao import UserDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.user_schema import UserSchema, UserModifySchema, RestrictedUserModifySchema
@@ -54,10 +55,10 @@ async def create_user(
 
     if not username == user.username:
         raise HTTPException(status_code=HTTPStatus.CONFLICT,
-                            detail=f"username '{username}' and '{user.username}' have to match")
+                            detail=f"Username '{username}' and '{user.username}' have to match")
 
     if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Role id #{user.role_id} does not exist")
 
     if user_dao.exists(user.username):
         raise HTTPException(
@@ -86,7 +87,7 @@ async def get_your_user(
 
     try:
         user = user_dao.get_by_username(token.username)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return UserSchema.from_model(user)
@@ -116,7 +117,7 @@ async def get_user_by_username(
 
     try:
         user = user_dao.get_by_username(username)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return UserSchema.from_model(user)
@@ -136,7 +137,7 @@ async def update_your_user(
     try:
         with transaction.start():
             updated = user_dao.restricted_update(token.username, user)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -156,12 +157,12 @@ async def update_user(
     """
 
     if not RoleSchema.validate_role_id(user.role_id):
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"role id #{user.role_id} does not exist")
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"Role id #{user.role_id} does not exist")
 
     try:
         with transaction.start():
             updated = user_dao.update(username, user)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -183,7 +184,7 @@ async def delete_your_user(
     try:
         with transaction.start():
             user_dao.delete(token.username)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
 
@@ -201,5 +202,5 @@ async def delete_user(
     try:
         with transaction.start():
             user_dao.delete(username)
-    except UserDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

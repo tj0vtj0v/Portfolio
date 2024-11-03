@@ -1,7 +1,6 @@
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import FuelType
 from backend.core.database.session import DBSession
 from backend.api.schemas.fuel.fuel_type_schema import FuelTypeSchema
@@ -32,7 +31,7 @@ class FuelTypeDao:
                      .one_or_none())
 
         if fuel_type is None:
-            raise self.NotFoundException(f"Fuel type with name '{name}' not found")
+            raise NotFoundException(f"Fuel type with name '{name}' not found")
 
         return fuel_type
 
@@ -46,8 +45,3 @@ class FuelTypeDao:
     def delete(self, name: str) -> None:
         to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

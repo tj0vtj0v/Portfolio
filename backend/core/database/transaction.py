@@ -7,7 +7,7 @@ from backend.core.database.session import DBSession
 
 
 class Transaction:
-    def __init__(self, db_session: DBSession):
+    def __init__(self, db_session: DBSession) -> None:
         self.db_session = db_session
 
     @contextmanager

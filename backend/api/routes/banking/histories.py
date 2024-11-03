@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from backend.core.database.dao.banking.history_dao import HistoryDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.role_schema import RoleEnum
@@ -19,7 +20,7 @@ async def create_entry(
         history: HistorySchema,
         transaction: DBTransaction,
         history_dao: HistoryDao = Depends()
-):
+) -> HistorySchema:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -57,7 +58,9 @@ async def get_entries(
     Authorisation: at least 'Viewer' is required
     """
 
-    entries = [HistorySchema.from_model(entry) for entry in history_dao.get_all_with(account, entry_date, amount)]
+    raw_data = history_dao.get_all_with(account, entry_date, amount)
+
+    entries = [HistorySchema.from_model(entry) for entry in raw_data]
 
     return sorted(entries, key=lambda entry: (entry.date, entry.account))
 
@@ -77,7 +80,7 @@ async def update_entry(
     try:
         with transaction.start():
             updated = history_dao.update(account, entry_date, history)
-    except HistoryDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -91,7 +94,7 @@ async def delete_entry(
         entry_date: date,
         transaction: DBTransaction,
         history_dao: HistoryDao = Depends()
-):
+) -> None:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -99,5 +102,5 @@ async def delete_entry(
     try:
         with transaction.start():
             history_dao.delete(account, entry_date)
-    except HistoryDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

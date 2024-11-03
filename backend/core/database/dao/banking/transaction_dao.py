@@ -1,8 +1,7 @@
 from datetime import date
 from typing import List
 
-from http import HTTPStatus
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Transaction
 from backend.core.database.session import DBSession
 from backend.api.schemas.banking.transaction_schema import TransactionModifySchema
@@ -41,7 +40,7 @@ class TransactionDao:
                 .all())
 
     def get_all_with(self,
-                     iban: str = None,
+                     account: str = None,
                      amount: float = None,
                      currencycode: str = None,
                      transaction_date: date = None,
@@ -50,8 +49,8 @@ class TransactionDao:
                      ) -> List[Transaction]:
         query = self.db_session.query(Transaction)
 
-        if iban is not None:
-            query.where(Transaction.account == iban)
+        if account is not None:
+            query.where(Transaction.account == account)
 
         if amount is not None:
             query.where(Transaction.amount == amount)
@@ -77,7 +76,7 @@ class TransactionDao:
                  .one_or_none())
 
         if entry is None:
-            raise TransactionDao.NotFoundException(f"Entry with id #{id} not found")
+            raise NotFoundException(f"Entry with id #{id} not found")
 
         return entry
 
@@ -104,8 +103,3 @@ class TransactionDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

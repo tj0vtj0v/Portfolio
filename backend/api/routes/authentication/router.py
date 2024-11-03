@@ -8,6 +8,6 @@ router = APIRouter(
     tags=["authentication"]
 )
 
-router.include_router(login_router, prefix="")
+router.include_router(login_router, prefix="/login")
 router.include_router(roles_router, prefix="/roles")
 router.include_router(users_router, prefix="/users")

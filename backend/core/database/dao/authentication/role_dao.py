@@ -1,7 +1,6 @@
 from typing import List
 
-from starlette.status import HTTP_404_NOT_FOUND
-
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Role
 from backend.core.database.session import DBSession
 
@@ -31,11 +30,6 @@ class RoleDao:
                 .one_or_none())
 
         if not role:
-            raise RoleDao.NotFoundException(f"Role with id #{role_id} not found")
+            raise NotFoundException(f"Role with id #{role_id} not found")
 
         return role
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTP_404_NOT_FOUND
-            self.detail = detail

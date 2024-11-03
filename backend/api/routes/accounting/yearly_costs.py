@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.yearly_cost_dao import YearlyCostDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.yearly_cost_schema import YearlyCostSchema
@@ -48,9 +49,9 @@ async def get_monthly_costs(
     return sorted(monthly_costs, key=lambda monthly_cost: monthly_cost.name)
 
 
-@router.patch("/{id}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
+@router.patch("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_monthly_cost(
-        id: int,
+        name: str,
         monthly_cost: YearlyCostSchema,
         transaction: DBTransaction,
         monthly_cost_dao: YearlyCostDao = Depends()
@@ -61,8 +62,8 @@ async def update_monthly_cost(
 
     try:
         with transaction.start():
-            updated = monthly_cost_dao.update(id, monthly_cost)
-    except YearlyCostDao.NotFoundException as e:
+            updated = monthly_cost_dao.update(name, monthly_cost)
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -70,10 +71,10 @@ async def update_monthly_cost(
     return YearlyCostSchema.from_model(updated)
 
 
-@router.delete("/{id}", status_code=HTTPStatus.NO_CONTENT,
+@router.delete("/{name}", status_code=HTTPStatus.NO_CONTENT,
                dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def delete_monthly_cost(
-        id: int,
+        name: str,
         transaction: DBTransaction,
         monthly_cost_dao: YearlyCostDao = Depends()
 ) -> None:
@@ -83,6 +84,6 @@ async def delete_monthly_cost(
 
     try:
         with transaction.start():
-            monthly_cost_dao.delete(id)
-    except YearlyCostDao.NotFoundException as e:
+            monthly_cost_dao.delete(name)
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

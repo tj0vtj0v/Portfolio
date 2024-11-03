@@ -1,8 +1,8 @@
 from typing import List
 
-from http import HTTPStatus
 from sqlalchemy import or_
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.models import Ingredient
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.item_ingredient_schema import IngredientsModifySchema
@@ -77,7 +77,7 @@ class IngredientDao:
                       .one_or_none())
 
         if ingredient is None:
-            raise IngredientDao.NotFoundException(f"Ingredients with id #{id} not found")
+            raise NotFoundException(f"Ingredients with id #{id} not found")
 
         return ingredient
 
@@ -98,8 +98,3 @@ class IngredientDao:
     def delete(self, id: int) -> None:
         to_delete = self.get_by_id(id)
         self.db_session.delete(to_delete)
-
-    class NotFoundException(Exception):
-        def __init__(self, detail: str):
-            self.status_code = HTTPStatus.NOT_FOUND
-            self.detail = detail

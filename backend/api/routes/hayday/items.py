@@ -4,6 +4,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.dao.hayday.item_dao import ItemDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
@@ -63,10 +64,10 @@ async def get_item_by_name(
 
     try:
         item = item_dao.get_by_name(name)
-        return ItemSchema.from_model(item)
-    except ItemDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
+    return ItemSchema.from_model(item)
 
 @router.patch("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_item(
@@ -83,7 +84,7 @@ async def update_item(
         with transaction.start():
             updated = item_dao.update(name, item)
             return ItemSchema.from_model(updated)
-    except ItemDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -94,7 +95,7 @@ async def delete_item(
         name: str,
         transaction: DBTransaction,
         item_dao: ItemDao = Depends()
-):
+) -> None:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -102,5 +103,5 @@ async def delete_item(
     try:
         with transaction.start():
             item_dao.delete(name)
-    except ItemDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

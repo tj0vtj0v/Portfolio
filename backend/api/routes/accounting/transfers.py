@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.transfer_dao import TransferDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.transfer_schema import TransferModifySchema, TransferSchema
@@ -63,7 +64,7 @@ async def update_transfer(
     try:
         with transaction.start():
             updated = transfer_dao.update(id, transfer)
-    except TransferDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
@@ -85,5 +86,5 @@ async def delete_transfer(
     try:
         with transaction.start():
             transfer_dao.delete(id)
-    except TransferDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

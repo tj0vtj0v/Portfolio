@@ -5,6 +5,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 
 from backend.core.database.dao.banking.transaction_dao import TransactionDao
+from backend.core.database.dao.generals import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.role_schema import RoleEnum
@@ -77,7 +78,7 @@ async def update_transaction(
     try:
         with transaction.start():
             updated = transaction_dao.update(id, transaction_entry)
-    except TransactionDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
 
     return TransactionSchema.from_model(updated)
@@ -89,7 +90,7 @@ async def delete_transaction(
         id: int,
         transaction: DBTransaction,
         transaction_dao: TransactionDao = Depends()
-):
+) -> None:
     """
     Authorisation: at least 'Editor' is required
     """
@@ -97,5 +98,5 @@ async def delete_transaction(
     try:
         with transaction.start():
             transaction_dao.delete(id)
-    except TransactionDao.NotFoundException as e:
+    except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
