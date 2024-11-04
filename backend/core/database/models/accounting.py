@@ -20,7 +20,7 @@ class Account(Base):
                                                                           back_populates="source")
     incoming_transfers: Mapped[Optional[List["Transfer"]]] = relationship("Transfer",
                                                                           foreign_keys="[Transfer.target_id]",
-                                                                          back_populates="source")
+                                                                          back_populates="target")
 
 
 class Category(Base):
