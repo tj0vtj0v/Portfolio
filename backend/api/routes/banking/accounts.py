@@ -1,15 +1,16 @@
 from typing import List
 from http import HTTPStatus
+from venv import create
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 
-from backend.api.schemas.authentication.role_schema import RoleEnum
-from backend.core.database.dao.accounting.account_dao import AccountDao
 from backend.core.database.dao import NotFoundException
+from backend.core.database.dao.banking.account_dao import AccountDao
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
-from backend.api.schemas.accounting.account_schema import AccountSchema
+from backend.api.schemas.authentication.role_schema import RoleEnum
+from backend.api.schemas.banking.account_schema import AccountSchema
 
 router = APIRouter()
 
@@ -66,7 +67,6 @@ async def get_account_by_name(
 @router.patch("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_account(
         name: str,
-        account: AccountSchema,
         transaction: DBTransaction,
         account_dao: AccountDao = Depends()
 ) -> AccountSchema:
@@ -76,7 +76,7 @@ async def update_account(
 
     try:
         with transaction.start():
-            updated = account_dao.update(name, account)
+            updated = account_dao.update(name, transaction)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:

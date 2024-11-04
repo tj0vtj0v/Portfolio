@@ -10,14 +10,14 @@ from backend.core.database.dao import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.role_schema import RoleEnum
-from backend.api.schemas.banking.history_schema import HistorySchema
+from backend.api.schemas.banking.history_schema import HistorySchema, HistoryModifySchema
 
 router = APIRouter()
 
 
 @router.post("", status_code=HTTPStatus.CREATED, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def create_entry(
-        history: HistorySchema,
+        history: HistoryModifySchema,
         transaction: DBTransaction,
         history_dao: HistoryDao = Depends()
 ) -> HistorySchema:
@@ -32,19 +32,6 @@ async def create_entry(
         raise HTTPException(status_code=HTTPStatus.CONFLICT, detail=e.detail)
 
     return HistorySchema.from_model(created)
-
-
-@router.get("/accounts", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_accounts(
-        history_dao: HistoryDao = Depends()
-) -> List[str]:
-    """
-    Authorisation: at least 'Viewer' is required
-    """
-
-    accounts = history_dao.get_accounts()
-
-    return sorted(accounts)
 
 
 @router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
@@ -67,9 +54,9 @@ async def get_entries(
 
 @router.patch("", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def update_entry(
-        account: str,
+        account_id: int,
         entry_date: date,
-        history: HistorySchema,
+        history: HistoryModifySchema,
         transaction: DBTransaction,
         history_dao: HistoryDao = Depends()
 ) -> HistorySchema:
@@ -79,7 +66,7 @@ async def update_entry(
 
     try:
         with transaction.start():
-            updated = history_dao.update(account, entry_date, history)
+            updated = history_dao.update(account_id, entry_date, history)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
     except IntegrityError as e:
@@ -90,7 +77,7 @@ async def update_entry(
 
 @router.delete("", status_code=HTTPStatus.NO_CONTENT, dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
 async def delete_entry(
-        account: str,
+        account_id: int,
         entry_date: date,
         transaction: DBTransaction,
         history_dao: HistoryDao = Depends()
@@ -101,6 +88,6 @@ async def delete_entry(
 
     try:
         with transaction.start():
-            history_dao.delete(account, entry_date)
+            history_dao.delete(account_id, entry_date)
     except NotFoundException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)

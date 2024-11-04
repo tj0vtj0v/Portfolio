@@ -13,7 +13,7 @@ class TransactionDao:
 
     def create(self, transaction: TransactionModifySchema) -> Transaction:
         to_add = Transaction(
-            account=transaction.account,
+            account_id=transaction.account_id,
             amount=transaction.amount,
             currencycode=transaction.currencycode,
             date=transaction.date,
@@ -33,14 +33,8 @@ class TransactionDao:
 
         return to_add
 
-    def get_accounts(self) -> List[str]:
-        return (self.db_session
-                .query(Transaction.account)
-                .distinct(Transaction.account)
-                .all())
-
     def get_all_with(self,
-                     account: str = None,
+                     account_name: str = None,
                      amount: float = None,
                      currencycode: str = None,
                      transaction_date: date = None,
@@ -49,8 +43,8 @@ class TransactionDao:
                      ) -> List[Transaction]:
         query = self.db_session.query(Transaction)
 
-        if account is not None:
-            query.where(Transaction.account == account)
+        if account_name is not None:
+            query.where(Transaction.account.name == account_name)
 
         if amount is not None:
             query.where(Transaction.amount == amount)
@@ -83,7 +77,7 @@ class TransactionDao:
     def update(self, id: int, update: TransactionModifySchema) -> Transaction:
         to_update = self.get_by_id(id)
 
-        to_update.account = update.account
+        to_update.account_id = update.account_id
         to_update.amount = update.amount
         to_update.currencycode = update.currencycode
         to_update.date = update.date

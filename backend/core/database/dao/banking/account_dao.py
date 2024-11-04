@@ -1,9 +1,9 @@
 from typing import List
 
 from backend.core.database.dao import NotFoundException
-from backend.core.database.models.accounting import Account
+from backend.core.database.models.banking import Account
 from backend.core.database.session import DBSession
-from backend.api.schemas.accounting.account_schema import AccountSchema
+from backend.api.schemas.banking.account_schema import AccountSchema
 
 
 class AccountDao:
@@ -12,8 +12,7 @@ class AccountDao:
 
     def create(self, account: AccountSchema) -> Account:
         to_add = Account(
-            name=account.name,
-            balance=account.balance
+            name=account.name
         )
 
         self.db_session.add(to_add)
@@ -40,7 +39,6 @@ class AccountDao:
         to_update = self.get_by_name(name)
 
         to_update.name = account.name
-        to_update.balance = account.balance
 
         return to_update
 

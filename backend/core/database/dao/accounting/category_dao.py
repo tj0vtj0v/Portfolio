@@ -24,7 +24,7 @@ class CategoryDao:
                 .query(Category)
                 .all())
 
-    def get_category_by_name(self, name: str) -> Category:
+    def get_by_name(self, name: str) -> Category:
         category = (self.db_session
                     .query(Category)
                     .where(Category.name == name)
@@ -36,12 +36,12 @@ class CategoryDao:
         return category
 
     def update(self, name: str, category: CategorySchema) -> Category:
-        to_update = self.get_category_by_name(name)
+        to_update = self.get_by_name(name)
 
         to_update.name = category.name
 
         return to_update
 
     def delete(self, name: str) -> None:
-        to_delete = self.get_category_by_name(name)
+        to_delete = self.get_by_name(name)
         self.db_session.delete(to_delete)

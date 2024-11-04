@@ -30,19 +30,6 @@ async def create_transaction(
     return TransactionSchema.from_model(created)
 
 
-@router.get("/accounts", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_accounts(
-        transaction_dao: TransactionDao = Depends()
-) -> List[str]:
-    """
-    Authorisation: at least 'Viewer' is required
-    """
-
-    accounts = transaction_dao.get_accounts()
-
-    return sorted(accounts)
-
-
 @router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
 async def get_transactions(
         iban: str = None,

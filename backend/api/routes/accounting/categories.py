@@ -34,7 +34,7 @@ async def create_category(
 
 
 @router.get("", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
-async def get_all_categories(
+async def get_categories(
         category_dao: CategoryDao = Depends()
 ) -> List[CategorySchema]:
     """
@@ -44,6 +44,23 @@ async def get_all_categories(
     categories = [CategorySchema.from_model(category) for category in category_dao.get_all()]
 
     return sorted(categories, key=lambda category: category.name)
+
+
+@router.get("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Viewer))])
+async def get_category_by_name(
+        name: str,
+        category_dao: CategoryDao = Depends()
+) -> CategorySchema:
+    """
+    Authorisation: at least 'Viewer' is required
+    """
+
+    try:
+        category = category_dao.get_by_name(name)
+    except NotFoundException as e:
+        raise HTTPException(status_code=e.status_code, detail=e.detail)
+
+    return CategorySchema.from_model(category)
 
 
 @router.patch("/{name}", dependencies=[Depends(get_and_validate_user(RoleEnum.Editor))])
