@@ -3,8 +3,8 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Proximity
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.proximity import Proximity
 from backend.core.database.session import DBSession
 from backend.api.schemas.proximity.proximity_schema import ProximitySchema
 

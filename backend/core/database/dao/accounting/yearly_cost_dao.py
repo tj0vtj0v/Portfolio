@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import YearlyCost
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.accounting import YearlyCost
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.yearly_cost_schema import YearlyCostSchema
 

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import YearlyCost
+from backend.core.database.models.accounting import YearlyCost
 
 
 class YearlyCostSchema(BaseModel):

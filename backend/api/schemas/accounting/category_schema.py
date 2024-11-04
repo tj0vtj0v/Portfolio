@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from datetime import date
 
-from backend.core.database.models import Category
+from backend.core.database.models.accounting import Category
 
 
 class CategorySchema(BaseModel):

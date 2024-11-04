@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import OreOccurrence
+from backend.core.database.models.hayday import OreOccurrence
 
 
 class OreOccurrenceSchema(BaseModel):

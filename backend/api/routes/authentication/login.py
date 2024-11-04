@@ -7,7 +7,7 @@ from hashlib import sha256
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 
-from backend.core.database.dao.generals import NotFoundException
+from backend.core.database.dao import NotFoundException
 from backend.settings.config import JWT_SECRET
 from backend.core.database.dao.authentication.user_dao import UserDao
 

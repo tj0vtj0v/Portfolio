@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.core.auth.token import Token
 from backend.core.database.dao.authentication.user_dao import UserDao
-from backend.core.database.dao.generals import NotFoundException
+from backend.core.database.dao import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.authentication.user_schema import UserSchema, UserModifySchema, RestrictedUserModifySchema

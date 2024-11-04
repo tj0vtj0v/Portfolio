@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import OreOccurrence
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.hayday import OreOccurrence
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.ore_occurrence_schema import OreOccurrenceSchema
 

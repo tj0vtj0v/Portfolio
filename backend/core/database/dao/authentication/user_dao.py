@@ -2,8 +2,8 @@ from hashlib import sha256
 from typing import List
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import User
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.authentication import User
 from backend.core.database.session import DBSession
 from backend.api.schemas.authentication.user_schema import UserModifySchema, RestrictedUserModifySchema
 
@@ -57,13 +57,13 @@ class UserDao:
         query = self.db_session.query(User)
 
         if first_name is not None:
-            query = query.where(User.first_name == first_name)
+            query = query.where(User.first_name.like(f"%{first_name}%"))  # TODO: check if its working
 
         if last_name is not None:
-            query = query.where(User.last_name == last_name)
+            query = query.where(User.last_name.like(f"%{last_name}%"))  # TODO: check if its working
 
         if email is not None:
-            query = query.where(User.email == email)
+            query = query.where(User.email.like(f"%{email}%"))  # TODO: check if its working
 
         if role_name is not None:
             query = query.where(User.role.name == role_name)

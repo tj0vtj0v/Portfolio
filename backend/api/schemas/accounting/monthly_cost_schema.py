@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import MonthlyCost
+from backend.core.database.models.accounting import MonthlyCost
 
 
 class MonthlyCostSchema(BaseModel):

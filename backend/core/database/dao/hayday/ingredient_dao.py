@@ -2,8 +2,8 @@ from typing import List
 
 from sqlalchemy import or_
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Ingredient
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.hayday import Ingredient
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.item_ingredient_schema import IngredientsModifySchema
 

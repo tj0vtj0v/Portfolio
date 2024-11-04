@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import Transfer
+from backend.core.database.models.accounting import Transfer
 from backend.api.schemas.accounting.account_schema import AccountSchema
 
 

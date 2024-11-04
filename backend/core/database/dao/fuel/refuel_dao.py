@@ -1,8 +1,8 @@
 from datetime import date
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Refuel
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.fuel import Refuel
 from backend.core.database.session import DBSession
 from backend.api.schemas.fuel.refuel_schema import RefuelModifySchema
 
@@ -46,7 +46,7 @@ class RefuelDao:
             query = query.where(Refuel.cost == cost)
 
         if fuel_type_name is not None:
-            query = query.where(Refuel.fuel_type.name == fuel_type_name)
+            query = query.where(Refuel.fuel_type.name.like(f"%{fuel_type_name}%"))  # TODO: check if its working
 
         return query.all()
 

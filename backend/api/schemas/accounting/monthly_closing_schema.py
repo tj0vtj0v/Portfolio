@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import MonthlyClosing
+from backend.core.database.models.accounting import MonthlyClosing
 
 
 class MonthlyClosingSchema(BaseModel):

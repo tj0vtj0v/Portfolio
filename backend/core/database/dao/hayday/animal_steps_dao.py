@@ -2,8 +2,8 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import AnimalSteps
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.hayday import AnimalSteps
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.animal_steps_schema import AnimalStepsSchema
 

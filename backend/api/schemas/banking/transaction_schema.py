@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import Transaction
+from backend.core.database.models.banking import Transaction
 
 
 class TransactionSchema(BaseModel):

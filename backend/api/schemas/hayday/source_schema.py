@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import Source
+from backend.core.database.models.hayday import Source
 
 
 class SourceSchema(BaseModel):

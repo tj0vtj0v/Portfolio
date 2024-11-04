@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import Expense
+from backend.core.database.models.accounting import Expense
 from backend.api.schemas.accounting.account_schema import AccountSchema
 from backend.api.schemas.accounting.category_schema import CategorySchema
 

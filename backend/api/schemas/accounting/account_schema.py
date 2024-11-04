@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import Account
+from backend.core.database.models.accounting import Account
 
 
 class AccountSchema(BaseModel):

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import AnimalSteps
+from backend.core.database.models.hayday import AnimalSteps
 
 
 class AnimalStepsSchema(BaseModel):

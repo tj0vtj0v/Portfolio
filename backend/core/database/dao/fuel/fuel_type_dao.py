@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import FuelType
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.fuel import FuelType
 from backend.core.database.session import DBSession
 from backend.api.schemas.fuel.fuel_type_schema import FuelTypeSchema
 

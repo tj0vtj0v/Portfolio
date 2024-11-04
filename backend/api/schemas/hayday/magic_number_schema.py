@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import MagicNumber
+from backend.core.database.models.hayday import MagicNumber
 
 
 class MagicNumberSchema(BaseModel):

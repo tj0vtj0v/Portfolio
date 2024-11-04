@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-from backend.core.database.models import Proximity
+from backend.core.database.models.proximity import Proximity
 
 
 class ProximitySchema(BaseModel):

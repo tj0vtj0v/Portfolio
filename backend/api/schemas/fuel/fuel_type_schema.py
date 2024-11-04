@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import FuelType
+from backend.core.database.models.fuel import FuelType
 
 
 class FuelTypeSchema(BaseModel):

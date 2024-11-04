@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import History
+from backend.core.database.models.banking import History
 
 
 class HistorySchema(BaseModel):

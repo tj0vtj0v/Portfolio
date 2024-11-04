@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Role
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.authentication import Role
 from backend.core.database.session import DBSession
 
 

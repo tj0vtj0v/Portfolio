@@ -1,8 +1,8 @@
 from datetime import date
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Expense
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.accounting import Expense
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.expense_schema import ExpenseModifySchema
 

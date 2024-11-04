@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
-from backend.core.database.models import Refuel
+from backend.core.database.models.fuel import Refuel
 from backend.api.schemas.fuel.fuel_type_schema import FuelTypeSchema
 
 

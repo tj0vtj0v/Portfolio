@@ -3,8 +3,8 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import History
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.banking import History
 from backend.core.database.session import DBSession
 from backend.api.schemas.banking.history_schema import HistorySchema
 

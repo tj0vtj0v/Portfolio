@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import BaseModel
 
-from backend.core.database.models import Role
+from backend.core.database.models.authentication import Role
 
 
 class RoleNames(Enum):

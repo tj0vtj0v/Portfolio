@@ -1,7 +1,7 @@
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import MagicNumber
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.hayday import MagicNumber
 from backend.core.database.session import DBSession
 from backend.api.schemas.hayday.magic_number_schema import MagicNumberSchema
 

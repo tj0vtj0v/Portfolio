@@ -1,8 +1,8 @@
 from datetime import date
 from typing import List
 
-from backend.core.database.dao.generals import NotFoundException
-from backend.core.database.models import Transaction
+from backend.core.database.dao import NotFoundException
+from backend.core.database.models.banking import Transaction
 from backend.core.database.session import DBSession
 from backend.api.schemas.banking.transaction_schema import TransactionModifySchema
 
@@ -62,10 +62,10 @@ class TransactionDao:
             query.where(Transaction.date == transaction_date)
 
         if peer is not None:
-            query.where(Transaction.peer == peer)
+            query.where(Transaction.peer.like(f"%{peer}%"))  # TODO: check if its working
 
         if reasonforpayment is not None:
-            query.where(Transaction.reasonforpayment == reasonforpayment)
+            query.where(Transaction.reasonforpayment.like(f"%{reasonforpayment}%"))  # TODO: check if its working
 
         return query.all()
 

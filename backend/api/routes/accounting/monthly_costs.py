@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.api.schemas.authentication.role_schema import RoleEnum
 from backend.core.database.dao.accounting.monthly_cost_dao import MonthlyCostDao
-from backend.core.database.dao.generals import NotFoundException
+from backend.core.database.dao import NotFoundException
 from backend.core.database.transaction import DBTransaction
 from backend.core.auth.authorisation import get_and_validate_user
 from backend.api.schemas.accounting.monthly_cost_schema import MonthlyCostSchema

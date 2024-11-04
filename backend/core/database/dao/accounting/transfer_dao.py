@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 
-from backend.core.database.models import Transfer
+from backend.core.database.models.accounting import Transfer
 from backend.core.database.session import DBSession
 from backend.api.schemas.accounting.transfer_schema import TransferModifySchema
 

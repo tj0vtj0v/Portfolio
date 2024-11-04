@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import Evaluation
+from backend.core.database.models.hayday import Evaluation
 from backend.api.schemas.hayday.item_ingredient_schema import ItemSchema
 
 

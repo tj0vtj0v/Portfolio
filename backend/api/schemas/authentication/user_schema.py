@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import User
+from backend.core.database.models.authentication import User
 from backend.api.schemas.authentication.role_schema import RoleSchema
 
 

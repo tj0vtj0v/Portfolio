@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from backend.core.database.models import Ingredient
-from backend.core.database.models import Item
+from backend.core.database.models.hayday import Ingredient
+from backend.core.database.models.hayday import Item
 from backend.api.schemas.hayday.source_schema import SourceSchema
 
 
