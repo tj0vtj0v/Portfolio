@@ -1,2 +1,0 @@
-DROP SCHEMA IF EXISTS authentication CASCADE;
-CREATE SCHEMA IF NOT EXISTS authentication;
