@@ -19,6 +19,8 @@ jobs:
           script: |
             cd /docker/portfolio || exit 1
             git pull || exit 2
+            whoami
+            npm install
             ng build --configuration production || exit 3
             docker-compose down || exit4 
             docker-compose up -d --build || exit 5
