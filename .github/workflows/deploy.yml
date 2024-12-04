@@ -1,4 +1,4 @@
-name: Deploy Portfolio # TODO: change
+name: Deploy Portfolio
 
 on:
   push:
@@ -10,6 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout Repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Step 3: Build Angular App
+      - name: Build Angular App
+        run: |
+          cd portfolio
+          npm ci
+          npm run build -- --configuration production
+
+      # Step 4: Deploy to Raspberry Pi
       - name: Deploy to Raspberry Pi
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -19,12 +37,16 @@ jobs:
           script: |
             cd /docker/portfolio || exit 1
             git pull || exit 2
-            whoami
-            npm install
-            ng build --configuration production || exit 3
-            docker-compose down || exit4 
-            docker-compose up -d --build || exit 5
-          # script to execute within the raspi  # TODO: change
+            docker-compose down || exit 3
+            docker-compose up -d --build || exit 4
 
-# TODO: add secrets to repo
+      # Step 5: Copy Built Files to Raspberry Pi
+      - name: Copy Built Angular Files
+        uses: appleboy/scp-action@v1.1.0
+        with:
+          host: ${{ vars.FRITZ_BOX_IP }}
+          username: ${{ secrets.RASPI_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          source: portfolio/dist/portfolio/browser/*
+          target: /docker/portfolio/dist/portfolio/browser/
 
