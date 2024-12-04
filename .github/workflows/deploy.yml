@@ -33,5 +33,5 @@ jobs:
           host: ${{ vars.FRITZ_BOX_IP }}
           username: ${{ secrets.RASPI_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
-          source: portfolio/dist/portfolio/browser/*
+          source: dist/portfolio/browser/*
           target: /docker/portfolio/
