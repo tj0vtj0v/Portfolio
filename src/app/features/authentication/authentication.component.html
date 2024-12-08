@@ -3,12 +3,12 @@
     <form (ngSubmit)="onLogin()">
         <div class="form-group">
             <label for="username">Username</label>
-            <input required type="text" id="username" placeholder="Enter your username"/>
+            <input [(ngModel)]="username" required name="username" type="text" id="username" placeholder="Enter your username"/>
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input required type="password" id="password" placeholder="Enter your password"/>
+            <input [(ngModel)]="password" required name="password" type="password" id="password" placeholder="Enter your password"/>
         </div>
 
         <button class="login-button" type="submit">Login</button>
