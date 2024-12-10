@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {AuthenticationService} from '../../shared/authentication.service';
 import {FormsModule} from '@angular/forms';
-import {HttpResponse} from '@angular/common/http';
 
 @Component({
     selector: 'app-authentication',
@@ -23,11 +22,6 @@ export class AuthenticationComponent {
             return;
         }
 
-        this.authenticationService.login(this.username, this.password).subscribe(
-            (response: HttpResponse<any>) => {
-                console.log(response);
-                localStorage.setItem('auth-token', response.body);
-            }
-        )
+        this.authenticationService.login(this.username, this.password).subscribe()
     }
 }
