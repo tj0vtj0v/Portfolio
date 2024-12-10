@@ -3,15 +3,19 @@
     <form (ngSubmit)="onLogin()">
         <div class="form-group">
             <label for="username">Username</label>
-            <input [(ngModel)]="username" required name="username" type="text" id="username" placeholder="Enter your username"/>
+            <input [(ngModel)]="username" id="username" name="username" placeholder="Enter your username" required
+                   type="text"/>
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input [(ngModel)]="password" required name="password" type="password" id="password" placeholder="Enter your password"/>
+            <input [(ngModel)]="password" id="password" name="password" placeholder="Enter your password" required
+                   type="password"/>
         </div>
 
         <button class="login-button" type="submit">Login</button>
+
+        <p *ngIf="status_message" class="status-text">{{ status_message }}</p>
 
         <!-- <div class="links"> -->
         <!--     <a routerLink="/forgot-password">Forgot Password?</a> -->

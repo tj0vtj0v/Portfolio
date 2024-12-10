@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {catchError, map} from 'rxjs';
+import {map} from 'rxjs';
 
 interface AuthResponse {
     access_token: string;
@@ -17,21 +17,22 @@ export class AuthenticationService {
     constructor(private http: HttpClient) {
     }
 
-    login(username: string, password: string) {
+    login(username: string, password: string): boolean {
         const body = new HttpParams().set('username', username).set('password', password);
         const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
-        return this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
+        let success = false;
+
+        this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
             map((response: AuthResponse) => {
                 console.log(response);
                 if (response.access_token) {
                     localStorage.setItem('auth-token', response.access_token);
+                    success = true;
                 }
-            }),
-            catchError((error) => {
-                alert(error?.error?.detail);
-                throw error
             })
-        )
+        ).subscribe()
+
+        return success;
     }
 
     logout(): void {

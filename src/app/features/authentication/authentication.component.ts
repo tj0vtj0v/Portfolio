@@ -1,16 +1,18 @@
 import {Component} from '@angular/core';
 import {AuthenticationService} from '../../shared/authentication.service';
 import {FormsModule} from '@angular/forms';
+import {NgIf} from '@angular/common';
 
 @Component({
     selector: 'app-authentication',
-    imports: [FormsModule],
+    imports: [FormsModule, NgIf],
     templateUrl: './authentication.component.html',
     styleUrl: './authentication.component.css'
 })
 export class AuthenticationComponent {
     username: string = '';
     password: string = '';
+    status_message: string = '';
 
     constructor(private authenticationService: AuthenticationService) {
     }
@@ -21,6 +23,12 @@ export class AuthenticationComponent {
             return;
         }
 
-        this.authenticationService.login(this.username, this.password).subscribe()
+        let success = this.authenticationService.login(this.username, this.password)
+
+        if (success) {
+            this.status_message = 'Login successful.';
+            this.username = ''
+            this.password = ''
+        }
     }
 }
