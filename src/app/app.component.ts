@@ -11,7 +11,6 @@ import {FooterComponent} from './core/footer/footer.component';
         FooterComponent
     ],
     templateUrl: './app.component.html',
-    standalone: true,
     styleUrl: './app.component.css'
 })
 export class AppComponent {

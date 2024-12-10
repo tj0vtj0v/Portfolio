@@ -6,7 +6,6 @@ import {FormsModule} from '@angular/forms';
     selector: 'app-authentication',
     imports: [FormsModule],
     templateUrl: './authentication.component.html',
-    standalone: true,
     styleUrl: './authentication.component.css'
 })
 export class AuthenticationComponent {
