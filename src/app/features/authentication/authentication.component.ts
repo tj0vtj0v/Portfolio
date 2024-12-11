@@ -5,14 +5,17 @@ import {NgIf} from '@angular/common';
 
 @Component({
     selector: 'app-authentication',
-    imports: [FormsModule, NgIf],
+    imports: [
+        FormsModule,
+        NgIf
+    ],
     templateUrl: './authentication.component.html',
     styleUrl: './authentication.component.css'
 })
 export class AuthenticationComponent {
     username: string = '';
     password: string = '';
-    status_message: string = '';
+    statusMessage: string = '';
 
     constructor(private authenticationService: AuthenticationService) {
     }
@@ -26,7 +29,7 @@ export class AuthenticationComponent {
         let success = this.authenticationService.login(this.username, this.password)
 
         if (success) {
-            this.status_message = 'Login successful.';
+            this.statusMessage = 'Login successful.';
             this.username = ''
             this.password = ''
         }

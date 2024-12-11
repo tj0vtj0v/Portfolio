@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {map} from 'rxjs';
+import {map, take} from 'rxjs';
 
 interface AuthResponse {
     access_token: string;
@@ -23,6 +23,7 @@ export class AuthenticationService {
         let success = false;
 
         this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
+            take(1),
             map((response: AuthResponse) => {
                 console.log(response);
                 if (response.access_token) {
@@ -39,7 +40,7 @@ export class AuthenticationService {
         localStorage.removeItem('auth-token');
     }
 
-    is_logged_in(): boolean {
-        return localStorage.getItem('auth-token') !== undefined;
+    isLoggedIn(): boolean {
+        return localStorage.getItem('auth-token') !== null;
     }
 }

@@ -2,4 +2,5 @@
     <a routerLink="/">Home</a>
     <a routerLink="/login">Login</a>
     <a routerLink="/private">Private</a>
+    <a (click)="logoutCheck()" *ngIf="authenticationService.isLoggedIn()">Logout</a>
 </nav>
