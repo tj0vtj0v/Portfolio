@@ -9,13 +9,14 @@
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input [(ngModel)]="password" id="password" name="password" placeholder="Enter your password" required
+            <input (keydown)="onPasswordClickOn()" [(ngModel)]="password" id="password" name="password" placeholder="Enter your password"
+                   required
                    type="password"/>
         </div>
 
         <button class="login-button" type="submit">Login</button>
 
-        <p *ngIf="statusMessage" class="status-text">{{ statusMessage }}</p>
+        <p *ngIf="statusMessage != ''" class="status-text">{{ statusMessage }}</p>
 
         <!-- <div class="links"> -->
         <!--     <a routerLink="/forgot-password">Forgot Password?</a> -->

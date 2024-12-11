@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {map, take} from 'rxjs';
+import {catchError, map, Observable, of, take} from 'rxjs';
 
 interface AuthResponse {
     access_token: string;
@@ -17,23 +17,25 @@ export class AuthenticationService {
     constructor(private http: HttpClient) {
     }
 
-    login(username: string, password: string): boolean {
+    login(username: string, password: string): Observable<string> {
         const body = new HttpParams().set('username', username).set('password', password);
         const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
-        let success = false;
 
-        this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
+        return this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
             take(1),
             map((response: AuthResponse) => {
-                console.log(response);
                 if (response.access_token) {
                     localStorage.setItem('auth-token', response.access_token);
-                    success = true;
+                    return 'Login successful.';
                 }
+                throw ('Unexpected login response');
+            }),
+            catchError((error) => {
+                return of(error?.statusText
+                    ? `Login failed: ${error.statusText}`
+                    : 'Login failed');
             })
-        ).subscribe()
-
-        return success;
+        )
     }
 
     logout(): void {

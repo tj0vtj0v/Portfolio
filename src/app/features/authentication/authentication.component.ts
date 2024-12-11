@@ -13,9 +13,10 @@ import {NgIf} from '@angular/common';
     styleUrl: './authentication.component.css'
 })
 export class AuthenticationComponent {
-    username: string = '';
-    password: string = '';
-    statusMessage: string = '';
+    protected username: string = '';
+    protected password: string = '';
+    protected statusMessage: string = '';
+    protected passwordFilled = false
 
     constructor(private authenticationService: AuthenticationService) {
     }
@@ -26,12 +27,18 @@ export class AuthenticationComponent {
             return;
         }
 
-        let success = this.authenticationService.login(this.username, this.password)
+        this.authenticationService.login(this.username, this.password).subscribe(
+            (result) => {
+                this.statusMessage = result
+                this.passwordFilled = true;
+            }
+        )
+    }
 
-        if (success) {
-            this.statusMessage = 'Login successful.';
-            this.username = ''
+    onPasswordClickOn() {
+        if (this.passwordFilled) {
             this.password = ''
+            this.passwordFilled = false;
         }
     }
 }
