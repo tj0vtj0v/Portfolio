@@ -1,6 +1,14 @@
 <nav>
     <a routerLink="/">Home</a>
-    <a routerLink="/login">Login</a>
-    <a routerLink="/private">Private</a>
+    <a routerLink="/about">About</a>
+    <a routerLink="/projects">Projects</a>
+
+    <a *ngIf="!authenticationService.isLoggedIn()" routerLink="/login">Login</a>
     <a (click)="logoutCheck()" *ngIf="authenticationService.isLoggedIn()">Logout</a>
+
+    <nav *ngIf="authenticationService.isLoggedIn()">
+        <a routerLink="/banking">Banking</a>
+        <a routerLink="/accounting">Accounting</a>
+        <a routerLink="/proximity">Proximity</a>
+    </nav>
 </nav>
