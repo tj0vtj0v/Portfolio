@@ -7,11 +7,15 @@ import {AboutComponent} from './features/about/about.component';
 import {ProjectsComponent} from './features/projects/projects.component';
 import {AccountingComponent} from './private/accounting/accounting.component';
 import {ProximityComponent} from './private/proximity/proximity.component';
+import {ContactComponent} from './features/contact/contact.component';
+import {ImprintComponent} from './features/imprint/imprint.component';
 
 export const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
     {path: 'home', component: HomeComponent},
     {path: 'about', component: AboutComponent},
+    {path: 'contact', component: ContactComponent},
+    {path: 'imprint', component: ImprintComponent},
     {path: 'projects', component: ProjectsComponent},
     {path: 'login', component: AuthenticationComponent},
     {path: 'banking', component: BankingComponent},
