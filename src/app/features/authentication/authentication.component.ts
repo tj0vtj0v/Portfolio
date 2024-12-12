@@ -18,7 +18,15 @@ export class AuthenticationComponent {
     protected statusMessage: string = '';
     protected passwordFilled = false
 
-    constructor(private authenticationService: AuthenticationService) {
+    constructor(protected authenticationService: AuthenticationService) {
+    }
+
+    ngOnInit() {
+        if (this.authenticationService.isLoggedIn()) {
+            this.statusMessage = 'You are already logged in';
+        } else {
+            this.statusMessage = '';
+        }
     }
 
     onLogin() {

@@ -26,7 +26,7 @@ export class AuthenticationService {
             map((response: AuthResponse) => {
                 if (response.access_token) {
                     localStorage.setItem('auth-token', response.access_token);
-                    return 'Login successful.';
+                    return 'Login successful';
                 }
                 throw ('Unexpected login response');
             }),
