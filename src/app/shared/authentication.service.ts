@@ -8,9 +8,6 @@ import {AuthService} from './api/auth.service';
     providedIn: 'root'
 })
 export class AuthenticationService {
-    private loginUrl = 'http://80.209.200.73:4053/login';
-
-
     constructor(
         private authService: AuthService,
     ) {

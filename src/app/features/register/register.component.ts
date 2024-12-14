@@ -3,7 +3,7 @@ import {ModifyRestrictedUser} from '../../shared/datatype/ModifyRestrictedUser';
 import {AuthService} from '../../shared/api/auth.service';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 
 @Component({
     selector: 'app-register',
