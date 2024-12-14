@@ -2,12 +2,14 @@ import {Component} from '@angular/core';
 import {AuthenticationService} from '../../shared/authentication.service';
 import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 @Component({
     selector: 'app-authentication',
     imports: [
         FormsModule,
-        NgIf
+        NgIf,
+        RouterLink
     ],
     templateUrl: './authentication.component.html',
     styleUrl: './authentication.component.css'

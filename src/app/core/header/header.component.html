@@ -5,6 +5,7 @@
     <a routerLink="/contact">Contact</a>
     <a routerLink="/imprint">Imprint</a>
 
+    <a *ngIf="authenticationService.isLoggedIn()" routerLink="/account">Account</a>
     <a *ngIf="!authenticationService.isLoggedIn()" routerLink="/login">Login</a>
     <a (click)="logoutCheck()" *ngIf="authenticationService.isLoggedIn()">Logout</a>
 

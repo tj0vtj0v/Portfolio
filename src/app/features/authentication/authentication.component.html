@@ -19,11 +19,9 @@
 
         <button class="login-button" type="submit">Login</button>
 
-
-        <!-- <div class="links"> -->
-        <!--     <a routerLink="/forgot-password">Forgot Password?</a> -->
-        <!--     <a routerLink="/register">Register</a> -->
-        <!-- </div> -->
+        <div class="links">
+            <a routerLink="/register">Register</a>
+        </div>
     </form>
 
     <p *ngIf="statusMessage != ''" class="status-text">{{ statusMessage }}</p>

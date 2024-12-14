@@ -9,6 +9,9 @@ import {AccountingComponent} from './private/accounting/accounting.component';
 import {ProximityComponent} from './private/proximity/proximity.component';
 import {ContactComponent} from './features/contact/contact.component';
 import {ImprintComponent} from './features/imprint/imprint.component';
+import {RegisterComponent} from './features/register/register.component';
+import {RequestComponent} from './features/request/request.component';
+import {AccountComponent} from './features/account/account.component';
 
 export const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -18,6 +21,9 @@ export const routes: Routes = [
     {path: 'imprint', component: ImprintComponent},
     {path: 'projects', component: ProjectsComponent},
     {path: 'login', component: AuthenticationComponent},
+    {path: 'register', component: RegisterComponent},
+    {path: 'request', component: RequestComponent},
+    {path: 'account', component: AccountComponent},
     {path: 'banking', component: BankingComponent},
     {path: "accounting", component: AccountingComponent},
     {path: "proximity", component: ProximityComponent},

@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {catchError, map, Observable, of, take} from 'rxjs';
 
-interface AuthResponse {
-    access_token: string;
-    token_type: string;
-}
+import {AuthResponse} from './datatype/AuthResponse';
+import {AuthService} from './api/auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,35 +11,36 @@ export class AuthenticationService {
     private loginUrl = 'http://80.209.200.73:4053/login';
 
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private authService: AuthService,
+    ) {
     }
 
     login(username: string, password: string): Observable<string> {
-        const body = new HttpParams().set('username', username).set('password', password);
-        const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
-
-        return this.http.post<AuthResponse>(this.loginUrl, body.toString(), {headers}).pipe(
+        return this.authService.login(username, password).pipe(
             take(1),
             map((response: AuthResponse) => {
                 if (response.access_token) {
-                    localStorage.setItem('auth-token', response.access_token);
+                    localStorage.setItem('token', response.access_token);
+                    localStorage.setItem('token-type', response.token_type);
                     return 'Login successful';
                 }
                 throw ('Unexpected login response');
             }),
             catchError((error) => {
-                return of(error?.statusText
-                    ? `Login failed: ${error.statusText}`
+                return of(error?.error?.detail
+                    ? `Login failed: ${error.error.detail}`
                     : 'Login failed');
             })
         )
     }
 
     logout(): void {
-        localStorage.removeItem('auth-token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-type');
     }
 
     isLoggedIn(): boolean {
-        return localStorage.getItem('auth-token') !== null;
+        return localStorage.getItem('token') !== null;
     }
 }

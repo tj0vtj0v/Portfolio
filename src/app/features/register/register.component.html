@@ -1,0 +1,49 @@
+<div class="register-container">
+    <h2>Register</h2>
+
+    <form (ngSubmit)="onRegister()" *ngIf="!success">
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input [(ngModel)]="user.first_name" id="first_name" name="first_name" placeholder="Enter your first name"
+                   required/>
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input [(ngModel)]="user.last_name" id="last_name" name="last_name" placeholder="Enter your last name"
+                   required/>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input [(ngModel)]="user.email" id="email" name="email" placeholder="Enter your email" required
+                   type="email"/>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input [(ngModel)]="user.username" id="username" name="username" placeholder="Enter your username"
+                   required/>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input [(ngModel)]="user.password" id="password" name="password" placeholder="Enter your password" required
+                   type="password"/>
+        </div>
+
+        <div class="form-group">
+            <label for="repeatPassword">Repeat Password</label>
+            <input [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword"
+                   placeholder="Confirm your password" required type="password"/>
+        </div>
+
+        <button class="register-button" type="submit">Register</button>
+    </form>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+
+    <div class="links">
+        <a routerLink="/login">Back to login</a>
+    </div>
+</div>
