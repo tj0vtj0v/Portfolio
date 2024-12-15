@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Router, RouterLink} from '@angular/router';
+import {RouterLink} from '@angular/router';
 import {AuthenticationService} from '../../shared/authentication.service';
 import {NgIf} from '@angular/common';
 
@@ -14,15 +14,7 @@ import {NgIf} from '@angular/common';
 })
 export class HeaderComponent {
     constructor(
-        protected authenticationService: AuthenticationService,
-        private router: Router,
+        protected authenticationService: AuthenticationService
     ) {
-    }
-
-    logoutCheck(): void {
-        if (confirm("Are you sure you want to logout?")) {
-            this.authenticationService.logout();
-            this.router.navigate(['/home']).then();
-        }
     }
 }

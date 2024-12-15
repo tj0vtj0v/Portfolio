@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {catchError, throwError} from 'rxjs';
 import {AuthResponse} from '../datatype/AuthResponse';
+import {Router} from '@angular/router';
 
 @Injectable({
     providedIn: 'root'
@@ -8,7 +10,10 @@ import {AuthResponse} from '../datatype/AuthResponse';
 export class ConnectorService {
     private url = 'http://80.209.200.73:4053/' // TODO
 
-    constructor(private http: HttpClient) {
+    constructor(
+        private http: HttpClient,
+        private router: Router
+    ) {
     }
 
     login(username: string, password: string) {
@@ -18,20 +23,54 @@ export class ConnectorService {
         return this.http.post<AuthResponse>(`${this.url}login`, body.toString(), {headers});
     }
 
+    logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-type');
+        this.router.navigate(['/home']).then();
+    }
+
     create(suffix: string, body: any) {
-        return this.http.post(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()});
+        return this.http.post(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()}).pipe(
+            catchError(error => {
+                if (error.error?.detail === 'Authorisation token expired') {
+                    this.logout()
+                }
+                return throwError(error);
+            })
+        );
     }
 
     read(suffix: string) {
-        return this.http.get(`${this.url}${suffix}`, {headers: this.buildRequestHeader()});
+        return this.http.get(`${this.url}${suffix}`, {headers: this.buildRequestHeader()}).pipe(
+            catchError(error => {
+                if (error.error?.detail === 'Authorisation token expired') {
+                    this.logout()
+                }
+                return throwError(error);
+            })
+        );
     }
 
     update(suffix: string, body: any) {
-        return this.http.patch(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()});
+        return this.http.patch(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()}).pipe(
+            catchError(error => {
+                if (error.error?.detail === 'Authorisation token expired') {
+                    this.logout()
+                }
+                return throwError(error);
+            })
+        );
     }
 
     delete(suffix: string) {
-        return this.http.delete(`${this.url}${suffix}`, {headers: this.buildDeleteHeader()});
+        return this.http.delete(`${this.url}${suffix}`, {headers: this.buildDeleteHeader()}).pipe(
+            catchError(error => {
+                if (error.error?.detail === 'Authorisation token expired') {
+                    this.logout()
+                }
+                return throwError(error);
+            })
+        );
     }
 
     private buildAuthHeader() {

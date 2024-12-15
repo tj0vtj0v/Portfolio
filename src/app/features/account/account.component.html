@@ -1,1 +1,42 @@
-<p>account works!</p>
+<div class="account-page">
+    <h2>Edit Profile</h2>
+    <form (ngSubmit)="onUpdate()" *ngIf="!success">
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input [(ngModel)]="user.first_name" id="first_name" name="first_name"
+                   placeholder="Enter your first name" required type="text"/>
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input [(ngModel)]="user.last_name" id="last_name" name="last_name"
+                   placeholder="Enter your last name" required type="text"/>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input [(ngModel)]="user.email" id="email" name="email"
+                   placeholder="Enter your email" required type="email"/>
+        </div>
+
+        <div *ngIf="changePassword" class="password">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input [(ngModel)]="user.password" id="password" name="password"
+                       placeholder="Enter your password" required type="password"/>
+            </div>
+
+            <div class="form-group">
+                <label for="repeatPassword">Repeat Password</label>
+                <input [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword"
+                       placeholder="Confirm your password" required type="password"/>
+            </div>
+        </div>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <button (click)="changePassword = true" *ngIf="!changePassword && !success">Change Password</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>

@@ -2,19 +2,19 @@ import {Injectable} from '@angular/core';
 import {catchError, map, Observable, of, take} from 'rxjs';
 
 import {AuthResponse} from './datatype/AuthResponse';
-import {AuthService} from './api/auth.service';
+import {UserService} from './api/user.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthenticationService {
     constructor(
-        private authService: AuthService,
+        private userService: UserService,
     ) {
     }
 
     login(username: string, password: string): Observable<string> {
-        return this.authService.login(username, password).pipe(
+        return this.userService.login(username, password).pipe(
             take(1),
             map((response: AuthResponse) => {
                 if (response.access_token) {

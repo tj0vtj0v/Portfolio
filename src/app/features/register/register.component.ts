@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {ModifyRestrictedUser} from '../../shared/datatype/ModifyRestrictedUser';
-import {AuthService} from '../../shared/api/auth.service';
+import {UserService} from '../../shared/api/user.service';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
@@ -28,7 +28,7 @@ export class RegisterComponent {
     success = false;
 
     constructor(
-        private authService: AuthService
+        private userService: UserService
     ) {
     }
 
@@ -44,7 +44,7 @@ export class RegisterComponent {
             return;
         }
 
-        this.authService.register(this.user).subscribe(
+        this.userService.register(this.user).subscribe(
             () => {
                 this.statusMessage = 'Registered successfully, please log in';
                 this.success = true;
