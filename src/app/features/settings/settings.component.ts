@@ -13,17 +13,7 @@ import {UserService} from '../../shared/api/user.service';
     styleUrl: './settings.component.css'
 })
 export class SettingsComponent {
-    user: ReadUser = {
-        first_name: '',
-        last_name: '',
-        email: '',
-        username: '',
-        role: {
-            id: 1,
-            priority: 1,
-            name: "User"
-        }
-    };
+    user?: ReadUser;
 
     constructor(
         private authenticationService: AuthenticationService,

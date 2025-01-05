@@ -8,8 +8,8 @@
     <a *ngIf="!authenticationService.isLoggedIn()" routerLink="/login">Login</a>
 
     <nav *ngIf="authenticationService.isLoggedIn()">
-        <a routerLink="/banking">Banking</a>
         <a routerLink="/accounting">Accounting</a>
+        <a routerLink="/banking">Banking</a>
         <a routerLink="/proximity">Proximity</a>
     </nav>
 </nav>

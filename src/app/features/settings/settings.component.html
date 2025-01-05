@@ -2,14 +2,13 @@
     <h2>Account Settings</h2>
 
     <div class="user-details">
-        <p><strong>Username:</strong> {{ user.username }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Role:</strong> {{ user.role.name }}</p>
+        <p><strong>Username:</strong> {{ user?.username }}</p>
+        <p><strong>Email:</strong> {{ user?.email }}</p>
+        <p><strong>Role:</strong> {{ user?.role?.name }}</p>
     </div>
 
     <div class="settings-actions">
         <a routerLink="/account">Edit Account</a>
-        <a routerLink="/request">Request More Rights</a>
         <a (click)="delete()">Delete Account</a>
         <a (click)="logout()">Logout</a>
     </div>

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ModifyRestrictedUser} from '../../shared/datatype/ModifyRestrictedUser';
+import {RegisterUser} from '../../shared/datatype/RegisterUser';
 import {UserService} from '../../shared/api/user.service';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -16,7 +16,7 @@ import {RouterLink} from '@angular/router';
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-    user: ModifyRestrictedUser = {
+    user: RegisterUser = {
         first_name: '',
         last_name: '',
         email: '',

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {UserService} from '../../shared/api/user.service';
-import {MinimalModifyUser} from '../../shared/datatype/MinimalModifyUser';
+import {ModifyUser} from '../../shared/datatype/ModifyUser';
 import {ReadUser} from '../../shared/datatype/ReadUser';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -15,11 +15,10 @@ import {FormsModule} from '@angular/forms';
     styleUrl: './account.component.css'
 })
 export class AccountComponent {
-    user: MinimalModifyUser = {
+    user: ModifyUser = {
         first_name: '',
         last_name: '',
-        email: '',
-        password: undefined
+        email: ''
     };
     changePassword: boolean = false;
     repeatPassword?: string = undefined;

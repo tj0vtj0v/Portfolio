@@ -23,12 +23,6 @@ export class ConnectorService {
         return this.http.post<AuthResponse>(`${this.url}login`, body.toString(), {headers});
     }
 
-    logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('token-type');
-        this.router.navigate(['/home']).then();
-    }
-
     create(suffix: string, body: any) {
         return this.http.post(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()}).pipe(
             catchError(error => {
@@ -73,6 +67,12 @@ export class ConnectorService {
         );
     }
 
+    private logout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-type');
+        this.router.navigate(['/home']).then();
+    }
+
     private buildAuthHeader() {
         if (localStorage.getItem('token') !== null) {
             return new HttpHeaders().set('Authorization', `${localStorage.getItem('token-type')} ${localStorage.getItem('token')}`);
@@ -93,12 +93,3 @@ export class ConnectorService {
         return this.buildRequestHeader().set('Content-Type', 'application/json');
     }
 }
-
-// export function toHttpParams(object: any): HttpParams {
-//     let params = new HttpParams();
-//     Object.keys(object).forEach(key => {
-//             params = params.set(key, object[key]);
-//         }
-//     )
-//     return params;
-// }
