@@ -2,22 +2,16 @@
     <div class="sidebar">
 
         <button (click)="selectOption('')">Dashboard</button>
-        <button (click)="selectOption('viewExpenses')">View Expenses</button>
-        <button (click)="selectOption('addExpense')">Add Expense</button>
-        <button (click)="selectOption('viewTransfers')">View Transfers</button>
-        <button (click)="selectOption('addTransfer')">Add Transfer</button>
-        <button (click)="selectOption('viewAccounts')">View Accounts</button>
-        <button (click)="selectOption('addAccount')">Add Account</button>
+        <button (click)="selectOption('Expenses')">Expenses</button>
+        <button (click)="selectOption('Transfers')">Transfers</button>
+        <button (click)="selectOption('Accounts')">Accounts</button>
 
     </div>
     <div class="content">
         <div [ngSwitch]="selectedOption">
-            <app-view-expense *ngSwitchCase="'viewExpenses'"></app-view-expense>
-            <app-add-expense *ngSwitchCase="'addExpense'"></app-add-expense>
-            <app-view-transfer *ngSwitchCase="'viewTransfers'"></app-view-transfer>
-            <app-add-transfer *ngSwitchCase="'addTransfer'"></app-add-transfer>
-            <app-view-account *ngSwitchCase="'viewAccounts'"></app-view-account>
-            <app-add-account *ngSwitchCase="'addAccount'"></app-add-account>
+            <app-expense *ngSwitchCase="'Expenses'"></app-expense>
+            <app-transfer *ngSwitchCase="'Transfers'"></app-transfer>
+            <app-account *ngSwitchCase="'Accounts'"></app-account>
             <app-dashboard *ngSwitchDefault></app-dashboard>
         </div>
     </div>

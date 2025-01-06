@@ -1,0 +1,55 @@
+<div *ngIf="!(account || addingAccount)">
+    <ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="accounts"
+        (rowClicked)="onRowClicked($event)"
+        rowSelection="single"
+        [columnDefs]="columnDefs"
+        [modules]="modules"
+        [domLayout]="'autoHeight'"
+    >
+    </ag-grid-angular>
+    <button (click)="onAdd()">Add Account</button>
+</div>
+
+<div *ngIf="addingAccount">
+    <h3>Add Account</h3>
+    <form (ngSubmit)="onSave()">
+        <div>
+            <label for="add_name">Name</label>
+            <input [(ngModel)]="account!.name" id="add_name" name="add_name" placeholder="Enter your last name" required
+                   type="text"/>
+        </div>
+        <div>
+            <label for="add_balance">Balance</label>
+            <input [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="number"/>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <!--<button (click)="unselect()">Back</button>-->
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
+
+<div *ngIf="!addingAccount && account">
+    <h3>Edit Account: {{ accountName }}</h3>
+    <form (ngSubmit)="onUpdate()">
+        <div>
+            <label for="name">Name</label>
+            <input [(ngModel)]="account.name" id="name" name="name" required type="text"/>
+        </div>
+        <div>
+            <label for="balance">Balance</label>
+            <input [(ngModel)]="account.balance" id="balance" name="balance" required type="number"/>
+        </div>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+    <button (click)="onDelete()">Delete Account</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>

@@ -1,23 +1,17 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ViewExpenseComponent} from './view-expense/view-expense.component';
-import {AddExpenseComponent} from './add-expense/add-expense.component';
-import {ViewTransferComponent} from './view-transfer/view-transfer.component';
-import {AddTransferComponent} from './add-transfer/add-transfer.component';
-import {ViewAccountComponent} from './view-account/view-account.component';
-import {AddAccountComponent} from './add-account/add-account.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import {ExpenseComponent} from './expense/expense.component';
+import {TransferComponent} from './transfer/transfer.component';
+import {AccountComponent} from './account/account.component';
 
 @Component({
     selector: 'app-accounting',
     imports: [
         CommonModule,
-        ViewExpenseComponent,
-        AddExpenseComponent,
-        ViewTransferComponent,
-        AddTransferComponent,
-        ViewAccountComponent,
-        AddAccountComponent,
+        ExpenseComponent,
+        TransferComponent,
+        AccountComponent,
         DashboardComponent
     ],
     templateUrl: './accounting.component.html',
