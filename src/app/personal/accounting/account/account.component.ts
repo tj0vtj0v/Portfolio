@@ -41,10 +41,6 @@ export class AccountComponent {
                 console.log(this.accounts);
             }
         );
-    }
-
-    reset(): void {
-        this.ngOnInit()
 
         this.account = undefined;
         this.accountName = undefined;
@@ -68,7 +64,7 @@ export class AccountComponent {
     onSave(): void {
         this.accountingService.add_account(this.account!).subscribe(
             () => {
-                this.reset()
+                this.ngOnInit()
             },
             (error) => {
                 if (error?.error?.detail) {
@@ -83,7 +79,7 @@ export class AccountComponent {
     onUpdate(): void {
         this.accountingService.update_account(this.accountName!, this.account!).subscribe(
             () => {
-                this.reset()
+                this.ngOnInit()
             },
             (error) => {
                 if (error?.error?.detail) {
@@ -99,7 +95,7 @@ export class AccountComponent {
         if (confirm('Are you sure you want to delete this account?')) {
             this.accountingService.delete_account(this.accountName!).subscribe(
                 () => {
-                    this.reset()
+                    this.ngOnInit()
                 }
             )
         }
