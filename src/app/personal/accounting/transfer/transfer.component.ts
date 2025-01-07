@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {Transfer} from '../../../shared/datatype/Transfer';
-import {ModifyTransfer} from '../../../shared/datatype/ModifyTransfer';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
+import {ModifyTransfer} from '../../../shared/datatype/ModifyTransfer';
+import {switchMap} from 'rxjs';
 
 @Component({
     selector: 'app-transfer',
@@ -26,7 +27,10 @@ export class TransferComponent {
     protected statusMessage = '';
 
     protected columnDefs: ColDef[] = [
-        // TODO
+        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Amount', field: 'amount', sortable: true, filter: true},
+        {headerName: 'Source Account', field: 'source.name', sortable: true, filter: true},
+        {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
     ];
     protected modules: Module[] = [ClientSideRowModelModule]
 
@@ -58,14 +62,20 @@ export class TransferComponent {
     }
 
     onRowClicked(event: RowClickedEvent): void {
-        this.transfer = {...event.data};
+        this.transfer = {
+            id: event.data.id,
+            date: event.data.date,
+            amount: event.data.amount,
+            source: event.data.source.name,
+            target: event.data.target.name
+        };
     }
 
     onAdd(): void {
         this.addingTransfer = true;
 
         this.transfer = {
-            date: '',
+            date: new Date().toISOString().split('T')[0],
             amount: 0,
             source: '',
             target: ''
@@ -73,14 +83,73 @@ export class TransferComponent {
     }
 
     onSave(): void {
-        // TODO
+        if (this.transfer!.source == '' || this.transfer!.target == '') {
+            this.statusMessage = 'The Transfer must have a source and a target';
+            return;
+        }
+
+        this.accountingService.get_account(this.transfer!.source).pipe(
+            switchMap((source_account: Account) =>
+                this.accountingService.get_account(this.transfer!.target).pipe(
+                    switchMap((target_account: Account) => {
+                            return this.accountingService.add_transfer({
+                                    date: this.transfer!.date,
+                                    amount: this.transfer!.amount,
+                                    source: source_account,
+                                    target: target_account
+                                }
+                            );
+                        }
+                    )
+                )
+            )
+        ).subscribe(
+            () => this.reset(),
+            (error) => {
+                if (error?.error?.detail) {
+                    this.statusMessage = `Adding failed: ${error.error.detail}`;
+                } else {
+                    this.statusMessage = 'Adding failed';
+                }
+            }
+        )
     }
 
     onUpdate(): void {
-        // TODO
+        this.accountingService.get_account(this.transfer!.source).pipe(
+            switchMap((source_account: Account) =>
+                this.accountingService.get_account(this.transfer!.target).pipe(
+                    switchMap((target_account: Account) => {
+                            return this.accountingService.update_transfer(
+                                this.transfer!.id!,
+                                {
+                                    date: this.transfer!.date,
+                                    amount: this.transfer!.amount,
+                                    source: source_account,
+                                    target: target_account
+                                }
+                            );
+                        }
+                    )
+                )
+            )
+        ).subscribe(
+            () => this.reset(),
+            (error) => {
+                if (error?.error?.detail) {
+                    this.statusMessage = `Edit failed: ${error.error.detail}`;
+                } else {
+                    this.statusMessage = 'Edit failed';
+                }
+            }
+        )
     }
 
     onDelete(): void {
-        // TODO
+        if (confirm('Are you sure you want to delete this transfer?')) {
+            this.accountingService.delete_transfer(this.transfer!.id!).subscribe(
+                () => this.reset()
+            )
+        }
     }
 }

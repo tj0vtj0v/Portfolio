@@ -4,6 +4,6 @@ export interface Transfer {
     id?: number;
     date: string;
     amount: number;
-    source: Account;
-    target: Account;
+    source?: Account;
+    target?: Account;
 }

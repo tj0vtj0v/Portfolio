@@ -16,6 +16,42 @@
     <h3>Add Transfer</h3>
     <form (ngSubmit)="onSave()">
         <div>
+            <label for="add_date">Date</label>
+            <input [(ngModel)]="transfer!.date" id="add_date" name="date" required type="date"/>
+        </div>
+        <div>
+            <label for="add_amount">Amount</label>
+            <input [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="number"/>
+        </div>
+        <div>
+            <label for="add_source">Source</label>
+            <select [(ngModel)]="transfer!.source" id="add_source" name="source" required>
+                <option *ngFor="let account of accounts" [value]="account.name">
+                    {{ account.name }}
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="add_target">Target</label>
+            <select [(ngModel)]="transfer!.target" id="add_target" name="target" required>
+                <option *ngFor="let account of accounts" [value]="account.name">
+                    {{ account.name }}
+                </option>
+            </select>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
+
+<div *ngIf="!addingTransfer && transfer">
+    <h3>Edit Transfer</h3>
+    <form (ngSubmit)="onUpdate()">
+        <div>
             <label for="date">Date</label>
             <input [(ngModel)]="transfer!.date" id="date" name="date" required type="date"/>
         </div>
@@ -38,22 +74,6 @@
                     {{ account.name }}
                 </option>
             </select>
-        </div>
-
-        <button type="submit">Save</button>
-    </form>
-
-    <button (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingTransfer && transfer">
-    <h3>Edit Transfer</h3>
-    <form (ngSubmit)="onUpdate()">
-        <div>
-            <label for="x">X</label>
-            <input [(ngModel)]="transfer.date" id="x" name="x" required type="text"/>
         </div>
 
         <button type="submit">Update</button>

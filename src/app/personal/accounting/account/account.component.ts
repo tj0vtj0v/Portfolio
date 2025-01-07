@@ -36,9 +36,7 @@ export class AccountComponent {
 
     ngOnInit(): void {
         this.accountingService.get_accounts().subscribe(
-            (accounts: any) => {
-                this.accounts = accounts;
-            }
+            (accounts: any) => this.accounts = accounts
         );
     }
 
@@ -66,9 +64,7 @@ export class AccountComponent {
 
     onSave(): void {
         this.accountingService.add_account(this.account!).subscribe(
-            () => {
-                this.reset()
-            },
+            () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Adding failed: ${error.error.detail}`;
@@ -81,9 +77,7 @@ export class AccountComponent {
 
     onUpdate(): void {
         this.accountingService.update_account(this.accountName!, this.account!).subscribe(
-            () => {
-                this.reset()
-            },
+            () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Edit failed: ${error.error.detail}`;
@@ -97,9 +91,7 @@ export class AccountComponent {
     onDelete(): void {
         if (confirm('Are you sure you want to delete this account?')) {
             this.accountingService.delete_account(this.accountName!).subscribe(
-                () => {
-                    this.reset()
-                }
+                () => this.reset()
             )
         }
     }

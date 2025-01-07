@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ConnectorService} from './connector.service';
 import {Observable} from 'rxjs';
 import {Account} from '../datatype/Account';
+import {Transfer} from '../datatype/Transfer';
 
 @Injectable({
     providedIn: 'root'
@@ -21,6 +22,10 @@ export class AccountingService {
         return this.connectorService.get('accounting/accounts');
     }
 
+    public get_account(name: string): Observable<any> {
+        return this.connectorService.get(`accounting/accounts/${name}`);
+    }
+
     public update_account(account_name: string, account: Account): Observable<any> {
         return this.connectorService.update(`accounting/accounts/${account_name}`, account);
     }
@@ -29,7 +34,35 @@ export class AccountingService {
         return this.connectorService.delete(`accounting/accounts/${account_name}`);
     }
 
+    public add_transfer(transfer: Transfer): Observable<any> {
+        return this.connectorService.add(
+            'accounting/transfers',
+            {
+                date: transfer.date,
+                amount: transfer.amount,
+                source_id: transfer.source!.id,
+                target_id: transfer.target!.id,
+            }
+        );
+    }
+
     public get_transfers(): Observable<any> {
         return this.connectorService.get('accounting/transfers');
+    }
+
+    public update_transfer(id: number, transfer: Transfer): Observable<any> {
+        return this.connectorService.update(
+            `accounting/transfers/${id}`,
+            {
+                date: transfer.date,
+                amount: transfer.amount,
+                source_id: transfer.source!.id,
+                target_id: transfer.target!.id,
+            }
+        );
+    }
+
+    public delete_transfer(id: number): Observable<any> {
+        return this.connectorService.delete(`accounting/transfers/${id}`);
     }
 }
