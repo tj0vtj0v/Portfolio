@@ -89,9 +89,16 @@ export class AccountComponent {
     }
 
     onDelete(): void {
-        if (confirm('Are you sure you want to delete this account?')) {
+        if (confirm('Are you sure you want to delete this account and all its data?')) {
             this.accountingService.delete_account(this.accountName!).subscribe(
-                () => this.reset()
+                () => this.reset(),
+                (error) => {
+                    if (error?.error?.detail) {
+                        this.statusMessage = `Edit failed: ${error.error.detail}`;
+                    } else {
+                        this.statusMessage = 'Edit failed';
+                    }
+                }
             )
         }
     }
