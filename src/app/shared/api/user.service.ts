@@ -20,11 +20,11 @@ export class UserService {
     }
 
     register(user: RegisterUser): Observable<any> {
-        return this.connectorService.create('users', user);
+        return this.connectorService.add('users', user);
     }
 
     get(): Observable<any> {
-        return this.connectorService.read('users/me');
+        return this.connectorService.get('users/me');
     }
 
     update(user: ModifyUser): Observable<any> {

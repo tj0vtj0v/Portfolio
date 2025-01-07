@@ -1,1 +1,66 @@
-<p>transfer works!</p>
+<div *ngIf="!(transfer || addingTransfer)">
+    <ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="transfers"
+        (rowClicked)="onRowClicked($event)"
+        rowSelection="single"
+        [columnDefs]="columnDefs"
+        [modules]="modules"
+        [domLayout]="'autoHeight'"
+    >
+    </ag-grid-angular>
+    <button (click)="onAdd()">Add Transfer</button>
+</div>
+
+<div *ngIf="addingTransfer">
+    <h3>Add Transfer</h3>
+    <form (ngSubmit)="onSave()">
+        <div>
+            <label for="date">Date</label>
+            <input [(ngModel)]="transfer!.date" id="date" name="date" required type="date"/>
+        </div>
+        <div>
+            <label for="amount">Amount</label>
+            <input [(ngModel)]="transfer!.amount" id="amount" name="amount" required type="number"/>
+        </div>
+        <div>
+            <label for="source">Source</label>
+            <select [(ngModel)]="transfer!.source" id="source" name="source" required>
+                <option *ngFor="let account of accounts" [value]="account.name">
+                    {{ account.name }}
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="target">Target</label>
+            <select [(ngModel)]="transfer!.target" id="target" name="target" required>
+                <option *ngFor="let account of accounts" [value]="account.name">
+                    {{ account.name }}
+                </option>
+            </select>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
+
+<div *ngIf="!addingTransfer && transfer">
+    <h3>Edit Transfer</h3>
+    <form (ngSubmit)="onUpdate()">
+        <div>
+            <label for="x">X</label>
+            <input [(ngModel)]="transfer.date" id="x" name="x" required type="text"/>
+        </div>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+    <button (click)="onDelete()">Delete Transfer</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>

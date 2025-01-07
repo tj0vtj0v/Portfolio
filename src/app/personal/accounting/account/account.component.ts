@@ -9,9 +9,9 @@ import {AccountingService} from '../../../shared/api/accounting.service';
 @Component({
     selector: 'app-account',
     imports: [
-        CommonModule,
+        AgGridModule,
         FormsModule,
-        AgGridModule
+        CommonModule
     ],
     templateUrl: './account.component.html',
     styleUrl: './account.component.css'
@@ -36,9 +36,8 @@ export class AccountComponent {
 
     ngOnInit(): void {
         this.accountingService.get_accounts().subscribe(
-            (data: any) => {
-                this.accounts = data;
-                console.log(this.accounts);
+            (accounts: any) => {
+                this.accounts = accounts;
             }
         );
     }

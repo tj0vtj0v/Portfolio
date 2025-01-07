@@ -14,11 +14,11 @@ export class AccountingService {
     }
 
     public add_account(account: Account): Observable<any> {
-        return this.connectorService.create('accounting/accounts', account);
+        return this.connectorService.add('accounting/accounts', account);
     }
 
     public get_accounts(): Observable<any> {
-        return this.connectorService.read('accounting/accounts');
+        return this.connectorService.get('accounting/accounts');
     }
 
     public update_account(account_name: string, account: Account): Observable<any> {
@@ -27,5 +27,9 @@ export class AccountingService {
 
     public delete_account(account_name: string): Observable<any> {
         return this.connectorService.delete(`accounting/accounts/${account_name}`);
+    }
+
+    public get_transfers(): Observable<any> {
+        return this.connectorService.get('accounting/transfers');
     }
 }

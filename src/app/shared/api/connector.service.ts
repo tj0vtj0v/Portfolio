@@ -23,7 +23,7 @@ export class ConnectorService {
         return this.http.post<AuthResponse>(`${this.url}login`, body.toString(), {headers});
     }
 
-    create(suffix: string, body: any) {
+    add(suffix: string, body: any) {
         return this.http.post(`${this.url}${suffix}`, body, {headers: this.buildSendHeader()}).pipe(
             catchError(error => {
                 if (error.error?.detail === 'Authorisation token expired') {
@@ -34,7 +34,7 @@ export class ConnectorService {
         );
     }
 
-    read(suffix: string) {
+    get(suffix: string) {
         return this.http.get(`${this.url}${suffix}`, {headers: this.buildRequestHeader()}).pipe(
             catchError(error => {
                 if (error.error?.detail === 'Authorisation token expired') {
