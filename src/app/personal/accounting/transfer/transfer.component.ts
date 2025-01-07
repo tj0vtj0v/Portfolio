@@ -28,7 +28,10 @@ export class TransferComponent {
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Date', field: 'date', sortable: true, filter: true},
-        {headerName: 'Amount', field: 'amount', sortable: true, filter: true},
+        {
+            headerName: 'Amount', field: 'amount', sortable: true, filter: true,
+            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+        },
         {headerName: 'Source Account', field: 'source.name', sortable: true, filter: true},
         {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
     ];

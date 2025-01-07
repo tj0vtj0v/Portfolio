@@ -25,7 +25,10 @@ export class AccountComponent {
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Account', field: 'name', sortable: true, filter: true},
-        {headerName: 'Balance', field: 'balance', sortable: true, filter: true}
+        {
+            headerName: 'Balance', field: 'balance', sortable: true, filter: true,
+            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+        }
     ];
     protected modules: Module[] = [ClientSideRowModelModule];
 
@@ -36,7 +39,7 @@ export class AccountComponent {
 
     ngOnInit(): void {
         this.accountingService.get_accounts().subscribe(
-            (accounts: any) => this.accounts = accounts
+            (accounts: Account[]) => this.accounts = accounts
         );
     }
 
@@ -89,14 +92,14 @@ export class AccountComponent {
     }
 
     onDelete(): void {
-        if (confirm('Are you sure you want to delete this account and all its data?')) {
+        if (confirm('Are you sure you want to delete this account?')) {
             this.accountingService.delete_account(this.accountName!).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {
-                        this.statusMessage = `Edit failed: ${error.error.detail}`;
+                        this.statusMessage = `Delete failed: ${error.error.detail}`;
                     } else {
-                        this.statusMessage = 'Edit failed';
+                        this.statusMessage = 'Delete failed';
                     }
                 }
             )
