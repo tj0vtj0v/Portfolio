@@ -4,6 +4,7 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {ExpenseComponent} from './expense/expense.component';
 import {TransferComponent} from './transfer/transfer.component';
 import {AccountComponent} from './account/account.component';
+import {CategoryComponent} from './category/category.component';
 
 @Component({
     selector: 'app-accounting',
@@ -12,6 +13,7 @@ import {AccountComponent} from './account/account.component';
         ExpenseComponent,
         TransferComponent,
         AccountComponent,
+        CategoryComponent,
         DashboardComponent
     ],
     templateUrl: './accounting.component.html',

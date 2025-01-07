@@ -3,6 +3,7 @@ import {ConnectorService} from './connector.service';
 import {Observable} from 'rxjs';
 import {Account} from '../datatype/Account';
 import {Transfer} from '../datatype/Transfer';
+import {Category} from '../datatype/Category';
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +15,7 @@ export class AccountingService {
     ) {
     }
 
+    // account management
     public add_account(account: Account): Observable<any> {
         return this.connectorService.add('accounting/accounts', account);
     }
@@ -34,6 +36,7 @@ export class AccountingService {
         return this.connectorService.delete(`accounting/accounts/${account_name}`);
     }
 
+    // transfer management
     public add_transfer(transfer: Transfer): Observable<any> {
         return this.connectorService.add(
             'accounting/transfers',
@@ -64,5 +67,26 @@ export class AccountingService {
 
     public delete_transfer(id: number): Observable<any> {
         return this.connectorService.delete(`accounting/transfers/${id}`);
+    }
+
+    // category management
+    public add_category(category: Category): Observable<any> {
+        return this.connectorService.add('accounting/categories', category);
+    }
+
+    public get_categories(): Observable<any> {
+        return this.connectorService.get('accounting/categories');
+    }
+
+    public get_category(name: string): Observable<any> {
+        return this.connectorService.get(`accounting/categories${name}`);
+    }
+
+    public update_category(name: string, category: Category): Observable<any> {
+        return this.connectorService.update(`accounting/categories/${name}`, category);
+    }
+
+    public delete_category(name: string): Observable<any> {
+        return this.connectorService.delete(`accounting/categories/${name}`);
     }
 }

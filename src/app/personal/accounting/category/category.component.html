@@ -1,0 +1,47 @@
+<div *ngIf="!(category || addingCategory)">
+    <ag-grid-angular
+        class="ag-theme-alpine"
+        [rowData]="categories"
+        (rowClicked)="onRowClicked($event)"
+        rowSelection="single"
+        [columnDefs]="columnDefs"
+        [modules]="modules"
+        [domLayout]="'autoHeight'"
+    >
+    </ag-grid-angular>
+    <button (click)="onAdd()">Add Category</button>
+</div>
+
+<div *ngIf="addingCategory">
+    <h3>Add Category</h3>
+    <form (ngSubmit)="onSave()">
+        <div>
+            <label for="add_name">Name</label>
+            <input [(ngModel)]="category!.name" id="add_name" name="add_name" placeholder="Enter the category name"
+                   required type="text"/>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
+
+<div *ngIf="!addingCategory && category">
+    <h3>Edit Category: {{ categoryName }}</h3>
+    <form (ngSubmit)="onUpdate()">
+        <div>
+            <label for="name">Name</label>
+            <input [(ngModel)]="category.name" id="name" name="name" required type="text"/>
+        </div>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+    <button (click)="onDelete()">Delete Category</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
