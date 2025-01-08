@@ -110,7 +110,8 @@ export class ExpenseComponent {
             switchMap((account: Account) =>
                 this.accountingService.get_category(this.expense!.category).pipe(
                     switchMap((category: Category) => {
-                            return this.accountingService.add_expense({
+                            return this.accountingService.add_expense(
+                                {
                                     date: this.expense!.date,
                                     reason: this.expense!.reason,
                                     amount: this.expense!.amount,
@@ -135,10 +136,46 @@ export class ExpenseComponent {
     }
 
     onUpdate(): void {
-        // TODO
+        if (this.expense!.amount == 0) {
+            this.statusMessage = 'The Expense must not have an amount equal to 0';
+            return;
+        }
+
+        this.accountingService.get_account(this.expense!.account).pipe(
+            switchMap((account: Account) =>
+                this.accountingService.get_category(this.expense!.category).pipe(
+                    switchMap((category: Category) => {
+                            return this.accountingService.update_expense(
+                                this.expense!.id!,
+                                {
+                                    date: this.expense!.date,
+                                    reason: this.expense!.reason,
+                                    amount: this.expense!.amount,
+                                    account: account,
+                                    category: category
+                                }
+                            );
+                        }
+                    )
+                )
+            )
+        ).subscribe(
+            () => this.reset(),
+            (error) => {
+                if (error?.error?.detail) {
+                    this.statusMessage = `Edit failed: ${error.error.detail}`;
+                } else {
+                    this.statusMessage = 'Edit failed';
+                }
+            }
+        );
     }
 
     onDelete(): void {
-        // TODO
+        if (confirm('Are you sure you want to delete this expense?')) {
+            this.accountingService.delete_expense(this.expense!.id!).subscribe(
+                () => this.reset()
+            )
+        }
     }
 }

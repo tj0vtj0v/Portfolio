@@ -60,14 +60,26 @@
             <input [(ngModel)]="expense!.date" id="date" name="date" required type="date"/>
         </div>
         <div>
+            <label for="reason">Reason</label>
+            <input [(ngModel)]="expense!.reason" id="reason" name="add_reason" required type="text"/>
+        </div>
+        <div>
             <label for="amount">Amount</label>
             <input [(ngModel)]="expense!.amount" id="amount" name="amount" required type="number"/>
         </div>
         <div>
-            <label for="source">Source</label>
-            <select [(ngModel)]="expense!.account" id="source" name="source" required>
+            <label for="account">Account</label>
+            <select [(ngModel)]="expense!.account" id="account" name="add_account" required>
                 <option *ngFor="let account of accounts" [value]="account.name">
                     {{ account.name }}
+                </option>
+            </select>
+        </div>
+        <div>
+            <label for="category">Category</label>
+            <select [(ngModel)]="expense!.category" id="category" name="add_category" required>
+                <option *ngFor="let category of categories" [value]="category.name">
+                    {{ category.name }}
                 </option>
             </select>
         </div>

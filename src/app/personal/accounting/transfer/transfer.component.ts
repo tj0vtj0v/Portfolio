@@ -95,7 +95,8 @@ export class TransferComponent {
             switchMap((source_account: Account) =>
                 this.accountingService.get_account(this.transfer!.target).pipe(
                     switchMap((target_account: Account) => {
-                            return this.accountingService.add_transfer({
+                            return this.accountingService.add_transfer(
+                                {
                                     date: this.transfer!.date,
                                     amount: this.transfer!.amount,
                                     source: source_account,
