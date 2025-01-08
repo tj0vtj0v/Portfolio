@@ -20,7 +20,7 @@ import {switchMap} from 'rxjs';
     styleUrl: './transfer.component.css'
 })
 export class TransferComponent {
-    protected accounts?: Account[] = [];
+    protected accounts: Account[] = [];
     protected transfers: Transfer[] = [];
     protected transfer?: ModifyTransfer;
     protected addingTransfer: boolean = false;
@@ -44,7 +44,7 @@ export class TransferComponent {
 
     ngOnInit(): void {
         this.accountingService.get_transfers().subscribe(
-            (transfers) => {
+            (transfers: Transfer[]) => {
                 this.transfers = transfers;
             }
         )

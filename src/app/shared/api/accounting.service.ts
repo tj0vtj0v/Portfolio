@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {Account} from '../datatype/Account';
 import {Transfer} from '../datatype/Transfer';
 import {Category} from '../datatype/Category';
+import {Expense} from '../datatype/Expense';
 
 @Injectable({
     providedIn: 'root'
@@ -79,7 +80,7 @@ export class AccountingService {
     }
 
     public get_category(name: string): Observable<any> {
-        return this.connectorService.get(`accounting/categories${name}`);
+        return this.connectorService.get(`accounting/categories/${name}`);
     }
 
     public update_category(name: string, category: Category): Observable<any> {
@@ -88,5 +89,41 @@ export class AccountingService {
 
     public delete_category(name: string): Observable<any> {
         return this.connectorService.delete(`accounting/categories/${name}`);
+    }
+
+    // expense management
+    public add_expense(expense: Expense): Observable<any> {
+        return this.connectorService.add(
+            'accounting/expenses',
+            {
+                date: expense.date,
+                reason: expense.reason,
+                amount: expense.amount,
+                account_id: expense.account.id,
+                category_id: expense.category.id
+            }
+        );
+    }
+
+    public get_expenses(): Observable<any> {
+        return this.connectorService.get('accounting/expenses');
+    }
+
+    public update_expense(id: number, expense: Expense): Observable<any> {
+        return this.connectorService.update(
+            `accounting/expenses/${id}`,
+            {
+                date: expense.date,
+                reason: expense.reason,
+                amount: expense.amount,
+                account_id: expense.account.id,
+                category_id: expense.category.id
+            }
+        );
+    }
+
+
+    public delete_expense(id: number): Observable<any> {
+        return this.connectorService.delete(`accounting/expenses/${id}`);
     }
 }
