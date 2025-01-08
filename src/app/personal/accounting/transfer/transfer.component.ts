@@ -44,15 +44,11 @@ export class TransferComponent {
 
     ngOnInit(): void {
         this.accountingService.get_transfers().subscribe(
-            (transfers: Transfer[]) => {
-                this.transfers = transfers;
-            }
+            (transfers: Transfer[]) => this.transfers = transfers
         )
 
         this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => {
-                this.accounts = accounts;
-            }
+            (accounts: Account[]) => this.accounts = accounts
         )
     }
 

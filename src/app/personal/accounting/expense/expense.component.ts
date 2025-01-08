@@ -47,21 +47,15 @@ export class ExpenseComponent {
 
     ngOnInit() {
         this.accountingService.get_expenses().subscribe(
-            (expenses: Expense[]) => {
-                this.expenses = expenses; // TODO make one line
-            }
+            (expenses: Expense[]) => this.expenses = expenses
         )
 
         this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => {
-                this.accounts = accounts;
-            }
+            (accounts: Account[]) => this.accounts = accounts
         )
 
         this.accountingService.get_categories().subscribe(
-            (categories: Category[]) => {
-                this.categories = categories;
-            }
+            (categories: Category[]) => this.categories = categories
         )
     }
 
