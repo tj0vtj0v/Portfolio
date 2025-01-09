@@ -3,6 +3,7 @@
 
         <button (click)="selectOption('')">Dashboard</button>
         <button (click)="selectOption('Expenses')">Expenses</button>
+        <button (click)="selectOption('Incomes')">Incomes</button>
         <button (click)="selectOption('Transfers')">Transfers</button>
         <button (click)="selectOption('Accounts')">Accounts</button>
         <button (click)="selectOption('Categories')">Categories</button>
@@ -11,6 +12,7 @@
     <div class="content">
         <div [ngSwitch]="selectedOption">
             <app-expense *ngSwitchCase="'Expenses'"></app-expense>
+            <app-income *ngSwitchCase="'Incomes'"></app-income>
             <app-transfer *ngSwitchCase="'Transfers'"></app-transfer>
             <app-account *ngSwitchCase="'Accounts'"></app-account>
             <app-category *ngSwitchCase="'Categories'"></app-category>

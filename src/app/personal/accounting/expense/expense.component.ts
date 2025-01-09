@@ -36,7 +36,7 @@ export class ExpenseComponent {
             valueFormatter: (params) => `${params.value?.toFixed(2)}€`
         },
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true},
-        {headerName: 'Category', field: 'category.name', sortable: true, filter: true},
+        {headerName: 'Category', field: 'category.name', sortable: true, filter: true}
     ];
     protected modules: Module[] = [ClientSideRowModelModule]
 
@@ -91,10 +91,6 @@ export class ExpenseComponent {
     }
 
     onSave(): void {
-        if (this.expense!.amount == 0) {
-            this.statusMessage = 'The Expense must not have an amount equal to 0';
-            return;
-        }
         if (this.expense!.account == '' || this.expense!.category == '') {
             this.statusMessage = 'The expense must have an account and a category'
             return;

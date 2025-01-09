@@ -5,6 +5,7 @@ import {Account} from '../datatype/Account';
 import {Transfer} from '../datatype/Transfer';
 import {Category} from '../datatype/Category';
 import {Expense} from '../datatype/Expense';
+import {Income} from '../datatype/Income';
 
 @Injectable({
     providedIn: 'root'
@@ -122,8 +123,40 @@ export class AccountingService {
         );
     }
 
-
     public delete_expense(id: number): Observable<any> {
         return this.connectorService.delete(`accounting/expenses/${id}`);
+    }
+
+    // income management
+    public add_income(income: Income): Observable<any> {
+        return this.connectorService.add(
+            'accounting/incomes',
+            {
+                date: income.date,
+                reason: income.reason,
+                amount: income.amount,
+                account_id: income.account.id
+            }
+        );
+    }
+
+    public get_incomes(): Observable<any> {
+        return this.connectorService.get('accounting/incomes');
+    }
+
+    public update_income(id: number, income: Income): Observable<any> {
+        return this.connectorService.update(
+            `accounting/incomes/${id}`,
+            {
+                date: income.date,
+                reason: income.reason,
+                amount: income.amount,
+                account_id: income.account.id
+            }
+        );
+    }
+
+    public delete_income(id: number): Observable<any> {
+        return this.connectorService.delete(`accounting/incomes/${id}`);
     }
 }

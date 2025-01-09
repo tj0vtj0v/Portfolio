@@ -5,12 +5,14 @@ import {ExpenseComponent} from './expense/expense.component';
 import {TransferComponent} from './transfer/transfer.component';
 import {AccountComponent} from './account/account.component';
 import {CategoryComponent} from './category/category.component';
+import {IncomeComponent} from './income/income.component';
 
 @Component({
     selector: 'app-accounting',
     imports: [
         CommonModule,
         ExpenseComponent,
+        IncomeComponent,
         TransferComponent,
         AccountComponent,
         CategoryComponent,
