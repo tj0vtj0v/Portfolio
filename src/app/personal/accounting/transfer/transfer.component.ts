@@ -113,7 +113,14 @@ export class TransferComponent {
     onDelete(): void {
         if (confirm('Are you sure you want to delete this transfer?')) {
             this.accountingService.delete_transfer(this.transfer!.id!).subscribe(
-                () => this.reset()
+                () => this.reset(),
+                (error) => {
+                    if (error?.error?.detail) {
+                        this.statusMessage = `Delete failed: ${error.error.detail}`;
+                    } else {
+                        this.statusMessage = 'Delete failed';
+                    }
+                }
             )
         }
     }

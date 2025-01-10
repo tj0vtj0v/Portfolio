@@ -126,7 +126,14 @@ export class ExpenseComponent {
     onDelete(): void {
         if (confirm('Are you sure you want to delete this expense?')) {
             this.accountingService.delete_expense(this.expense!.id!).subscribe(
-                () => this.reset()
+                () => this.reset(),
+                (error) => {
+                    if (error?.error?.detail) {
+                        this.statusMessage = `Delete failed: ${error.error.detail}`;
+                    } else {
+                        this.statusMessage = 'Delete failed';
+                    }
+                }
             )
         }
     }

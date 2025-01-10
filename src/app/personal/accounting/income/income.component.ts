@@ -115,7 +115,14 @@ export class IncomeComponent {
     onDelete(): void {
         if (confirm('Are you sure you want to delete this income?')) {
             this.accountingService.delete_income(this.income!.id!).subscribe(
-                () => this.reset()
+                () => this.reset(),
+                (error) => {
+                    if (error?.error?.detail) {
+                        this.statusMessage = `Delete failed: ${error.error.detail}`;
+                    } else {
+                        this.statusMessage = 'Delete failed';
+                    }
+                }
             )
         }
     }
