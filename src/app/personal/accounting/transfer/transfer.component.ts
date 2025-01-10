@@ -59,12 +59,14 @@ export class TransferComponent {
     }
 
     onRowClicked(event: RowClickedEvent): void {
+        const source = this.accounts.find(account => account.id === event.data.source.id);
+        const target = this.accounts.find(account => account.id === event.data.target.id);
         this.transfer = {
             id: event.data.id,
             date: event.data.date,
             amount: event.data.amount,
-            source: event.data.source,
-            target: event.data.target
+            source: source,
+            target: target
         };
     }
 

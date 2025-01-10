@@ -61,12 +61,13 @@ export class IncomeComponent {
     }
 
     onRowClicked(event: RowClickedEvent): void {
+        const account = this.accounts.find(account => account.id === event.data.account.id);
         this.income = {
             id: event.data.id,
             date: event.data.date,
             reason: event.data.reason,
             amount: event.data.amount,
-            account: event.data.account
+            account: account
         }
     }
 
