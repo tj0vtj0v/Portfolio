@@ -5,5 +5,5 @@ export interface Income {
     date: string;
     reason: string;
     amount: number;
-    account: Account;
+    account?: Account;
 }

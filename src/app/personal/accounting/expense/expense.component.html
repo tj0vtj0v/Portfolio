@@ -30,7 +30,7 @@
         <div>
             <label for="add_account">Account</label>
             <select [(ngModel)]="expense!.account" id="add_account" name="add_account" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
@@ -38,7 +38,7 @@
         <div>
             <label for="add_category">Category</label>
             <select [(ngModel)]="expense!.category" id="add_category" name="add_category" required>
-                <option *ngFor="let category of categories" [value]="category.name">
+                <option *ngFor="let category of categories" [ngValue]="category">
                     {{ category.name }}
                 </option>
             </select>
@@ -70,7 +70,7 @@
         <div>
             <label for="account">Account</label>
             <select [(ngModel)]="expense!.account" id="account" name="add_account" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
@@ -78,7 +78,7 @@
         <div>
             <label for="category">Category</label>
             <select [(ngModel)]="expense!.category" id="category" name="add_category" required>
-                <option *ngFor="let category of categories" [value]="category.name">
+                <option *ngFor="let category of categories" [ngValue]="category">
                     {{ category.name }}
                 </option>
             </select>

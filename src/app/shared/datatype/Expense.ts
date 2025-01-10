@@ -6,6 +6,6 @@ export interface Expense {
     date: string,
     reason: string,
     amount: number,
-    account: Account,
-    category: Category
+    account?: Account,
+    category?: Category
 }

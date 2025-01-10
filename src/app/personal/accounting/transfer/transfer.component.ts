@@ -6,8 +6,6 @@ import {CommonModule} from '@angular/common';
 import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
-import {ModifyTransfer} from '../../../shared/datatype/ModifyTransfer';
-import {switchMap} from 'rxjs';
 
 @Component({
     selector: 'app-transfer',
@@ -22,7 +20,7 @@ import {switchMap} from 'rxjs';
 export class TransferComponent {
     protected accounts: Account[] = [];
     protected transfers: Transfer[] = [];
-    protected transfer?: ModifyTransfer;
+    protected transfer?: Transfer;
     protected addingTransfer: boolean = false;
     protected statusMessage = '';
 
@@ -65,8 +63,8 @@ export class TransferComponent {
             id: event.data.id,
             date: event.data.date,
             amount: event.data.amount,
-            source: event.data.source.name,
-            target: event.data.target.name
+            source: event.data.source,
+            target: event.data.target
         };
     }
 
@@ -76,34 +74,18 @@ export class TransferComponent {
         this.transfer = {
             date: new Date().toISOString().split('T')[0],
             amount: 0,
-            source: '',
-            target: ''
+            source: undefined,
+            target: undefined
         }
     }
 
     onSave(): void {
-        if (this.transfer!.source == '' || this.transfer!.target == '') {
+        if (this.transfer!.source == undefined || this.transfer!.target == undefined) {
             this.statusMessage = 'The Transfer must have a source and a target';
             return;
         }
 
-        this.accountingService.get_account(this.transfer!.source).pipe(
-            switchMap((source_account: Account) =>
-                this.accountingService.get_account(this.transfer!.target).pipe(
-                    switchMap((target_account: Account) => {
-                            return this.accountingService.add_transfer(
-                                {
-                                    date: this.transfer!.date,
-                                    amount: this.transfer!.amount,
-                                    source: source_account,
-                                    target: target_account
-                                }
-                            );
-                        }
-                    )
-                )
-            )
-        ).subscribe(
+        this.accountingService.add_transfer(this.transfer!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -116,24 +98,7 @@ export class TransferComponent {
     }
 
     onUpdate(): void {
-        this.accountingService.get_account(this.transfer!.source).pipe(
-            switchMap((source_account: Account) =>
-                this.accountingService.get_account(this.transfer!.target).pipe(
-                    switchMap((target_account: Account) => {
-                            return this.accountingService.update_transfer(
-                                this.transfer!.id!,
-                                {
-                                    date: this.transfer!.date,
-                                    amount: this.transfer!.amount,
-                                    source: source_account,
-                                    target: target_account
-                                }
-                            );
-                        }
-                    )
-                )
-            )
-        ).subscribe(
+        this.accountingService.update_transfer(this.transfer!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {

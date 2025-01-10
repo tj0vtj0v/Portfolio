@@ -4,10 +4,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
 import {Income} from '../../../shared/datatype/Income';
 import {Account} from '../../../shared/datatype/Account';
-import {ModifyIncome} from '../../../shared/datatype/ModifyIncome';
 import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
-import {switchMap} from 'rxjs';
 
 @Component({
     selector: 'app-income',
@@ -24,7 +22,7 @@ import {switchMap} from 'rxjs';
 export class IncomeComponent {
     protected incomes: Income[] = [];
     protected accounts: Account[] = [];
-    protected income?: ModifyIncome;
+    protected income?: Income;
     protected addingIncome = false;
     protected statusMessage = '';
 
@@ -68,7 +66,7 @@ export class IncomeComponent {
             date: event.data.date,
             reason: event.data.reason,
             amount: event.data.amount,
-            account: event.data.account.name
+            account: event.data.account
         }
     }
 
@@ -79,29 +77,17 @@ export class IncomeComponent {
             date: new Date().toISOString().split('T')[0],
             reason: '',
             amount: 0,
-            account: ''
+            account: undefined
         }
     }
 
     onSave(): void {
-        if (this.income!.account == '') {
-            this.statusMessage = ' The income must have an account';
+        if (this.income!.account == undefined) {
+            this.statusMessage = 'The income must have an account';
             return;
         }
 
-        this.accountingService.get_account(this.income!.account).pipe(
-            switchMap((account: Account) => {
-                    return this.accountingService.add_income(
-                        {
-                            date: this.income!.date,
-                            reason: this.income!.reason,
-                            amount: this.income!.amount,
-                            account: account
-                        }
-                    );
-                }
-            )
-        ).subscribe(
+        this.accountingService.add_income(this.income!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -114,20 +100,7 @@ export class IncomeComponent {
     }
 
     onUpdate(): void {
-        this.accountingService.get_account(this.income!.account).pipe(
-            switchMap((account: Account) => {
-                    return this.accountingService.update_income(
-                        this.income!.id!,
-                        {
-                            date: this.income!.date,
-                            reason: this.income!.reason,
-                            amount: this.income!.amount,
-                            account: account
-                        }
-                    );
-                }
-            )
-        ).subscribe(
+        this.accountingService.update_income(this.income!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {

@@ -26,10 +26,6 @@ export class AccountingService {
         return this.connectorService.get('accounting/accounts');
     }
 
-    public get_account(name: string): Observable<any> {
-        return this.connectorService.get(`accounting/accounts/${name}`);
-    }
-
     public update_account(account_name: string, account: Account): Observable<any> {
         return this.connectorService.update(`accounting/accounts/${account_name}`, account);
     }
@@ -55,9 +51,9 @@ export class AccountingService {
         return this.connectorService.get('accounting/transfers');
     }
 
-    public update_transfer(id: number, transfer: Transfer): Observable<any> {
+    public update_transfer(transfer: Transfer): Observable<any> {
         return this.connectorService.update(
-            `accounting/transfers/${id}`,
+            `accounting/transfers/${transfer.id}`,
             {
                 date: transfer.date,
                 amount: transfer.amount,
@@ -80,10 +76,6 @@ export class AccountingService {
         return this.connectorService.get('accounting/categories');
     }
 
-    public get_category(name: string): Observable<any> {
-        return this.connectorService.get(`accounting/categories/${name}`);
-    }
-
     public update_category(name: string, category: Category): Observable<any> {
         return this.connectorService.update(`accounting/categories/${name}`, category);
     }
@@ -100,8 +92,8 @@ export class AccountingService {
                 date: expense.date,
                 reason: expense.reason,
                 amount: expense.amount,
-                account_id: expense.account.id,
-                category_id: expense.category.id
+                account_id: expense.account!.id,
+                category_id: expense.category!.id
             }
         );
     }
@@ -110,15 +102,15 @@ export class AccountingService {
         return this.connectorService.get('accounting/expenses');
     }
 
-    public update_expense(id: number, expense: Expense): Observable<any> {
+    public update_expense(expense: Expense): Observable<any> {
         return this.connectorService.update(
-            `accounting/expenses/${id}`,
+            `accounting/expenses/${expense.id}`,
             {
                 date: expense.date,
                 reason: expense.reason,
                 amount: expense.amount,
-                account_id: expense.account.id,
-                category_id: expense.category.id
+                account_id: expense.account!.id,
+                category_id: expense.category!.id
             }
         );
     }
@@ -135,7 +127,7 @@ export class AccountingService {
                 date: income.date,
                 reason: income.reason,
                 amount: income.amount,
-                account_id: income.account.id
+                account_id: income.account!.id
             }
         );
     }
@@ -144,14 +136,14 @@ export class AccountingService {
         return this.connectorService.get('accounting/incomes');
     }
 
-    public update_income(id: number, income: Income): Observable<any> {
+    public update_income(income: Income): Observable<any> {
         return this.connectorService.update(
-            `accounting/incomes/${id}`,
+            `accounting/incomes/${income.id}`,
             {
                 date: income.date,
                 reason: income.reason,
                 amount: income.amount,
-                account_id: income.account.id
+                account_id: income.account!.id
             }
         );
     }

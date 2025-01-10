@@ -26,7 +26,7 @@
         <div>
             <label for="add_source">Source</label>
             <select [(ngModel)]="transfer!.source" id="add_source" name="source" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
@@ -34,7 +34,7 @@
         <div>
             <label for="add_target">Target</label>
             <select [(ngModel)]="transfer!.target" id="add_target" name="target" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
@@ -62,7 +62,7 @@
         <div>
             <label for="source">Source</label>
             <select [(ngModel)]="transfer!.source" id="source" name="source" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
@@ -70,7 +70,7 @@
         <div>
             <label for="target">Target</label>
             <select [(ngModel)]="transfer!.target" id="target" name="target" required>
-                <option *ngFor="let account of accounts" [value]="account.name">
+                <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>

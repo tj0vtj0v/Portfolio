@@ -5,10 +5,8 @@ import {CommonModule} from '@angular/common';
 import {Expense} from '../../../shared/datatype/Expense';
 import {Account} from '../../../shared/datatype/Account';
 import {Category} from '../../../shared/datatype/Category';
-import {ModifyExpense} from '../../../shared/datatype/ModifyExpense';
 import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
-import {switchMap} from 'rxjs';
 
 @Component({
     selector: 'app-expense',
@@ -24,7 +22,7 @@ export class ExpenseComponent {
     protected expenses: Expense[] = [];
     protected accounts: Account[] = [];
     protected categories: Category[] = [];
-    protected expense?: ModifyExpense;
+    protected expense?: Expense;
     protected addingExpense: boolean = false;
     protected statusMessage = '';
 
@@ -73,8 +71,8 @@ export class ExpenseComponent {
             date: event.data.date,
             reason: event.data.reason,
             amount: event.data.amount,
-            account: event.data.account.name,
-            category: event.data.category.name
+            account: event.data.account,
+            category: event.data.category
         }
     }
 
@@ -85,35 +83,18 @@ export class ExpenseComponent {
             date: new Date().toISOString().split('T')[0],
             reason: '',
             amount: 0,
-            account: '',
-            category: ''
+            account: undefined,
+            category: undefined
         }
     }
 
     onSave(): void {
-        if (this.expense!.account == '' || this.expense!.category == '') {
+        if (this.expense!.account == undefined || this.expense!.category == undefined) {
             this.statusMessage = 'The expense must have an account and a category'
             return;
         }
 
-        this.accountingService.get_account(this.expense!.account).pipe(
-            switchMap((account: Account) =>
-                this.accountingService.get_category(this.expense!.category).pipe(
-                    switchMap((category: Category) => {
-                            return this.accountingService.add_expense(
-                                {
-                                    date: this.expense!.date,
-                                    reason: this.expense!.reason,
-                                    amount: this.expense!.amount,
-                                    account: account,
-                                    category: category
-                                }
-                            );
-                        }
-                    )
-                )
-            )
-        ).subscribe(
+        this.accountingService.add_expense(this.expense!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -130,26 +111,7 @@ export class ExpenseComponent {
             this.statusMessage = 'The Expense must not have an amount equal to 0';
             return;
         }
-
-        this.accountingService.get_account(this.expense!.account).pipe(
-            switchMap((account: Account) =>
-                this.accountingService.get_category(this.expense!.category).pipe(
-                    switchMap((category: Category) => {
-                            return this.accountingService.update_expense(
-                                this.expense!.id!,
-                                {
-                                    date: this.expense!.date,
-                                    reason: this.expense!.reason,
-                                    amount: this.expense!.amount,
-                                    account: account,
-                                    category: category
-                                }
-                            );
-                        }
-                    )
-                )
-            )
-        ).subscribe(
+        this.accountingService.update_expense(this.expense!).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
