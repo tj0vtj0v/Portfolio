@@ -4,10 +4,10 @@
     <a routerLink="/projects">Projects</a>
     <a routerLink="/contact">Contact</a>
 
-    <a *ngIf="authenticationService.isLoggedIn()" routerLink="/settings">Settings</a>
-    <a *ngIf="!authenticationService.isLoggedIn()" routerLink="/login">Login</a>
+    <a *ngIf="userService.isLoggedIn()" routerLink="/settings">Settings</a>
+    <a *ngIf="!userService.isLoggedIn()" routerLink="/login">Login</a>
 
-    <nav *ngIf="authenticationService.isLoggedIn()">
+    <nav *ngIf="userService.isLoggedIn()">
         <a routerLink="/accounting">Accounting</a>
         <a routerLink="/banking">Banking</a>
         <a routerLink="/proximity">Proximity</a>

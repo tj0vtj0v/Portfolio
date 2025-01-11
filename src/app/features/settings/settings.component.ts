@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {ReadUser} from '../../shared/datatype/ReadUser';
-import {AuthenticationService} from '../../shared/authentication.service';
 import {UserService} from '../../shared/api/user.service';
 
 @Component({
@@ -16,9 +15,8 @@ export class SettingsComponent {
     user?: ReadUser;
 
     constructor(
-        private authenticationService: AuthenticationService,
         private userService: UserService,
-        private router: Router,
+        private router: Router
     ) {
     }
 
@@ -31,14 +29,14 @@ export class SettingsComponent {
     }
 
     logout(): void {
-        this.authenticationService.logout();
+        this.userService.logout();
         this.router.navigate(['/home']).then();
     }
 
     delete(): void {
         if (confirm('Please confirm deleting your account')) {
             this.userService.delete().subscribe();
-            this.authenticationService.logout();
+            this.userService.logout();
             this.router.navigate(['/home']).then();
         }
     }

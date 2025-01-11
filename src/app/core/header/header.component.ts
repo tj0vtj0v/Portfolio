@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {AuthenticationService} from '../../shared/authentication.service';
 import {NgIf} from '@angular/common';
+import {UserService} from '../../shared/api/user.service';
 
 @Component({
     selector: 'app-header',
@@ -14,7 +14,7 @@ import {NgIf} from '@angular/common';
 })
 export class HeaderComponent {
     constructor(
-        protected authenticationService: AuthenticationService
+        protected userService: UserService
     ) {
     }
 }

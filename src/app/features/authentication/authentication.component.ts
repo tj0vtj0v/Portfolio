@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {AuthenticationService} from '../../shared/authentication.service';
 import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
 import {RouterLink} from '@angular/router';
+import {UserService} from '../../shared/api/user.service';
 
 @Component({
     selector: 'app-authentication',
@@ -20,11 +20,11 @@ export class AuthenticationComponent {
     protected statusMessage: string = '';
     protected passwordFilled = false
 
-    constructor(protected authenticationService: AuthenticationService) {
+    constructor(protected userService: UserService) {
     }
 
     ngOnInit() {
-        if (this.authenticationService.isLoggedIn()) {
+        if (this.userService.isLoggedIn()) {
             this.statusMessage = 'You are already logged in';
         } else {
             this.statusMessage = '';
@@ -33,14 +33,21 @@ export class AuthenticationComponent {
 
     onLogin() {
         if (!this.username || !this.password) {
-            alert('Please enter both username and password.');
+            this.statusMessage = 'Please enter both, username and password.';
             return;
         }
 
-        this.authenticationService.login(this.username, this.password).subscribe(
-            (result) => {
-                this.statusMessage = result
+        this.userService.login(this.username, this.password).subscribe(
+            () => {
+                this.statusMessage = 'Login successful';
                 this.passwordFilled = true;
+            },
+            (error) => {
+                if (error?.error?.detail) {
+                    `Login failed: ${error.error.detail}`
+                } else {
+                    'Login failed';
+                }
             }
         )
     }

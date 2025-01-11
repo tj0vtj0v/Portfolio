@@ -1,7 +1,7 @@
 <div class="login-container">
     <h2>Login</h2>
 
-    <form (ngSubmit)="onLogin()" *ngIf="!this.authenticationService.isLoggedIn()">
+    <form (ngSubmit)="onLogin()" *ngIf="!this.userService.isLoggedIn()">
         <div class="form-group">
             <label for="username">Username</label>
             <input [(ngModel)]="username" id="username" name="username" placeholder="Enter your username" required

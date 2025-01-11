@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ConnectorService} from './connector.service';
 import {Observable} from 'rxjs';
-import {AuthResponse} from '../datatype/AuthResponse';
 import {RegisterUser} from '../datatype/RegisterUser';
 import {ModifyUser} from '../datatype/ModifyUser';
 
@@ -15,8 +14,17 @@ export class UserService {
     ) {
     }
 
-    login(username: string, password: string): Observable<AuthResponse> {
+    login(username: string, password: string): Observable<void> {
         return this.connectorService.login(username, password)
+    }
+
+    isLoggedIn(): boolean {
+        return localStorage.getItem('token') !== null;
+    }
+
+    logout(): void {
+        localStorage.removeItem('token');
+        localStorage.removeItem('token-type');
     }
 
     register(user: RegisterUser): Observable<any> {
