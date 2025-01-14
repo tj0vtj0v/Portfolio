@@ -6,9 +6,10 @@
         rowSelection="single"
         [columnDefs]="columnDefs"
         [modules]="modules"
-        [domLayout]="'autoHeight'"
-    >
-    </ag-grid-angular>
+        [pagination]="true"
+        [paginationPageSize]="10"
+        [domLayout]="'normal'"
+    />
     <button (click)="onAdd()">Add Income</button>
 </div>
 
