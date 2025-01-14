@@ -6,6 +6,7 @@ import {TransferComponent} from './transfer/transfer.component';
 import {AccountComponent} from './account/account.component';
 import {CategoryComponent} from './category/category.component';
 import {IncomeComponent} from './income/income.component';
+import {AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
 
 @Component({
     selector: 'app-accounting',
@@ -23,6 +24,10 @@ import {IncomeComponent} from './income/income.component';
 })
 export class AccountingComponent {
     protected selectedOption: string = '';
+
+    constructor() {
+        ModuleRegistry.registerModules([AllCommunityModule]);
+    }
 
     protected selectOption(option: string) {
         this.selectedOption = option;

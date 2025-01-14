@@ -3,7 +3,7 @@ import {AgGridAngular} from 'ag-grid-angular';
 import {Transfer} from '../../../shared/datatype/Transfer';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
 
@@ -33,7 +33,6 @@ export class TransferComponent {
         {headerName: 'Source Account', field: 'source.name', sortable: true, filter: true},
         {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
     ];
-    protected modules: Module[] = [ClientSideRowModelModule]
 
     constructor(
         private accountingService: AccountingService

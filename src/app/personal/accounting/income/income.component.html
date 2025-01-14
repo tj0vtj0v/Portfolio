@@ -1,12 +1,12 @@
 <div *ngIf="!(income || addingIncome)">
     <ag-grid-angular
+        style="height: 550px"
         class="ag-theme-alpine"
         [rowData]="incomes"
         (rowClicked)="onRowClicked($event)"
-        rowSelection="single"
         [columnDefs]="columnDefs"
-        [modules]="modules"
         [pagination]="true"
+        [paginationPageSizeSelector]="[10, 20, 50]"
         [paginationPageSize]="10"
         [domLayout]="'normal'"
     />

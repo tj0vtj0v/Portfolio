@@ -5,7 +5,7 @@ import {CommonModule} from '@angular/common';
 import {Expense} from '../../../shared/datatype/Expense';
 import {Account} from '../../../shared/datatype/Account';
 import {Category} from '../../../shared/datatype/Category';
-import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
+import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 
 @Component({
@@ -36,11 +36,11 @@ export class ExpenseComponent {
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true},
         {headerName: 'Category', field: 'category.name', sortable: true, filter: true}
     ];
-    protected modules: Module[] = [ClientSideRowModelModule]
 
     constructor(
         private accountingService: AccountingService
     ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit() {

@@ -4,14 +4,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
 import {Income} from '../../../shared/datatype/Income';
 import {Account} from '../../../shared/datatype/Account';
-import {
-    AllCommunityModule,
-    ClientSideRowModelModule,
-    ColDef,
-    Module,
-    ModuleRegistry,
-    RowClickedEvent
-} from 'ag-grid-community';
+import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 
 @Component({
@@ -42,7 +35,6 @@ export class IncomeComponent {
         },
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true}
     ];
-    protected modules: Module[] = [ClientSideRowModelModule]
 
     constructor(
         private accountingService: AccountingService

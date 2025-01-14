@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Category} from '../../../shared/datatype/Category';
-import {ClientSideRowModelModule, ColDef, Module, RowClickedEvent} from 'ag-grid-community';
+import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
@@ -26,11 +26,11 @@ export class CategoryComponent {
     protected columnDefs: ColDef[] = [
         {headerName: 'Name', field: 'name', sortable: true, filter: true}
     ]
-    protected modules: Module[] = [ClientSideRowModelModule]
 
     constructor(
         private accountingService: AccountingService
     ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit(): void {
