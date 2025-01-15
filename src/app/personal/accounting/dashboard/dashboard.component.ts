@@ -71,10 +71,12 @@ export class DashboardComponent implements OnInit {
     }
 
     build_chart(): void {
-        const a = this.accounts.map(account => ({
-            name: account.name,
-            value: account.balance,
-        }));
+        const accounts = this.accounts.map(account => (
+            {
+                name: account.name,
+                value: account.balance,
+            }
+        ));
 
         this.balance_chart = {
             title: {
@@ -83,7 +85,10 @@ export class DashboardComponent implements OnInit {
             },
             tooltip: {
                 trigger: 'item',
-                formatter: '{a} <br/>{b}: {c} ({d}%)',
+                formatter: (params: any) => {
+                    const value = parseFloat(params.value).toFixed(2);
+                    return `${params.name}: ${value}€`;
+                },
             },
             legend: {
                 orient: 'vertical',
@@ -94,7 +99,7 @@ export class DashboardComponent implements OnInit {
                     name: 'Balance',
                     type: 'pie',
                     radius: '50%',
-                    data: a,
+                    data: accounts,
                     emphasis: {
                         itemStyle: {
                             shadowBlur: 10,
