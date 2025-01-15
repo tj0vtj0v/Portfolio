@@ -83,7 +83,10 @@ export class DashboardComponent implements OnInit {
             },
             tooltip: {
                 trigger: 'item',
-                formatter: '{a} <br/>{b}: {c} ({d}%)',
+                formatter: (params: any) => {
+                    const value = parseFloat(params.value).toFixed(2);
+                    return `${params.name}: ${value}€`;
+                },
             },
             legend: {
                 orient: 'vertical',
