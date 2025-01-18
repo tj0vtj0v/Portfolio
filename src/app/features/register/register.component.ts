@@ -32,7 +32,16 @@ export class RegisterComponent {
     ) {
     }
 
+    trim(): void {
+        this.user.first_name = this.user.first_name.trim();
+        this.user.last_name = this.user.last_name.trim();
+        this.user.email = this.user.email.trim().toLowerCase();
+        this.user.username = this.user.username.trim();
+    }
+
     onRegister(): void {
+        this.trim()
+
         if (!this.user.first_name || !this.user.last_name || !this.user.email ||
             !this.user.username || !this.user.password) {
             this.statusMessage = 'Please fill in all fields.';

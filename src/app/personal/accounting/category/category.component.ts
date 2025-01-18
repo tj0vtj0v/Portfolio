@@ -39,6 +39,10 @@ export class CategoryComponent {
         )
     }
 
+    trim(): void {
+        this.category!.name = this.category!.name.trim();
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -61,6 +65,8 @@ export class CategoryComponent {
     }
 
     onSave(): void {
+        this.trim()
+
         this.accountingService.add_category(this.category!).subscribe(
             () => this.reset(),
             (error) => {
@@ -74,6 +80,8 @@ export class CategoryComponent {
     }
 
     onUpdate(): void {
+        this.trim()
+
         this.accountingService.update_category(this.categoryName!, this.category!).subscribe(
             () => this.reset(),
             (error) => {

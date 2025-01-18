@@ -43,6 +43,10 @@ export class AccountComponent {
         );
     }
 
+    trim(): void {
+        this.account!.name = this.account!.name.trim();
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -66,6 +70,8 @@ export class AccountComponent {
     }
 
     onSave(): void {
+        this.trim()
+
         this.accountingService.add_account(this.account!).subscribe(
             () => this.reset(),
             (error) => {
@@ -79,6 +85,8 @@ export class AccountComponent {
     }
 
     onUpdate(): void {
+        this.trim()
+
         this.accountingService.update_account(this.accountName!, this.account!).subscribe(
             () => this.reset(),
             (error) => {

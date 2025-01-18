@@ -40,8 +40,16 @@ export class AccountComponent {
         )
     }
 
+    trim(): void {
+        this.user.first_name = this.user.first_name.trim();
+        this.user.last_name = this.user.last_name.trim();
+        this.user.email = this.user.email.trim().toLowerCase();
+    }
+
 
     onUpdate(): void {
+        this.trim()
+
         if (!this.user.first_name || !this.user.last_name || !this.user.email) {
             this.statusMessage = 'Please do not remove values.';
             return;

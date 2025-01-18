@@ -52,6 +52,10 @@ export class IncomeComponent {
         )
     }
 
+    trim(): void {
+        this.income!.reason = this.income!.reason.trim();
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -83,6 +87,8 @@ export class IncomeComponent {
     }
 
     onSave(): void {
+        this.trim()
+
         if (this.income!.account == undefined) {
             this.statusMessage = 'The income must have an account';
             return;
@@ -101,6 +107,8 @@ export class IncomeComponent {
     }
 
     onUpdate(): void {
+        this.trim()
+
         this.accountingService.update_income(this.income!).subscribe(
             () => this.reset(),
             (error) => {

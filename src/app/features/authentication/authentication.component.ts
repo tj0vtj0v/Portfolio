@@ -31,7 +31,13 @@ export class AuthenticationComponent {
         }
     }
 
+    trim(): void {
+        this.username = this.username.trim();
+    }
+
     onLogin() {
+        this.trim()
+
         if (!this.username || !this.password) {
             this.statusMessage = 'Please enter both, username and password.';
             return;

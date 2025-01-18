@@ -57,6 +57,10 @@ export class ExpenseComponent {
         )
     }
 
+    trim(): void {
+        this.expense!.reason = this.expense!.reason.trim();
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -91,6 +95,8 @@ export class ExpenseComponent {
     }
 
     onSave(): void {
+        this.trim()
+
         if (this.expense!.account == undefined || this.expense!.category == undefined) {
             this.statusMessage = 'The expense must have an account and a category'
             return;
@@ -109,6 +115,8 @@ export class ExpenseComponent {
     }
 
     onUpdate(): void {
+        this.trim()
+
         if (this.expense!.amount == 0) {
             this.statusMessage = 'The Expense must not have an amount equal to 0';
             return;
