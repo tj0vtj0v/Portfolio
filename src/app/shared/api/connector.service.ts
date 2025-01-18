@@ -21,7 +21,7 @@ export class ConnectorService {
         const body = new HttpParams().set('username', username).set('password', password);
         const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
 
-        return this.http.post<AuthResponse>(
+        return this.http.put<AuthResponse>(
             `${this.url}login`, body.toString(),
             {headers, withCredentials: true}
         ).pipe(
@@ -123,7 +123,7 @@ export class ConnectorService {
 
     private refresh(): Promise<void> {
         return firstValueFrom(
-            this.http.post<AuthResponse>(
+            this.http.put<AuthResponse>(
                 `${this.url}login/refresh`, {},
                 {headers: this.buildSendHeader(), withCredentials: true}
             ).pipe(
