@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {catchError, EMPTY, firstValueFrom, from, map, Observable, switchMap, take} from 'rxjs';
 import {AuthResponse} from '../datatype/AuthResponse';
 import {Router} from '@angular/router';
+import {CookieService} from 'ngx-cookie-service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +14,7 @@ export class ConnectorService {
 
     constructor(
         private http: HttpClient,
+        private cookieService: CookieService,
         private router: Router
     ) {
     }
@@ -161,6 +163,7 @@ export class ConnectorService {
     private logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('token-type');
+        this.cookieService.delete('refresh-token');
         this.router.navigate(['/login']).then();
     }
 
