@@ -26,6 +26,10 @@ export class AccountingService {
         return this.connectorService.get('accounting/accounts');
     }
 
+    public get_account_history(account_name: string): Observable<any> {
+        return this.connectorService.get(`accounting/accounts/${account_name}/history`);
+    }
+
     public update_account(account_name: string, account: Account): Observable<any> {
         return this.connectorService.update(`accounting/accounts/${account_name}`, account);
     }

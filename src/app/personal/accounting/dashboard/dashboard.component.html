@@ -2,11 +2,15 @@
     <h1>Dashboard</h1>
     <div>
         <label for="start">Start Date:</label>
-        <input [(ngModel)]="startDate" (change)="update()" id="start" name="start" required type="date"/>
+        <input (change)="update()" [(ngModel)]="startDate" id="start" name="start" required type="date"/>
 
         <label for="end">End Date:</label>
-        <input [(ngModel)]="endDate" (change)="update()" id="end" name="end" required type="date"/>
+        <input (change)="update()" [(ngModel)]="endDate" id="end" name="end" required type="date"/>
     </div>
 
-    <div echarts [options]="balance_chart" class="chart"></div>
+
+    <button (click)="logx()" mat-button>Log X</button>
+    <div (chartInit)="balanceLegendListener($event)" [options]="balance_chart" class="chart" echarts></div>
+    <div (chartInit)="categoryLegendListener($event)" [options]="category_expense_chart" class="chart" echarts></div>
+    <div [options]="history_chart" class="chart" echarts></div>
 </div>
