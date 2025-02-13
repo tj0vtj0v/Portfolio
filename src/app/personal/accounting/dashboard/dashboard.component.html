@@ -10,7 +10,7 @@
 
 
     <button (click)="logx()" mat-button>Log X</button>
-    <div (chartInit)="balanceLegendListener($event)" [options]="balance_chart" class="chart" echarts></div>
-    <div (chartInit)="categoryLegendListener($event)" [options]="category_expense_chart" class="chart" echarts></div>
-    <div [options]="history_chart" class="chart" echarts></div>
+    <div [options]="balance_chart" (chartInit)="balanceLegendListener($event)" class="chart" echarts></div>
+    <div [options]="category_expense_chart" (chartInit)="categoryLegendListener($event)" class="chart" echarts></div>
+    <!--<div [options]="history_chart" class="chart" echarts></div>-->
 </div>
