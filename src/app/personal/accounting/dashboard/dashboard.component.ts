@@ -47,7 +47,7 @@ export class DashboardComponent implements OnInit {
     //filter
     protected selectedAccounts: Account[] = [];
     protected selectedCategories: Category[] = [];
-    protected startDate?: string;
+    protected startDate?: string = new Date(Date.UTC(new Date().getFullYear(), 0, 1)).toISOString().split('T')[0];
     protected endDate?: string;
     private histories: Map<string, BalanceHistory[]> = new Map();
 
@@ -55,12 +55,14 @@ export class DashboardComponent implements OnInit {
     protected filteredHistories: Map<string, BalanceHistory[]> = new Map();
     protected filteredExpenses: Expense[] = [];
     protected categoryExpenseMap: Map<string, number> = new Map();
+    protected accountIncomeMap: Map<string, number> = new Map();
     protected filteredIncomes: Income[] = [];
     protected filteredTransfers: Transfer[] = [];
 
     //visuals
     protected balance_chart: EChartsCoreOption = {};
     protected category_expense_chart: EChartsCoreOption = {};
+    protected account_income_chart: EChartsCoreOption = {};
     protected history_chart: EChartsCoreOption = {};
 
     constructor(
@@ -157,7 +159,7 @@ export class DashboardComponent implements OnInit {
                 selectedNames.includes(account.name)
             );
 
-            this.filterData();
+            this.update();
         });
     }
 
@@ -215,8 +217,53 @@ export class DashboardComponent implements OnInit {
                 selectedNames.includes(category.name)
             );
 
-            this.filterData();
+            this.update();
         });
+    }
+
+    private build_account_income_chart(): void {
+        const totalIncome = Array.from(this.accountIncomeMap.values()).reduce((sum, income) => sum + income, 0);
+        const refinedAccounts = Array.from(this.accountIncomeMap.entries()).map(entry => (
+            {
+                name: entry[0],
+                value: entry[1]
+            }
+        ));
+
+        this.account_income_chart = {
+            title: {
+                text: `Income by Account - Total: ${totalIncome.toFixed(2)}€`,
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: (params: any) => {
+                    const percentage = parseFloat(params.percent).toFixed(1);
+                    const value = parseFloat(params.value).toFixed(2);
+                    return `${params.name}: ${value}€<br>${percentage}%`;
+                },
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                selectedMode: 'multiple',
+            },
+            series: [
+                {
+                    name: 'Account Incomes',
+                    type: 'pie',
+                    radius: '50%',
+                    data: refinedAccounts,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                },
+            ],
+        };
     }
 
     private build_history_chart(): void {
@@ -250,8 +297,6 @@ export class DashboardComponent implements OnInit {
                     data: data.map(entry => entry.balance)
                 };
             });
-
-        console.log(refinedHistories)
 
         this.history_chart = {
             title: {
@@ -288,6 +333,8 @@ export class DashboardComponent implements OnInit {
         this.filterData();
         this.build_balance_chart();
         this.build_category_expense_chart();
+        this.build_account_income_chart();
+        this.build_history_chart();
     }
 
     private filterData(): void {
@@ -328,10 +375,18 @@ export class DashboardComponent implements OnInit {
             return false
         });
 
+        this.accountIncomeMap = new Map();
         this.filteredIncomes = this.incomes.filter(income => {
             const isAfterStart = this.startDate ? income.date >= this.startDate : true;
             const isBeforeEnd = this.endDate ? income.date <= this.endDate : true;
             const isInAccounts = this.selectedAccounts.some(account => account.id === income.account!.id);
+
+            if (isAfterStart && isBeforeEnd && isInAccounts) {
+                const accountName = income.account!.name;
+                const currentIncome = this.accountIncomeMap.get(accountName) || 0;
+                this.accountIncomeMap.set(accountName, currentIncome + income.amount);
+            }
+
             return isAfterStart && isBeforeEnd && isInAccounts;
         });
 
@@ -342,8 +397,5 @@ export class DashboardComponent implements OnInit {
             const targetIsInAccounts = this.selectedAccounts.some(account => account.id === transfer.target!.id);
             return isAfterStart && isBeforeEnd && (sourceIsInAccounts || targetIsInAccounts);
         });
-
-
-        this.build_history_chart();
     }
 }
