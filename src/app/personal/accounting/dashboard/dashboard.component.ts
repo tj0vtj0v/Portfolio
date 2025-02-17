@@ -50,9 +50,10 @@ export class DashboardComponent implements OnInit {
     protected startDate?: string = new Date(Date.UTC(new Date().getFullYear(), 0, 1)).toISOString().split('T')[0];
     protected endDate?: string;
     private histories: Map<string, BalanceHistory[]> = new Map();
-
     //visual data
+
     protected filteredHistories: Map<string, BalanceHistory[]> = new Map();
+    private minMovementDate?: string;
     protected filteredExpenses: Expense[] = [];
     protected categoryExpenseMap: Map<string, number> = new Map();
     protected accountIncomeMap: Map<string, number> = new Map();
@@ -150,19 +151,6 @@ export class DashboardComponent implements OnInit {
         };
     }
 
-    protected balanceLegendListener(ec: any) {
-        ec.on('legendselectchanged', (params: any) => {
-            const selectedNames = Object.keys(params.selected)
-                .filter(accountName => params.selected[accountName]);
-
-            this.selectedAccounts = this.accounts.filter(account =>
-                selectedNames.includes(account.name)
-            );
-
-            this.update();
-        });
-    }
-
     private build_category_expense_chart(): void {
         const totalExpenses = Array.from(this.categoryExpenseMap.values()).reduce((sum, expense) => sum + expense, 0);
         const refinedCategories = Array.from(this.categoryExpenseMap.entries()).map(entry => (
@@ -206,19 +194,6 @@ export class DashboardComponent implements OnInit {
                 },
             ],
         };
-    }
-
-    protected categoryLegendListener(ec: any) {
-        ec.on('legendselectchanged', (params: any) => {
-            const selectedNames = Object.keys(params.selected)
-                .filter(categoryName => params.selected[categoryName]);
-
-            this.selectedCategories = this.categories.filter(category =>
-                selectedNames.includes(category.name)
-            );
-
-            this.update();
-        });
     }
 
     private build_account_income_chart(): void {
@@ -267,26 +242,23 @@ export class DashboardComponent implements OnInit {
     }
 
     private build_history_chart(): void {
-        const dates = Array.from(new Set([...this.filteredHistories.values()]
-            .flatMap(history => history.map(entry => entry.date))
-            .filter(date => !this.startDate || date >= this.startDate))
-        ).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+        const dates = this.getDateRange(this.startDate ?? this.minMovementDate!, this.endDate ?? new Date().toISOString().split('T')[0]);
 
         const refinedHistories = Array.from(this.filteredHistories)
             .map(([accountName, history]) => {
                 const historyMap = new Map(history.map(entry => [entry.date, entry.balance]));
 
                 let balance: number;
-                if (!this.startDate && new Date(historyMap.entries().next().value![0]) > new Date("2000-01-01")) {
-                    balance = historyMap.entries().next().value![1];
+                if (this.startDate && (new Date(history[0].date) < new Date(this.startDate))) {
+                    balance = history[0].balance
                 }
 
                 const data = dates.map(date => {
-                    if (historyMap.has(date) && this.startDate ? this.startDate <= date : true) {
+                    if (historyMap.has(date)) {
                         balance = historyMap.get(date)!;
                     }
 
-                    return {date, balance};
+                    return balance;
                 });
 
                 return {
@@ -294,7 +266,7 @@ export class DashboardComponent implements OnInit {
                     type: 'line',
                     showSymbol: false,
                     smooth: true,
-                    data: data.map(entry => entry.balance)
+                    data: data
                 };
             });
 
@@ -325,8 +297,16 @@ export class DashboardComponent implements OnInit {
         };
     }
 
-    logx() {
-        console.log(this.selectedAccounts);
+    private getDateRange(startDate: string, endDate: string): string[] {
+        const dates: string[] = [];
+        let currentDate = new Date(startDate);
+
+        while (currentDate <= new Date(endDate)) {
+            dates.push(currentDate.toISOString().split('T')[0]);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        return dates;
     }
 
     protected update(): void {
@@ -338,6 +318,10 @@ export class DashboardComponent implements OnInit {
     }
 
     private filterData(): void {
+        this.minMovementDate = undefined;
+        this.startDate = this.startDate === "" ? undefined : this.startDate;
+        this.endDate = this.endDate === "" ? undefined : this.endDate;
+
         this.filteredHistories = new Map();
         this.histories.forEach((history, name) => {
             let earlier: BalanceHistory | undefined;
@@ -349,6 +333,12 @@ export class DashboardComponent implements OnInit {
                 }
                 return isAfterStart && isBeforeEnd;
             });
+
+            if (!this.startDate && filteredHistory.length > 0) {
+                this.minMovementDate = !this.minMovementDate || new Date(filteredHistory[0].date) < new Date(this.minMovementDate)
+                    ? filteredHistory[0].date
+                    : this.minMovementDate;
+            }
 
             const isInAccounts = this.selectedAccounts.some(account => account.name === name)
             if (filteredHistory.length > 0 && isInAccounts && earlier) {
