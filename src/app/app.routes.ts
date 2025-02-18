@@ -12,6 +12,7 @@ import {ImprintComponent} from './features/imprint/imprint.component';
 import {RegisterComponent} from './features/register/register.component';
 import {AccountComponent} from './features/account/account.component';
 import {SettingsComponent} from './features/settings/settings.component';
+import {FuelComponent} from './personal/fuel/fuel.component';
 
 export const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -24,8 +25,9 @@ export const routes: Routes = [
     {path: 'register', component: RegisterComponent},
     {path: 'settings', component: SettingsComponent},
     {path: 'account', component: AccountComponent},
-    {path: 'banking', component: BankingComponent},
     {path: "accounting", component: AccountingComponent},
+    {path: "fuel", component: FuelComponent},
+    {path: 'banking', component: BankingComponent},
     {path: "proximity", component: ProximityComponent},
     {path: '**', component: PageNotFoundComponent}
 ];
