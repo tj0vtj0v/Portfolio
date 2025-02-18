@@ -28,7 +28,7 @@ export class ExpenseComponent {
     protected statusMessage = '';
 
     protected columnDefs: ColDef[] = [
-        {headerName: 'Date', field: 'date', sortable: true, filter: 'agDateColumnFilter'},
+        {headerName: 'Date', field: 'date', sortable: true, filter: true},
         {headerName: 'Reason', field: 'reason', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
