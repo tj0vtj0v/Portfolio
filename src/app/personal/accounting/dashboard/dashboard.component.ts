@@ -63,6 +63,7 @@ export class DashboardComponent implements OnInit {
     protected category_expense_chart: EChartsCoreOption = {};
     protected account_income_chart: EChartsCoreOption = {};
     protected history_chart: EChartsCoreOption = {};
+    protected transfer_chart: EChartsCoreOption = {};
 
     constructor(
         private accountingService: AccountingService
@@ -100,6 +101,15 @@ export class DashboardComponent implements OnInit {
                 this.update();
             });
         });
+    }
+
+    protected update(): void {
+        this.filterData();
+        this.build_balance_chart();
+        this.build_category_expense_chart();
+        this.build_account_income_chart();
+        this.build_history_chart();
+        this.build_transfer_chart()
     }
 
     private build_balance_chart(): void {
@@ -295,6 +305,57 @@ export class DashboardComponent implements OnInit {
         };
     }
 
+    private build_transfer_chart(): void {
+        const refinedTransfers = this.filteredTransfers.map(transaction => {
+            return {
+                source: `${transaction.source!.name} `,
+                target: transaction.target!.name,
+                value: transaction.amount
+            };
+        });
+
+        this.transfer_chart = {
+            title: {
+                text: 'Transaction Flows Between Accounts',
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: (params: any) => {
+                    return `${params.data.source.split('_')[0] || ''} → ${params.data.target.split('_')[0] || ''}: ${parseFloat(params.data.value).toFixed(2)}€`;
+                },
+            },
+            series: [
+                {
+                    type: 'sankey',
+                    data: this.getNodesFromTransactions(refinedTransfers),
+                    links: refinedTransfers,
+                    label: {
+                        show: true,
+                        position: 'right', //(data): string => data.name.split('_')[1] === 'in' ? 'right' : 'left',
+                        formatter: '{b}',
+                    },
+                    emphasis: {
+                        focus: 'adjacency',
+                    },
+                },
+            ],
+        };
+    };
+
+    private getNodesFromTransactions(transactions: { source: string, target: string, value: number }[]): any[] {
+        const nodesSet = new Set<string>();
+
+        transactions.forEach(tx => {
+            nodesSet.add(tx.source);
+            nodesSet.add(tx.target);
+        });
+
+        return Array.from(nodesSet).map(name => ({
+            name,
+        }));
+    }
+
     private getDateRange(startDate: string, endDate: string): string[] {
         const dates: string[] = [];
         let currentDate = new Date(startDate);
@@ -305,14 +366,6 @@ export class DashboardComponent implements OnInit {
         }
 
         return dates;
-    }
-
-    protected update(): void {
-        this.filterData();
-        this.build_balance_chart();
-        this.build_category_expense_chart();
-        this.build_account_income_chart();
-        this.build_history_chart();
     }
 
     private filterData(): void {
