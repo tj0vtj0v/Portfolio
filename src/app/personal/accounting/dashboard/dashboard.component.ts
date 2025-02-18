@@ -341,19 +341,6 @@ export class DashboardComponent implements OnInit {
                 },
             ],
         };
-    };
-
-    private getNodesFromTransactions(transactions: { source: string, target: string, value: number }[]): any[] {
-        const nodesSet = new Set<string>();
-
-        transactions.forEach(tx => {
-            nodesSet.add(tx.source);
-            nodesSet.add(tx.target);
-        });
-
-        return Array.from(nodesSet).map(name => ({
-            name,
-        }));
     }
 
     private getDateRange(startDate: string, endDate: string): string[] {
@@ -366,6 +353,19 @@ export class DashboardComponent implements OnInit {
         }
 
         return dates;
+    }
+
+    private getNodesFromTransactions(transactions: { source: string, target: string, value: number }[]): any[] {
+        const nodesSet = new Set<string>();
+
+        transactions.forEach(tx => {
+            nodesSet.add(tx.source);
+            nodesSet.add(tx.target);
+        });
+
+        return Array.from(nodesSet).map(name => ({
+            name,
+        }));
     }
 
     private filterData(): void {
