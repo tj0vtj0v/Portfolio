@@ -123,7 +123,7 @@ export class DashboardComponent implements OnInit {
 
         this.balance_chart = {
             title: {
-                text: `Account Liquidity - Total: ${totalBalance}€`,
+                text: `Account Liquidity - Total: ${totalBalance.toFixed(2)}€`,
                 left: 'center',
             },
             tooltip: {
