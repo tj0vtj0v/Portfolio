@@ -6,6 +6,7 @@ import {Income} from '../../../shared/datatype/Income';
 import {Account} from '../../../shared/datatype/Account';
 import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
+import {forkJoin} from 'rxjs';
 
 @Component({
     selector: 'app-income',
@@ -36,6 +37,24 @@ export class IncomeComponent {
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true}
     ];
 
+    onGridReady(params: any) {
+        params.api.sizeColumnsToFit();
+        window.addEventListener('resize', () => {
+            params.api.sizeColumnsToFit();
+        });
+
+        const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
+
+        params.api.setFilterModel({
+            date: {
+                type: 'greaterThan',
+                dateFrom: startOfMonth.toISOString().split('T')[0]
+            }
+        })
+
+        params.api.onFilterChanged();
+    }
+
     constructor(
         private accountingService: AccountingService
     ) {
@@ -43,13 +62,13 @@ export class IncomeComponent {
     }
 
     ngOnInit() {
-        this.accountingService.get_incomes().subscribe(
-            (incomes: Income[]) => this.incomes = incomes
-        )
-
-        this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => this.accounts = accounts
-        )
+        forkJoin([
+            this.accountingService.get_incomes(),
+            this.accountingService.get_accounts()
+        ]).subscribe(([incomes, accounts]) => {
+            this.incomes = incomes;
+            this.accounts = accounts;
+        });
     }
 
     trim(): void {

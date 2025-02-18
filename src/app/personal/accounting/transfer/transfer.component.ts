@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
 import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
+import {forkJoin} from 'rxjs';
 
 @Component({
     selector: 'app-transfer',
@@ -34,19 +35,37 @@ export class TransferComponent {
         {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
     ];
 
+    onGridReady(params: any) {
+        params.api.sizeColumnsToFit();
+        window.addEventListener('resize', () => {
+            params.api.sizeColumnsToFit();
+        });
+
+        const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
+
+        params.api.setFilterModel({
+            date: {
+                type: 'greaterThan',
+                dateFrom: startOfMonth.toISOString().split('T')[0]
+            }
+        })
+
+        params.api.onFilterChanged();
+    }
+
     constructor(
         private accountingService: AccountingService
     ) {
     }
 
     ngOnInit(): void {
-        this.accountingService.get_transfers().subscribe(
-            (transfers: Transfer[]) => this.transfers = transfers
-        )
-
-        this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => this.accounts = accounts
-        )
+        forkJoin([
+            this.accountingService.get_transfers(),
+            this.accountingService.get_accounts()
+        ]).subscribe(([transfers, accounts]) => {
+            this.transfers = transfers;
+            this.accounts = accounts;
+        });
     }
 
     reset(): void {

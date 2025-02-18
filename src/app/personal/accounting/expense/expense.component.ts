@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {Expense} from '../../../shared/datatype/Expense';
 import {Account} from '../../../shared/datatype/Account';
 import {Category} from '../../../shared/datatype/Category';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {AllCommunityModule, ColDef, IFilterComp, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
+import {forkJoin} from 'rxjs';
 
 @Component({
     selector: 'app-expense',
@@ -27,7 +28,7 @@ export class ExpenseComponent {
     protected statusMessage = '';
 
     protected columnDefs: ColDef[] = [
-        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Date', field: 'date', sortable: true, filter: 'agDateColumnFilter'},
         {headerName: 'Reason', field: 'reason', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
@@ -37,6 +38,24 @@ export class ExpenseComponent {
         {headerName: 'Category', field: 'category.name', sortable: true, filter: true}
     ];
 
+    onGridReady(params: any) {
+        params.api.sizeColumnsToFit();
+        window.addEventListener('resize', () => {
+            params.api.sizeColumnsToFit();
+        });
+
+        const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
+
+        params.api.setFilterModel({
+            date: {
+                type: 'greaterThan',
+                dateFrom: startOfMonth.toISOString().split('T')[0]
+            }
+        })
+
+        params.api.onFilterChanged();
+    }
+
     constructor(
         private accountingService: AccountingService
     ) {
@@ -44,17 +63,15 @@ export class ExpenseComponent {
     }
 
     ngOnInit() {
-        this.accountingService.get_expenses().subscribe(
-            (expenses: Expense[]) => this.expenses = expenses
-        )
-
-        this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => this.accounts = accounts
-        )
-
-        this.accountingService.get_categories().subscribe(
-            (categories: Category[]) => this.categories = categories
-        )
+        forkJoin([
+            this.accountingService.get_expenses(),
+            this.accountingService.get_accounts(),
+            this.accountingService.get_categories()
+        ]).subscribe(([expenses, accounts, categories]) => {
+            this.expenses = expenses;
+            this.accounts = accounts;
+            this.categories = categories;
+        });
     }
 
     trim(): void {

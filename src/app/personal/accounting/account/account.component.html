@@ -1,6 +1,6 @@
 <div *ngIf="!(account || addingAccount)">
     <ag-grid-angular
-        style="height: 550px"
+        style="width: 100%; height: 100%;"
         class="ag-theme-alpine"
         [rowData]="accounts"
         (rowClicked)="onRowClicked($event)"
@@ -8,7 +8,8 @@
         [pagination]="true"
         [paginationPageSizeSelector]="[10, 20, 50]"
         [paginationPageSize]="10"
-        [domLayout]="'normal'"
+        [domLayout]="'autoHeight'"
+        (gridReady)="onGridReady($event)"
     />
     <button (click)="onAdd()">Add Account</button>
 </div>

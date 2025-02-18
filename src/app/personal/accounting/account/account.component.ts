@@ -31,6 +31,13 @@ export class AccountComponent {
         }
     ];
 
+    onGridReady(params: any) {
+        params.api.sizeColumnsToFit();
+        window.addEventListener('resize', () => {
+            params.api.sizeColumnsToFit();
+        });
+    }
+
     constructor(
         private accountingService: AccountingService
     ) {

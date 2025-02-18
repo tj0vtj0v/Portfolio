@@ -332,7 +332,7 @@ export class DashboardComponent implements OnInit {
                     links: refinedTransfers,
                     label: {
                         show: true,
-                        position: 'right', //(data): string => data.name.split('_')[1] === 'in' ? 'right' : 'left',
+                        position: 'right',
                         formatter: '{b}',
                     },
                     emphasis: {
