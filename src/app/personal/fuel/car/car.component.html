@@ -1,0 +1,65 @@
+<div *ngIf="!(car || addingCar)">
+    <ag-grid-angular
+        (gridReady)="onGridReady($event)"
+        (rowClicked)="onRowClicked($event)"
+        [columnDefs]="columnDefs"
+        [domLayout]="'autoHeight'"
+        [paginationPageSizeSelector]="[10, 20, 50]"
+        [paginationPageSize]="10"
+        [pagination]="true"
+        [rowData]="cars"
+        class="ag-theme-alpine"
+        style="width: 100%; height: 100%;"
+    />
+    <button (click)="onAdd()">Add Car</button>
+</div>
+
+<div *ngIf="addingCar">
+    <h3>Add Car</h3>
+    <form (ngSubmit)="onSave()">
+        <div>
+            <label for="add_name">Name</label>
+            <input [(ngModel)]="car!.name" id="add_name" name="add_name" placeholder="Enter the car name" required
+                   type="text"/>
+        </div>
+        <div>
+            <label for="add_start">Start usage</label>
+            <input [(ngModel)]="car!.usage_start" id="add_start" name="add_start" required type="date"/>
+        </div>
+        <div>
+            <label for="add_end">End usage</label>
+            <input [(ngModel)]="car!.usage_end" id="add_end" name="add_end" type="date"/>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>
+
+<div *ngIf="!addingCar && car">
+    <h3>Edit Car: {{ carName }}</h3>
+    <form (ngSubmit)="onUpdate()">
+        <div>
+            <label for="name">Name</label>
+            <input [(ngModel)]="car!.name" id="name" name="name" required type="text"/>
+        </div>
+        <div>
+            <label for="start">Start usage</label>
+            <input [(ngModel)]="car!.usage_start" id="start" name="start" required type="date"/>
+        </div>
+        <div>
+            <label for="end">End usage</label>
+            <input [(ngModel)]="car!.usage_end" id="end" name="end" type="date"/>
+        </div>
+
+        <button type="submit">Update</button>
+    </form>
+
+    <button (click)="reset()">Back</button>
+    <button (click)="onDelete()">Delete Car</button>
+
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+</div>

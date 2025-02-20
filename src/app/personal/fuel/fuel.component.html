@@ -1,1 +1,16 @@
-<p>fuel works!</p>
+<div class="container">
+    <div class="sidebar">
+
+        <button (click)="selectOption('')">Dashboard</button>
+        <button (click)="selectOption('Cars')">Cars</button>
+        <button (click)="selectOption('Refuels')">Refuels</button>
+
+    </div>
+    <div class="content">
+        <div [ngSwitch]="selectedOption">
+            <app-car *ngSwitchCase="'Cars'"></app-car>
+            <app-refuel *ngSwitchCase="'Refuels'"></app-refuel>
+            <app-dashboard *ngSwitchDefault></app-dashboard>
+        </div>
+    </div>
+</div>
