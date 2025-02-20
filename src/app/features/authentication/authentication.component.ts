@@ -50,9 +50,9 @@ export class AuthenticationComponent {
             },
             (error) => {
                 if (error?.error?.detail) {
-                    `Login failed: ${error.error.detail}`
+                    this.statusMessage = `Login failed: ${error.error.detail}`
                 } else {
-                    'Login failed';
+                    this.statusMessage = 'Login failed';
                 }
             }
         )
