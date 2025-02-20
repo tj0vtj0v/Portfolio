@@ -38,6 +38,12 @@ export class ExpenseComponent {
         {headerName: 'Category', field: 'category.name', sortable: true, filter: true}
     ];
 
+    constructor(
+        private accountingService: AccountingService
+    ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
+    }
+
     onGridReady(params: any) {
         params.api.sizeColumnsToFit();
         window.addEventListener('resize', () => {
@@ -54,12 +60,6 @@ export class ExpenseComponent {
         })
 
         params.api.onFilterChanged();
-    }
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit() {

@@ -1,15 +1,15 @@
 <div *ngIf="!(income || addingIncome)">
     <ag-grid-angular
-        style="width: 100%; height: 100%;"
-        class="ag-theme-alpine"
-        [rowData]="incomes"
+        (gridReady)="onGridReady($event)"
         (rowClicked)="onRowClicked($event)"
         [columnDefs]="columnDefs"
-        [pagination]="true"
+        [domLayout]="'autoHeight'"
         [paginationPageSizeSelector]="[10, 20, 50]"
         [paginationPageSize]="10"
-        [domLayout]="'autoHeight'"
-        (gridReady)="onGridReady($event)"
+        [pagination]="true"
+        [rowData]="incomes"
+        class="ag-theme-alpine"
+        style="width: 100%; height: 100%;"
     />
     <button (click)="onAdd()">Add Income</button>
 </div>

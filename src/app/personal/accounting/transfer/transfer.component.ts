@@ -35,6 +35,11 @@ export class TransferComponent {
         {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
     ];
 
+    constructor(
+        private accountingService: AccountingService
+    ) {
+    }
+
     onGridReady(params: any) {
         params.api.sizeColumnsToFit();
         window.addEventListener('resize', () => {
@@ -51,11 +56,6 @@ export class TransferComponent {
         })
 
         params.api.onFilterChanged();
-    }
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
     }
 
     ngOnInit(): void {

@@ -37,6 +37,12 @@ export class IncomeComponent {
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true}
     ];
 
+    constructor(
+        private accountingService: AccountingService
+    ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
+    }
+
     onGridReady(params: any) {
         params.api.sizeColumnsToFit();
         window.addEventListener('resize', () => {
@@ -53,12 +59,6 @@ export class IncomeComponent {
         })
 
         params.api.onFilterChanged();
-    }
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit() {

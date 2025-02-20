@@ -31,17 +31,17 @@ export class AccountComponent {
         }
     ];
 
+    constructor(
+        private accountingService: AccountingService
+    ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
+    }
+
     onGridReady(params: any) {
         params.api.sizeColumnsToFit();
         window.addEventListener('resize', () => {
             params.api.sizeColumnsToFit();
         });
-    }
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit(): void {

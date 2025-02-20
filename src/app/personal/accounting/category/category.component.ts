@@ -27,17 +27,17 @@ export class CategoryComponent {
         {headerName: 'Name', field: 'name', sortable: true, filter: true}
     ]
 
+    constructor(
+        private accountingService: AccountingService
+    ) {
+        ModuleRegistry.registerModules([AllCommunityModule]);
+    }
+
     onGridReady(params: any) {
         params.api.sizeColumnsToFit();
         window.addEventListener('resize', () => {
             params.api.sizeColumnsToFit();
         });
-    }
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
     ngOnInit(): void {
