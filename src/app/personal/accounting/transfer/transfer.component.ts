@@ -29,7 +29,7 @@ export class TransferComponent {
         {headerName: 'Date', field: 'date', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
-            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+            valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         },
         {headerName: 'Source Account', field: 'source.name', sortable: true, filter: true},
         {headerName: 'Target Account', field: 'target.name', sortable: true, filter: true},
@@ -89,7 +89,7 @@ export class TransferComponent {
         }
 
         if (this.transfer!.amount <= 0) {
-            this.statusMessage = 'The transfer must not have an amount less or equal to 0';
+            this.statusMessage = 'The transfer must be greater than 0';
             return false;
         }
 

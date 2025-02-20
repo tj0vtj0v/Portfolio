@@ -32,7 +32,7 @@ export class IncomeComponent {
         {headerName: 'Reason', field: 'reason', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
-            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+            valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         },
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true}
     ];
@@ -94,7 +94,7 @@ export class IncomeComponent {
         }
 
         if (this.income!.amount <= 0) {
-            this.statusMessage = 'The income must not have an amount less or equal to 0';
+            this.statusMessage = 'The income must be greater than 0';
             return false;
         }
 

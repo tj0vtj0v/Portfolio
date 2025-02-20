@@ -27,7 +27,7 @@ export class AccountComponent {
         {headerName: 'Account', field: 'name', sortable: true, filter: true},
         {
             headerName: 'Balance', field: 'balance', sortable: true, filter: true,
-            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+            valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         }
     ];
 

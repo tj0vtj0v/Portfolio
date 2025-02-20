@@ -1,11 +1,11 @@
 import {Component} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Expense} from '../../../shared/datatype/Expense';
 import {Account} from '../../../shared/datatype/Account';
 import {Category} from '../../../shared/datatype/Category';
-import {AllCommunityModule, ColDef, IFilterComp, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {forkJoin} from 'rxjs';
 
@@ -32,7 +32,7 @@ export class ExpenseComponent {
         {headerName: 'Reason', field: 'reason', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
-            valueFormatter: (params) => `${params.value?.toFixed(2)}€`
+            valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         },
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true},
         {headerName: 'Category', field: 'category.name', sortable: true, filter: true}
@@ -101,7 +101,7 @@ export class ExpenseComponent {
         }
 
         if (this.expense!.amount <= 0) {
-            this.statusMessage = 'The expense must not have an amount less or equal to 0';
+            this.statusMessage = 'The expense must be greater than 0';
             return false;
         }
 
