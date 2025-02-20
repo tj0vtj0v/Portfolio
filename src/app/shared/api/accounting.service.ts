@@ -13,7 +13,7 @@ import {Income} from '../datatype/Income';
 export class AccountingService {
 
     constructor(
-        private connectorService: ConnectorService,
+        private connectorService: ConnectorService
     ) {
     }
 

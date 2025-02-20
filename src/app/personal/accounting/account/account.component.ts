@@ -52,10 +52,23 @@ export class AccountComponent {
 
     trim(): void {
         this.account!.name = this.account!.name.trim();
+
+        if (this.account!.balance == null) {
+            this.account!.balance = 0
+        }
+    }
+
+    check(): boolean {
+        if (this.account!.name === '') {
+            this.statusMessage = 'The account must have a name';
+            return false;
+        }
+
+        return true
     }
 
     reset(): void {
-        this.ngOnInit()
+        this.ngOnInit();
 
         this.account = undefined;
         this.accountName = undefined;
@@ -69,15 +82,17 @@ export class AccountComponent {
     }
 
     onAdd(): void {
-        this.addingAccount = true
+        this.addingAccount = true;
         this.account = {
             name: '',
             balance: 0
-        }
+        };
     }
 
     onSave(): void {
-        this.trim()
+        this.trim();
+        if (!this.check())
+            return;
 
         this.accountingService.add_account(this.account!).subscribe(
             () => this.reset(),
@@ -92,7 +107,9 @@ export class AccountComponent {
     }
 
     onUpdate(): void {
-        this.trim()
+        this.trim();
+        if (!this.check())
+            return;
 
         this.accountingService.update_account(this.accountName!, this.account!).subscribe(
             () => this.reset(),

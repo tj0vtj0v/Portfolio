@@ -75,6 +75,18 @@ export class DashboardComponent implements OnInit {
             this.accounts = accounts;
             this.update();
 
+            const historyRequests = accounts.map((account: Account) =>
+                this.accountingService.get_account_history(account.name)
+            );
+
+            forkJoin(
+                [...historyRequests]
+            ).subscribe((results) => {
+                accounts.forEach((account: Account, i: number) => this.histories.set(account.name, results[i]));
+
+                this.update();
+            });
+
             forkJoin([
                 this.accountingService.get_categories(),
                 this.accountingService.get_expenses(),
@@ -85,18 +97,6 @@ export class DashboardComponent implements OnInit {
                 this.expenses = expenses;
                 this.incomes = incomes;
                 this.transfers = transfers;
-
-                this.update();
-            });
-
-            const historyRequests = accounts.map((account: Account) =>
-                this.accountingService.get_account_history(account.name)
-            );
-
-            forkJoin(
-                [...historyRequests]
-            ).subscribe((results) => {
-                accounts.forEach((account: Account, i: number) => this.histories.set(account.name, results[i]));
 
                 this.update();
             });

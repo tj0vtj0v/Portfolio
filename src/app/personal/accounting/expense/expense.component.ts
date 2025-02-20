@@ -76,6 +76,36 @@ export class ExpenseComponent {
 
     trim(): void {
         this.expense!.reason = this.expense!.reason.trim();
+
+        if (this.expense!.amount == null) {
+            this.expense!.amount = 0
+        }
+    }
+
+    check(): boolean {
+        if (this.expense!.account == undefined) {
+            this.statusMessage = 'The expense must have an account'
+            return false;
+        }
+        if (this.expense!.category == undefined) {
+            this.statusMessage = 'The expense must have a category'
+            return false;
+        }
+        if (this.expense!.reason === '') {
+            this.statusMessage = 'The expense must have a reason'
+            return false;
+        }
+        if (this.expense!.date === '') {
+            this.statusMessage = 'The expense must have a date'
+            return false;
+        }
+
+        if (this.expense!.amount <= 0) {
+            this.statusMessage = 'The expense must not have an amount less or equal to 0';
+            return false;
+        }
+
+        return true;
     }
 
     reset(): void {
@@ -112,12 +142,9 @@ export class ExpenseComponent {
     }
 
     onSave(): void {
-        this.trim()
-
-        if (this.expense!.account == undefined || this.expense!.category == undefined) {
-            this.statusMessage = 'The expense must have an account and a category'
+        this.trim();
+        if (!this.check())
             return;
-        }
 
         this.accountingService.add_expense(this.expense!).subscribe(
             () => this.reset(),
@@ -132,12 +159,10 @@ export class ExpenseComponent {
     }
 
     onUpdate(): void {
-        this.trim()
-
-        if (this.expense!.amount == 0) {
-            this.statusMessage = 'The Expense must not have an amount equal to 0';
+        this.trim();
+        if (!this.check())
             return;
-        }
+
         this.accountingService.update_expense(this.expense!).subscribe(
             () => this.reset(),
             (error) => {

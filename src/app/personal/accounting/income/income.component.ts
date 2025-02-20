@@ -73,6 +73,32 @@ export class IncomeComponent {
 
     trim(): void {
         this.income!.reason = this.income!.reason.trim();
+
+        if (this.income!.amount == null) {
+            this.income!.amount = 0
+        }
+    }
+
+    check(): boolean {
+        if (this.income!.account == undefined) {
+            this.statusMessage = 'The income must have an account';
+            return false;
+        }
+        if (this.income!.reason === '') {
+            this.statusMessage = 'The income must have a reason';
+            return false;
+        }
+        if (this.income!.date === '') {
+            this.statusMessage = 'The income must have a date';
+            return false;
+        }
+
+        if (this.income!.amount <= 0) {
+            this.statusMessage = 'The income must not have an amount less or equal to 0';
+            return false;
+        }
+
+        return true;
     }
 
     reset(): void {
@@ -106,12 +132,9 @@ export class IncomeComponent {
     }
 
     onSave(): void {
-        this.trim()
-
-        if (this.income!.account == undefined) {
-            this.statusMessage = 'The income must have an account';
+        this.trim();
+        if (!this.check())
             return;
-        }
 
         this.accountingService.add_income(this.income!).subscribe(
             () => this.reset(),
@@ -126,7 +149,9 @@ export class IncomeComponent {
     }
 
     onUpdate(): void {
-        this.trim()
+        this.trim();
+        if (!this.check())
+            return;
 
         this.accountingService.update_income(this.income!).subscribe(
             () => this.reset(),

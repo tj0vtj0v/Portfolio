@@ -68,6 +68,34 @@ export class TransferComponent {
         });
     }
 
+    trim(): void {
+        if (this.transfer!.amount == null) {
+            this.transfer!.amount = 0
+        }
+    }
+
+    check(): boolean {
+        if (this.transfer!.source == undefined) {
+            this.statusMessage = 'The transfer must have a source';
+            return false;
+        }
+        if (this.transfer!.target == undefined) {
+            this.statusMessage = 'The transfer must have a target';
+            return false;
+        }
+        if (this.transfer!.date === '') {
+            this.statusMessage = 'The transfer must have a date';
+            return false;
+        }
+
+        if (this.transfer!.amount <= 0) {
+            this.statusMessage = 'The transfer must not have an amount less or equal to 0';
+            return false;
+        }
+
+        return true;
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -100,10 +128,9 @@ export class TransferComponent {
     }
 
     onSave(): void {
-        if (this.transfer!.source == undefined || this.transfer!.target == undefined) {
-            this.statusMessage = 'The Transfer must have a source and a target';
+        this.trim();
+        if (!this.check())
             return;
-        }
 
         this.accountingService.add_transfer(this.transfer!).subscribe(
             () => this.reset(),
@@ -118,6 +145,10 @@ export class TransferComponent {
     }
 
     onUpdate(): void {
+        this.trim();
+        if (!this.check())
+            return;
+
         this.accountingService.update_transfer(this.transfer!).subscribe(
             () => this.reset(),
             (error) => {

@@ -50,6 +50,15 @@ export class CategoryComponent {
         this.category!.name = this.category!.name.trim();
     }
 
+    check(): boolean {
+        if (this.category!.name === '') {
+            this.statusMessage = 'The category must have a name';
+            return false;
+        }
+
+        return true;
+    }
+
     reset(): void {
         this.ngOnInit()
 
@@ -72,7 +81,9 @@ export class CategoryComponent {
     }
 
     onSave(): void {
-        this.trim()
+        this.trim();
+        if (!this.check())
+            return;
 
         this.accountingService.add_category(this.category!).subscribe(
             () => this.reset(),
@@ -87,7 +98,9 @@ export class CategoryComponent {
     }
 
     onUpdate(): void {
-        this.trim()
+        this.trim();
+        if (!this.check())
+            return;
 
         this.accountingService.update_category(this.categoryName!, this.category!).subscribe(
             () => this.reset(),
