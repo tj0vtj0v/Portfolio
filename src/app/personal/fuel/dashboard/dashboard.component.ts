@@ -5,7 +5,7 @@ import {MatOptionModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {CommonModule} from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
 import {Refuel} from '../../../shared/datatype/Refuel';
 import {FuelType} from '../../../shared/datatype/FuelType';
@@ -85,6 +85,10 @@ export class DashboardComponent {
         let cumulativeDistance = 0;
         const dateMap = new Map<string, number>();
 
+        if (this.startDate) {
+            dateMap.set(this.startDate, 0)
+        }
+
         travelDistance.forEach(entry => {
             cumulativeDistance += entry.distance;
 
@@ -104,14 +108,14 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
-                    const content = params.map((item: any) => `${item.seriesName}: ${parseFloat(item.value).toFixed(2)} km`).join('<br/>');
-                    const date = new DatePipe("en-US").transform(new Date(params[0].name), 'dd.MM.yyyy');
-                    return `${date}<br>${content}`;
+                    const content = parseFloat(params[0].value[1]).toFixed(0);
+                    const date = new DatePipe("en-US").transform(new Date(params[0].value[0]), 'dd.MM.yyyy');
+                    return `${date}<br>${content} km`;
                 },
             },
             xAxis: {
-                type: 'category',
-                data: cumulativeData.map(entry => entry.date), // X-axis as dates
+                type: 'time',
+                name: 'Date',
             },
             yAxis: {
                 type: 'value',
@@ -121,8 +125,7 @@ export class DashboardComponent {
                 {
                     name: 'Cumulative Distance',
                     type: 'line',
-                    data: cumulativeData.map(entry => entry.cumulativeDistance), // Y-axis as cumulative distances
-                    smooth: true,
+                    data: travelDistance.map(entry => [entry.date, entry.distance])
                 }
             ]
         };
