@@ -43,15 +43,15 @@ export class DashboardComponent implements OnInit {
     private expenses: Expense[] = [];
     private incomes: Income[] = [];
     private transfers: Transfer[] = [];
+    private histories: Map<string, BalanceHistory[]> = new Map();
 
     //filter
     protected startDate?: string = new Date(Date.UTC(new Date().getFullYear(), 0, 1)).toISOString().split('T')[0];
     protected endDate?: string;
-    private histories: Map<string, BalanceHistory[]> = new Map();
-    //visual data
-
-    protected filteredHistories: Map<string, BalanceHistory[]> = new Map();
     private minMovementDate?: string;
+
+    //visual data
+    protected filteredHistories: Map<string, BalanceHistory[]> = new Map();
     protected filteredExpenses: Expense[] = [];
     protected categoryExpenseMap: Map<string, number> = new Map();
     protected accountIncomeMap: Map<string, number> = new Map();
