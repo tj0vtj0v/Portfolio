@@ -95,6 +95,10 @@ export class DashboardComponent {
             dateMap.set(entry.date, cumulativeDistance);
         });
 
+        if (this.endDate) {
+            dateMap.set(this.endDate, cumulativeDistance);
+        }
+
         travelDistance = Array.from(dateMap.entries()).map(([date, distance]) => ({
             date,
             distance
