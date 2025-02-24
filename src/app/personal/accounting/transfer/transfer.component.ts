@@ -7,10 +7,12 @@ import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
 import {forkJoin} from 'rxjs';
+import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 
 @Component({
     selector: 'app-transfer',
     imports: [
+        NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
         CommonModule

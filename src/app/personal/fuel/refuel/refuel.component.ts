@@ -8,10 +8,12 @@ import {FuelService} from '../../../shared/api/fuel.service';
 import {forkJoin} from 'rxjs';
 import {Car} from '../../../shared/datatype/Car';
 import {FuelType} from '../../../shared/datatype/FuelType';
+import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 
 @Component({
     selector: 'app-refuel',
     imports: [
+        NumberFormatterDirective,
         AgGridModule,
         FormsModule,
         CommonModule

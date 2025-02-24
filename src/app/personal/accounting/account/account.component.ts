@@ -5,10 +5,12 @@ import {AgGridModule} from 'ag-grid-angular';
 import {Account} from '../../../shared/datatype/Account';
 import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
+import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 
 @Component({
     selector: 'app-account',
     imports: [
+        NumberFormatterDirective,
         AgGridModule,
         FormsModule,
         CommonModule

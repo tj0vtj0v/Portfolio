@@ -23,7 +23,7 @@
         </div>
         <div>
             <label for="add_amount">Amount</label>
-            <input [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="number"/>
+            <input [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_source">Source</label>
@@ -59,7 +59,7 @@
         </div>
         <div>
             <label for="amount">Amount</label>
-            <input [(ngModel)]="transfer!.amount" id="amount" name="amount" required type="number"/>
+            <input [(ngModel)]="transfer!.amount" id="amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="source">Source</label>

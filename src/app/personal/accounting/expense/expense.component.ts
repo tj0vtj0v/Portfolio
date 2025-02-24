@@ -8,10 +8,12 @@ import {Category} from '../../../shared/datatype/Category';
 import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {forkJoin} from 'rxjs';
+import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 
 @Component({
     selector: 'app-expense',
     imports: [
+        NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
         CommonModule

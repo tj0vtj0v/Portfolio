@@ -27,7 +27,7 @@
         </div>
         <div>
             <label for="add_amount">Amount</label>
-            <input [(ngModel)]="expense!.amount" id="add_amount" name="amount" required type="number"/>
+            <input [(ngModel)]="expense!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_account">Account</label>
@@ -67,7 +67,7 @@
         </div>
         <div>
             <label for="amount">Amount</label>
-            <input [(ngModel)]="expense!.amount" id="amount" name="amount" required type="number"/>
+            <input [(ngModel)]="expense!.amount" id="amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="account">Account</label>

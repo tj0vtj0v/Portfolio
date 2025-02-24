@@ -25,7 +25,7 @@
         </div>
         <div>
             <label for="add_balance">Balance</label>
-            <input [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="number"/>
+            <input [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="text" numberFormatter/>
         </div>
 
         <button type="submit">Save</button>
@@ -45,7 +45,7 @@
         </div>
         <div>
             <label for="balance">Balance</label>
-            <input [(ngModel)]="account.balance" id="balance" name="balance" required type="number"/>
+            <input [(ngModel)]="account.balance" id="balance" name="balance" required type="text" numberFormatter/>
         </div>
 
         <button type="submit">Update</button>

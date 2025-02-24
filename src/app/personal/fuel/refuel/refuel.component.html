@@ -23,16 +23,16 @@
         </div>
         <div>
             <label for="add_distance">Distance</label>
-            <input [(ngModel)]="refuel!.distance" id="add_distance" name="add_distance" required type="number"/>
+            <input [(ngModel)]="refuel!.distance" id="add_distance" name="add_distance" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_consumption">Consumption</label>
             <input [(ngModel)]="refuel!.consumption" id="add_consumption" name="add_consumption" required
-                   type="number"/>
+                   type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_cost">Cost</label>
-            <input [(ngModel)]="refuel!.cost" id="add_cost" name="add_cost" required type="number"/>
+            <input [(ngModel)]="refuel!.cost" id="add_cost" name="add_cost" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_fuel_type">Fuel</label>
@@ -68,15 +68,15 @@
         </div>
         <div>
             <label for="distance">Distance</label>
-            <input [(ngModel)]="refuel!.distance" id="distance" name="distance" required type="number"/>
+            <input [(ngModel)]="refuel!.distance" id="distance" name="distance" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="consumption">Consumption</label>
-            <input [(ngModel)]="refuel!.consumption" id="consumption" name="consumption" required type="number"/>
+            <input [(ngModel)]="refuel!.consumption" id="consumption" name="consumption" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="cost">Cost</label>
-            <input [(ngModel)]="refuel!.cost" id="cost" name="cost" required type="number"/>
+            <input [(ngModel)]="refuel!.cost" id="cost" name="cost" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="fuel_type">Fuel</label>
