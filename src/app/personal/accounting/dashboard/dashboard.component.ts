@@ -370,8 +370,8 @@ export class DashboardComponent implements OnInit {
 
     private filterData(): void {
         this.minMovementDate = undefined;
-        this.startDate = this.startDate === "" ? undefined : this.startDate;
-        this.endDate = this.endDate === "" ? undefined : this.endDate;
+        this.startDate = this.startDate === '' ? undefined : this.startDate;
+        this.endDate = this.endDate === '' ? undefined : this.endDate;
 
         this.filteredHistories = new Map();
         this.histories.forEach((history, name) => {

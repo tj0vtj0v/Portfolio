@@ -76,31 +76,49 @@ export class DashboardComponent {
     }
 
     private build_travel_chart(): void {
-        let travelDistance = this.filteredRefuels.map(refuel => ({
-            date: refuel.date,
-            distance: refuel.distance
-        }));
-        travelDistance.reverse()
+        const carMap = new Map<string, { date: string, distance: number }[]>();
+        this.filteredRefuels.forEach(refuel => {
+            let car = refuel.car!.name;
 
-        let cumulativeDistance = 0;
-        const dateMap = new Map<string, number>();
+            if (!carMap.has(car)) {
+                carMap.set(car, []);
+            }
 
-        if (this.startDate) {
-            dateMap.set(this.startDate, 0)
-        }
-
-        travelDistance.forEach(entry => {
-            cumulativeDistance += entry.distance;
-
-            dateMap.set(entry.date, cumulativeDistance);
+            carMap.get(car)!.push({
+                date: refuel.date,
+                distance: refuel.distance
+            });
         });
 
-        dateMap.set(this.endDate || new Date().toISOString().split("T")[0], cumulativeDistance);
+        const refinedData: { name: string, type: string, showSymbol: boolean, data: [string, number][] }[] = [];
+        carMap.forEach((refuels, car) => {
+            refuels.reverse();
 
-        travelDistance = Array.from(dateMap.entries()).map(([date, distance]) => ({
-            date,
-            distance
-        }));
+            let cumulativeDistance = 0;
+            const dateMap = new Map<string, number>();
+
+            if (this.startDate) {
+                dateMap.set(this.startDate, 0);
+            }
+
+            refuels.forEach(entry => {
+                cumulativeDistance += entry.distance;
+                dateMap.set(entry.date, cumulativeDistance);
+            });
+
+            dateMap.set(this.endDate || new Date().toISOString().split('T')[0], cumulativeDistance);
+
+            refuels = Array.from(dateMap.entries()).map(([date, distance]) => (
+                {date, distance}
+            ));
+
+            refinedData.push({
+                name: car,
+                type: 'line',
+                showSymbol: false,
+                data: refuels.map(entry => [entry.date, entry.distance])
+            });
+        });
 
         this.travel_chart = {
             title: {
@@ -110,9 +128,12 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
-                    const content = parseFloat(params[0].value[1]).toFixed(0);
                     const date = new DatePipe("en-US").transform(new Date(params[0].value[0]), 'dd.MM.yyyy');
-                    return `${date}<br>${content} km`;
+                    const content = params.map((param: any) => {
+                        const value = parseFloat(param.value[1]).toFixed(0);
+                        return `${param.seriesName}: ${value} km`
+                    }).join('<br>')
+                    return `${date}<br>${content}`;
                 },
             },
             xAxis: {
@@ -123,19 +144,18 @@ export class DashboardComponent {
                 type: 'value',
                 name: 'Cumulative Distance (km)',
             },
-            series: [
-                {
-                    name: 'Cumulative Distance',
-                    type: 'line',
-                    data: travelDistance.map(entry => [entry.date, entry.distance])
-                }
-            ]
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                selectedMode: 'multiple',
+            },
+            series: refinedData
         };
     }
 
     private filterData(): void {
-        this.startDate = this.startDate === "" ? undefined : this.startDate;
-        this.endDate = this.endDate === "" ? undefined : this.endDate;
+        this.startDate = this.startDate === '' ? undefined : this.startDate;
+        this.endDate = this.endDate === '' ? undefined : this.endDate;
 
         this.filteredRefuels = this.refuels.filter(refuel => {
             const isAfterStart = this.startDate ? refuel.date >= this.startDate : true;

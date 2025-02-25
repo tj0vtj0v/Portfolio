@@ -25,9 +25,9 @@ export const routes: Routes = [
     {path: 'register', component: RegisterComponent},
     {path: 'settings', component: SettingsComponent},
     {path: 'account', component: AccountComponent},
-    {path: "accounting", component: AccountingComponent},
-    {path: "fuel", component: FuelComponent},
+    {path: 'accounting', component: AccountingComponent},
+    {path: 'fuel', component: FuelComponent},
     {path: 'banking', component: BankingComponent},
-    {path: "proximity", component: ProximityComponent},
+    {path: 'proximity', component: ProximityComponent},
     {path: '**', component: PageNotFoundComponent}
 ];
