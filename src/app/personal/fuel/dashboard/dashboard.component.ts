@@ -45,9 +45,12 @@ export class DashboardComponent {
 
     //visual data
     protected filteredRefuels: Refuel[] = [];
+    protected fuelRefuelMap: Map<string, Refuel[]> = new Map();
+    protected carRefuelMap: Map<string, Refuel[]> = new Map();
 
     //visuals
     protected travel_chart: EChartsCoreOption = {};
+    protected fuel_chart: EChartsCoreOption = {};
 
     constructor(
         private fuelService: FuelService
@@ -153,14 +156,65 @@ export class DashboardComponent {
         };
     }
 
+    private build_fuel_chart(): void {
+        const refinedData: { name: string, type: string, data: [number, number][] }[] = [];
+        this.carRefuelMap.forEach((refuels: Refuel[], car: string) => {
+
+            refinedData.push({
+                name: car,
+                type: 'scatter',
+                data: refuels.map(entry => [entry.distance, entry.consumption])
+            })
+        })
+
+
+        this.fuel_chart = {
+            title: {
+                text: '2D Scatter Plot Example'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params: any) {
+                    return `${params.seriesName}<br/>${params.data[0]}, ${params.data[1]}`;
+                }
+            },
+            xAxis: {
+                type: 'value',
+                name: 'Travelled distance'
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Consumed Fuel'
+            },
+            series: refinedData
+        };
+    }
+
     private filterData(): void {
         this.startDate = this.startDate === '' ? undefined : this.startDate;
         this.endDate = this.endDate === '' ? undefined : this.endDate;
 
+        this.carRefuelMap = new Map();
+        this.fuelRefuelMap = new Map();
         this.filteredRefuels = this.refuels.filter(refuel => {
             const isAfterStart = this.startDate ? refuel.date >= this.startDate : true;
             const isBeforeEnd = this.endDate ? refuel.date <= this.endDate : true;
-            return isAfterStart && isBeforeEnd;
+
+            if (isAfterStart && isBeforeEnd) {
+                if (!this.carRefuelMap.has(refuel.car!.name)) {
+                    this.carRefuelMap.set(refuel.car!.name, []);
+                }
+                this.carRefuelMap.get(refuel.car!.name)!.push(refuel);
+
+                if (!this.fuelRefuelMap.has(refuel.fuel_type!.name)) {
+                    this.fuelRefuelMap.set(refuel.fuel_type!.name, []);
+                }
+                this.fuelRefuelMap.get(refuel.fuel_type!.name)!.push(refuel);
+
+                return true;
+            }
+
+            return false;
         })
     }
 }
