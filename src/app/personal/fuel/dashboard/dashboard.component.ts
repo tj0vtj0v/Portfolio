@@ -76,6 +76,7 @@ export class DashboardComponent {
     update(): void {
         this.filterData();
         this.build_travel_chart();
+        this.build_fuel_chart();
     }
 
     private build_travel_chart(): void {
@@ -175,7 +176,8 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    return `${params.seriesName}<br/>${params.data[0]}, ${params.data[1]}`;
+                    const consumption = (params.data[1] / (params.data[0] / 100)).toFixed(1)
+                    return `${params.seriesName}<br>${params.data[0]} km, ${params.data[1]} L<br>${consumption} L/100km`;
                 }
             },
             xAxis: {
