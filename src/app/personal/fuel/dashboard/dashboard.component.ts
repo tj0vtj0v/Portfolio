@@ -51,6 +51,8 @@ export class DashboardComponent {
     //visuals
     protected travel_chart: EChartsCoreOption = {};
     protected fuel_chart: EChartsCoreOption = {};
+    protected consumption_chart: EChartsCoreOption = {};
+    protected price_chart: EChartsCoreOption = {};
 
     constructor(
         private fuelService: FuelService
@@ -77,6 +79,8 @@ export class DashboardComponent {
         this.filterData();
         this.build_travel_chart();
         this.build_fuel_chart();
+        this.build_consumption_chart();
+        this.build_price_chart();
     }
 
     private build_travel_chart(): void {
@@ -158,26 +162,28 @@ export class DashboardComponent {
     }
 
     private build_fuel_chart(): void {
-        const refinedData: { name: string, type: string, data: [number, number][] }[] = [];
+        const seriesData: { name: string, type: string, data: [number, number, number][] }[] = [];
         this.carRefuelMap.forEach((refuels: Refuel[], car: string) => {
 
-            refinedData.push({
+            seriesData.push({
                 name: car,
                 type: 'scatter',
-                data: refuels.map(entry => [entry.distance, entry.consumption])
-            })
-        })
+                data: refuels.map(entry => [entry.distance, entry.consumption, entry.cost])
+            });
+        });
 
 
         this.fuel_chart = {
             title: {
-                text: '2D Scatter Plot Example'
+                text: 'Consumption over Distance',
+                left: 'center',
             },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
                     const consumption = (params.data[1] / (params.data[0] / 100)).toFixed(1)
-                    return `${params.seriesName}<br>${params.data[0]} km, ${params.data[1]} L<br>${consumption} L/100km`;
+                    const price = (params.data[2] / params.data[0]).toFixed(2)
+                    return `${params.seriesName}<br>${params.data[0]} km, ${params.data[1]} L<br>${consumption} L/100km<br>${price} €/km`;
                 }
             },
             xAxis: {
@@ -188,7 +194,111 @@ export class DashboardComponent {
                 type: 'value',
                 name: 'Consumed Fuel'
             },
-            series: refinedData
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                selectedMode: 'multiple',
+            },
+            series: seriesData
+        };
+    }
+
+    private build_consumption_chart(): void {
+        const seriesData: { name: string, type: string, data: [number, number, number, number, number][] }[] = [];
+        this.carRefuelMap.forEach((refuels: Refuel[], car: string) => {
+            if (refuels.length < 5) return;
+
+            const consumptions = refuels.map(entry => entry.consumption / (entry.distance / 100));
+            consumptions.sort((a, b) => a - b);
+
+            const min = consumptions[0];
+            const q1 = consumptions[Math.floor(consumptions.length * 0.25)];
+            const median = consumptions[Math.floor(consumptions.length * 0.5)];
+            const q3 = consumptions[Math.floor(consumptions.length * 0.75)];
+            const max = consumptions[consumptions.length - 1];
+
+            seriesData.push({
+                name: car,
+                type: 'boxplot',
+                data: [[min, q1, median, q3, max]],
+            });
+        });
+
+
+        this.consumption_chart = {
+            title: {
+                text: 'Consumption',
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params: any) {
+                    return `${params.seriesName}<br/>Min: ${params.data[1].toFixed(1)} L<br/>Median: ${params.data[3].toFixed(1)} L<br/>Max: ${params.data[5].toFixed(1)} L`;
+                }
+            },
+            xAxis: {
+                type: 'value',
+                name: 'Consumption'
+            },
+            yAxis: {
+                type: 'category',
+                data: seriesData.map(s => s.name)
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                selectedMode: 'multiple',
+            },
+            series: seriesData
+        };
+    }
+
+    private build_price_chart(): void {
+        const refinedData: { name: string, data: [number, number, number, number, number][] }[] = [];
+        this.fuelRefuelMap.forEach((refuels: Refuel[], fuel: string) => {
+            if (refuels.length < 5) return;
+
+            const prices = refuels.map(entry => entry.cost / entry.consumption);
+            prices.sort((a, b) => a - b);
+
+            const min = prices[0];
+            const q1 = prices[Math.floor(prices.length * 0.25)];
+            const median = prices[Math.floor(prices.length * 0.5)];
+            const q3 = prices[Math.floor(prices.length * 0.75)];
+            const max = prices[prices.length - 1];
+
+            refinedData.push({
+                name: fuel,
+                data: [[min, q1, median, q3, max]],
+            });
+        });
+
+
+        this.price_chart = {
+            title: {
+                text: 'Price per Liter',
+                left: 'center',
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params: any) {
+                    console.log(params)
+                    return `${params.name}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
+                }
+            },
+            xAxis: {
+                type: 'value',
+                name: 'Price'
+            },
+            yAxis: {
+                type: 'category',
+                name: 'Fuel Type',
+                data: refinedData.map((s) => s.name)
+            },
+            series: [{
+                type: 'boxplot',
+                data: refinedData.map(s => s.data[0])
+            }]
         };
     }
 
@@ -197,7 +307,6 @@ export class DashboardComponent {
         this.endDate = this.endDate === '' ? undefined : this.endDate;
 
         this.carRefuelMap = new Map();
-        this.fuelRefuelMap = new Map();
         this.filteredRefuels = this.refuels.filter(refuel => {
             const isAfterStart = this.startDate ? refuel.date >= this.startDate : true;
             const isBeforeEnd = this.endDate ? refuel.date <= this.endDate : true;
