@@ -1,0 +1,13 @@
+<div>
+    <h1>Dashboard</h1>
+    <div>
+        <label for="start">Start Date:</label>
+        <input (change)="update()" [(ngModel)]="startDate" id="start" name="start" required type="date"/>
+
+        <label for="end">End Date:</label>
+        <input (change)="update()" [(ngModel)]="endDate" id="end" name="end" required type="date"/>
+    </div>
+
+
+    <div [options]="balance_chart" class="chart" echarts></div>
+</div>

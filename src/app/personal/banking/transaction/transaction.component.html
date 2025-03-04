@@ -1,0 +1,77 @@
+<div *ngIf="!transaction">
+    <ag-grid-angular
+        (gridReady)="onGridReady($event)"
+        (rowClicked)="onRowClicked($event)"
+        [columnDefs]="columnDefs"
+        [domLayout]="'autoHeight'"
+        [paginationPageSizeSelector]="[10, 20, 50]"
+        [paginationPageSize]="10"
+        [pagination]="true"
+        [rowData]="transactions"
+        class="ag-theme-alpine"
+        style="width: 100%; height: 100%;"
+    />
+</div>
+
+<div *ngIf="transaction">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Date:</label>
+                <p>{{ transaction.date || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Bank Account:</label>
+                <p>{{ transaction.bank_account.name || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Peer:</label>
+                <p>{{ transaction.peer || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Amount:</label>
+                <p>{{ transaction.amount + ' ' + transaction.currencycode || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Reason for Payment:</label>
+                <p>{{ transaction.reasonforpayment || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Posting Text:</label>
+                <p>{{ transaction.postingtext || '---' }}</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Validation date:</label>
+                <p>{{ transaction.vdate || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Booking date:</label>
+                <p>{{ transaction.bdate || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Customer Reference:</label>
+                <p>{{ transaction.customerreference || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Mandate Reference:</label>
+                <p>{{ transaction.mandatereference || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Peer Account:</label>
+                <p>{{ transaction.peeraccount || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Peer BIC:</label>
+                <p>{{ transaction.peerbic || '---' }}</p>
+            </div>
+            <div class="form-group">
+                <label>Peer ID:</label>
+                <p>{{ transaction.peerid || '---' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <button (click)="reset()">Back</button>
+</div>

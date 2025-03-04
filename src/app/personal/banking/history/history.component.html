@@ -1,0 +1,13 @@
+<div>
+    <ag-grid-angular
+        (gridReady)="onGridReady($event)"
+        [columnDefs]="columnDefs"
+        [domLayout]="'autoHeight'"
+        [paginationPageSizeSelector]="[10, 20, 50]"
+        [paginationPageSize]="10"
+        [pagination]="true"
+        [rowData]="histories"
+        class="ag-theme-alpine"
+        style="width: 100%; height: 100%;"
+    />
+</div>
