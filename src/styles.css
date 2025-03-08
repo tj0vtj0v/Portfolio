@@ -1,0 +1,111 @@
+:root {
+    --base-color: #efecec;
+    --base-variant: #f5f3ed;
+    --text-color: #0f1d31;
+    --secondary-text: #172549;
+    --primary-color: #75bdfc;
+    --accent-color: #f5eaaa;
+
+    --good: #84dc00;
+    --bad: #d52a2a;
+
+    --overlay: rgba(0, 0, 0, 0.1);
+    --overlay-dark: rgba(0, 0, 0, 0.2);
+    --overlay-darker: rgba(0, 0, 0, 0.5);
+}
+
+.dark {
+    --base-color: #1d2b65;
+    --base-variant: #224879;
+    --text-color: #faf6d6;
+    --secondary-text: #ffedd0;
+    --primary-color: #69cbff;
+    --accent-color: #a8bef6;
+
+    --good: #39b00a;
+    --bad: #c50000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Roboto Thin", sans-serif;
+    text-decoration: none;
+
+    color: var(--text-color);
+    background-color: transparent;
+
+    transition: all 0.3s;
+}
+
+body {
+    background-size: cover;
+    background: linear-gradient(-40deg, var(--base-color), var(--base-variant)) no-repeat;
+
+    display: flex;
+    flex-direction: column;
+
+    min-height: 100vh;
+    min-width: 490px;
+}
+
+button {
+    margin: 5px;
+    padding: 5px;
+
+    background-color: var(--primary-color);
+
+    border: 1px solid var(--overlay-darker);
+    border-radius: 5px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+nav {
+    margin-right: 30vw;
+
+    display: flex;
+    justify-content: space-between;
+}
+
+a {
+    margin: 5px;
+
+    background-color: var(--overlay);
+
+    box-shadow: 0 0 5px -1px var(--overlay-darker);
+    cursor: default;
+}
+
+a:hover {
+    background-color: var(--overlay-dark);
+}
+
+p {
+    color: var(--secondary-text);
+}
+
+input {
+    user-select: none;
+}
+
+.middle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px 0 20px 0;
+}
+
+.container {
+    background-color: var(--accent-color);
+}
+
+.status-message {
+    color: var(--bad);
+}
+

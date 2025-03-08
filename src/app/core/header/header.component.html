@@ -1,16 +1,21 @@
-<nav>
-    <a routerLink="/">Home</a>
-    <a routerLink="/about">About Me</a>
-    <a routerLink="/projects">Projects</a>
-    <a routerLink="/contact">Contact</a>
+<div id="spacer">
+    <div class="flex-container">
+        <nav>
+            <a routerLink="/">Home</a>
+            <a routerLink="/about">About</a>
+            <a routerLink="/projects">Projects</a>
+            <a routerLink="/contact">Contact</a>
 
-    <a *ngIf="userService.isLoggedIn()" routerLink="/settings">Settings</a>
-    <a *ngIf="!userService.isLoggedIn()" routerLink="/login">Login</a>
+            <a *ngIf="userService.isLoggedIn()" routerLink="/settings">Settings</a>
+            <a *ngIf="!userService.isLoggedIn()" routerLink="/login">Login</a>
+        </nav>
 
-    <nav *ngIf="userService.isLoggedIn()">
-        <a routerLink="/accounting">Accounting</a>
-        <a routerLink="/fuel">Fuel</a>
-        <a routerLink="/banking">Banking</a>
-        <a routerLink="/proximity">Proximity</a>
-    </nav>
-</nav>
+        <nav *ngIf="userService.isLoggedIn()">
+            <a routerLink="/accounting">Accounting</a>
+            <a routerLink="/fuel">Fuel</a>
+            <a routerLink="/banking">Banking</a>
+            <a routerLink="/proximity">Proximity</a>
+        </nav>
+    </div>
+    <button id="dark-toggle" (click)="document.body.classList.toggle('dark')">darkmode</button>
+</div>

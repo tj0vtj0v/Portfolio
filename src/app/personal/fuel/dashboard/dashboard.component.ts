@@ -282,7 +282,6 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    console.log(params)
                     return `${params.name}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
                 }
             },

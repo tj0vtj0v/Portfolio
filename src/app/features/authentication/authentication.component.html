@@ -1,4 +1,4 @@
-<div class="login-container">
+<div class="container">
     <h2>Login</h2>
 
     <form (ngSubmit)="onLogin()" *ngIf="!this.userService.isLoggedIn()">
@@ -18,11 +18,8 @@
         </div>
 
         <button class="login-button" type="submit">Login</button>
-
-        <div class="links">
-            <a routerLink="/register">Register</a>
-        </div>
+        <button routerLink="/register">Register</button>
     </form>
 
-    <p *ngIf="statusMessage != ''" class="status-text">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
 </div>

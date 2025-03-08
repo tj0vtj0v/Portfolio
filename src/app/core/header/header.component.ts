@@ -17,4 +17,6 @@ export class HeaderComponent {
         protected userService: UserService
     ) {
     }
+
+    protected readonly document = document;
 }

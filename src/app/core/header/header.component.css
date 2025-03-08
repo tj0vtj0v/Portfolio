@@ -1,0 +1,28 @@
+a {
+    padding: 10px;
+
+    border: 1px solid #2a7e0a;
+    border-radius: 10px;
+}
+
+a:hover {
+    box-shadow: 0 0 10px -1px var(--overlay-darker);
+}
+
+#spacer {
+    padding: 10px 0 10px 0;
+
+    background-color: var(--overlay);
+
+    display: flex;
+}
+
+.flex-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#dark-toggle {
+    right: 50px;
+}
