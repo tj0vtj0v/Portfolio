@@ -1,0 +1,12 @@
+.user-details {
+    margin: 5vh 0 5vh 0;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 20px;
+    color: var(--secondary-text);
+}

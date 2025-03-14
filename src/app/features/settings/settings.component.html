@@ -2,9 +2,20 @@
     <h2>Account Settings</h2>
 
     <div class="user-details">
-        <p><strong>Username:</strong> {{ user?.username }}</p>
-        <p><strong>Email:</strong> {{ user?.email }}</p>
-        <p><strong>Role:</strong> {{ user?.role?.name }}</p>
+        <table>
+            <tr>
+                <td><strong>Username:</strong></td>
+                <td>{{ user?.username }}</td>
+            </tr>
+            <tr>
+                <td><strong>Email:</strong></td>
+                <td>{{ user?.email }}</td>
+            </tr>
+            <tr>
+                <td><strong>Role:</strong></td>
+                <td>{{ user?.role?.name }}</td>
+            </tr>
+        </table>
     </div>
 
     <div class="settings-actions">

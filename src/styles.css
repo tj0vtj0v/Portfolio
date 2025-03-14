@@ -1,17 +1,17 @@
 :root {
-    --base-color: #efecec;
-    --base-variant: #f5f3ed;
+    --base-color: #f5f5f5;
+    --base-variant: #fffef3;
     --text-color: #0f1d31;
     --secondary-text: #172549;
-    --primary-color: #75bdfc;
-    --accent-color: #f5eaaa;
+    --primary-color: #cbe6fd;
+    --accent-color: #f6f4e7;
 
     --good: #84dc00;
     --bad: #d52a2a;
 
-    --overlay: rgba(0, 0, 0, 0.1);
-    --overlay-dark: rgba(0, 0, 0, 0.2);
-    --overlay-darker: rgba(0, 0, 0, 0.5);
+    --overlay: rgba(0, 0, 0, 0.04);
+    --overlay-dark: rgba(0, 0, 0, 0.15);
+    --overlay-darker: rgba(0, 0, 0, 0.2);
 }
 
 .dark {
@@ -19,11 +19,15 @@
     --base-variant: #224879;
     --text-color: #faf6d6;
     --secondary-text: #ffedd0;
-    --primary-color: #69cbff;
-    --accent-color: #a8bef6;
+    --primary-color: #497dc2;
+    --accent-color: #304885;
 
     --good: #39b00a;
     --bad: #c50000;
+
+    --overlay: rgba(0, 0, 0, 0.1);
+    --overlay-dark: rgba(0, 0, 0, 0.2);
+    --overlay-darker: rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -65,6 +69,10 @@ button:hover {
     cursor: pointer;
 }
 
+h2 {
+    text-align: center;
+}
+
 nav {
     display: flex;
     justify-content: space-between;
@@ -99,6 +107,10 @@ input {
 
 .container {
     background-color: var(--accent-color);
+
+    padding: 50px;
+
+    border-radius: 20px;
 }
 
 .flex-container {
