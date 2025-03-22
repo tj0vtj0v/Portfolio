@@ -1,7 +1,6 @@
 <div id="spacer">
     <div class="flex-container">
         <nav>
-            <p></p>
             <a routerLink="/">Home</a>
             <a routerLink="/about">About</a>
             <a routerLink="/projects">Projects</a>
@@ -9,16 +8,13 @@
 
             <a *ngIf="userService.isLoggedIn()" routerLink="/settings">Settings</a>
             <a *ngIf="!userService.isLoggedIn()" routerLink="/login">Login</a>
-            <p></p>
         </nav>
 
         <nav *ngIf="userService.isLoggedIn()">
-            <p></p>
             <a routerLink="/accounting">Accounting</a>
             <a routerLink="/fuel">Fuel</a>
             <a routerLink="/banking">Banking</a>
             <a routerLink="/proximity">Proximity</a>
-            <p></p>
         </nav>
     </div>
     <svg *ngIf="document.body.classList.contains('dark')" (click)="document.body.classList.toggle('dark')"

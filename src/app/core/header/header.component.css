@@ -1,5 +1,10 @@
 a {
     padding: 10px;
+    margin-left: 20px;
+}
+
+.flex-container {
+    align-items: flex-start;
 }
 
 #spacer {
