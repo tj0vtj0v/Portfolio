@@ -7,7 +7,7 @@ export interface Transaction {
     peer: string
     reasonforpayment: string
     id: number
-    bank_account: BankAccount
+    account: BankAccount
     bdate: string
     vdate: string
     postingtext: string
