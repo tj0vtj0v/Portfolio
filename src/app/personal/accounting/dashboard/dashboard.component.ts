@@ -306,13 +306,26 @@ export class DashboardComponent implements OnInit {
     }
 
     private build_transfer_chart(): void {
-        const refinedTransfers = this.filteredTransfers.map(transaction => {
-            return {
-                source: `${transaction.source!.name} `,
-                target: transaction.target!.name,
-                value: transaction.amount
-            };
+        const combinedTransfers = new Map<string, { source: string; target: string; value: number }>();
+
+        this.filteredTransfers.forEach(transfer => {
+            const source = transfer.source!.name;
+            const target = transfer.target!.name;
+            const amount = transfer.amount;
+            const key = `${source}${target}`;
+
+            if (!combinedTransfers.has(key)) {
+                combinedTransfers.set(key, {source: source, target: target, value: amount});
+            } else {
+                combinedTransfers.get(key)!.value += amount;
+            }
         });
+
+        const refinedTransfers = Array.from(combinedTransfers.values()).map(entry => ({
+            source: `${entry.source} `,
+            target: entry.target,
+            value: entry.value
+        }));
 
         this.transfer_chart = {
             title: {
