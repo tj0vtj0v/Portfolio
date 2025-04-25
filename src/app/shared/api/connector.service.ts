@@ -9,7 +9,7 @@ import {CookieService} from 'ngx-cookie-service';
     providedIn: 'root'
 })
 export class ConnectorService {
-    private url = 'http://80.209.200.73:4053/'
+    private url = 'http://80.209.200.73:4053/' // TODO
     private refreshPromise?: Promise<void>;
 
     constructor(
