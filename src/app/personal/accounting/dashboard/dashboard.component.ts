@@ -404,7 +404,7 @@ export class DashboardComponent implements OnInit {
                     : this.minMovementDate;
             }
 
-            if (filteredHistory.length > 0 && earlier) {
+            if (earlier) {
                 this.filteredHistories.set(name, [earlier, ...filteredHistory]);
             } else {
                 this.filteredHistories.set(name, filteredHistory);
