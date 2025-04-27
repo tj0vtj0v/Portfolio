@@ -137,13 +137,20 @@ export class DashboardComponent implements OnInit {
             legend: {
                 orient: 'vertical',
                 left: 'left',
+                width: '20%',
+                top: 40,
                 selectedMode: 'multiple'
+            },
+            grid: {
+                left: '20%',
+                containLabel: true
             },
             series: [
                 {
                     name: 'Balance',
                     type: 'pie',
                     radius: '50%',
+                    center: ['60%', '40%'],
                     data: refinedAccounts,
                     emphasis: {
                         itemStyle: {
@@ -164,7 +171,7 @@ export class DashboardComponent implements OnInit {
                 name: entry[0],
                 value: entry[1]
             }
-        ));
+        )).sort((a, b) => b.value - a.value);
 
         this.category_expense_chart = {
             title: {
@@ -174,7 +181,7 @@ export class DashboardComponent implements OnInit {
             tooltip: {
                 trigger: 'item',
                 formatter: (params: any) => {
-                    const percentage = parseFloat(params.percent).toFixed(1);
+                    const percentage = ((params.value / totalExpenses) * 100).toFixed(1);
                     const value = parseFloat(params.value).toFixed(2);
                     return `${params.name}: ${value}€<br>${percentage}%`;
                 },
@@ -184,12 +191,22 @@ export class DashboardComponent implements OnInit {
                 left: 'left',
                 selectedMode: 'multiple',
             },
+            xAxis: {
+                type: 'category',
+                data: refinedCategories.map(entry => entry.name),
+                axisLabel: {
+                    interval: 0,
+                    rotate: 30
+                },
+            },
+            yAxis: {
+                type: 'value',
+                name: 'Amount (€)'
+            },
             series: [
                 {
-                    name: 'Category Expenses',
-                    type: 'pie',
-                    radius: '50%',
-                    data: refinedCategories,
+                    type: 'bar',
+                    data: refinedCategories.map(entry => entry.value),
                     emphasis: {
                         itemStyle: {
                             shadowBlur: 10,
@@ -227,13 +244,16 @@ export class DashboardComponent implements OnInit {
             legend: {
                 orient: 'vertical',
                 left: 'left',
-                selectedMode: 'multiple',
+                width: '20%',
+                top: 40,
+                selectedMode: 'multiple'
             },
             series: [
                 {
                     name: 'Account Incomes',
                     type: 'pie',
                     radius: '50%',
+                    center: ['60%', '40%'],
                     data: refinedAccounts,
                     emphasis: {
                         itemStyle: {
@@ -292,7 +312,13 @@ export class DashboardComponent implements OnInit {
             legend: {
                 orient: 'vertical',
                 left: 'left',
+                top: 50,
                 selectedMode: 'multiple',
+            },
+            grid: {
+                left: 150,
+                top: 50,
+                containLabel: true
             },
             xAxis: {
                 type: 'category',
@@ -329,8 +355,8 @@ export class DashboardComponent implements OnInit {
 
         this.transfer_chart = {
             title: {
-                text: 'Transaction Flows Between Accounts',
-                left: 'center',
+                text: 'Transaction Flow Between Accounts',
+                left: 'center'
             },
             tooltip: {
                 trigger: 'item',
@@ -341,6 +367,7 @@ export class DashboardComponent implements OnInit {
             series: [
                 {
                     type: 'sankey',
+                    top: 50,
                     data: this.getNodesFromTransactions(refinedTransfers),
                     links: refinedTransfers,
                     label: {
