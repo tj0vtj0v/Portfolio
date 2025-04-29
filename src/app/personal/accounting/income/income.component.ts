@@ -159,9 +159,9 @@ export class IncomeComponent {
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
-                    this.statusMessage = `Adding failed: ${error.error.detail}`;
+                    this.statusMessage = `Edit failed: ${error.error.detail}`;
                 } else {
-                    this.statusMessage = 'Adding failed';
+                    this.statusMessage = 'Edit failed';
                 }
             }
         )
