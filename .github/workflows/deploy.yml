@@ -30,8 +30,8 @@ jobs:
       - name: Copy Built Angular Files
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ vars.FRITZ_BOX_IP }}
-          username: ${{ secrets.RASPI_USERNAME }}
+          host: ${{ vars.DEPLOY_IP }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           source: dist/portfolio/browser/*
           target: /docker/portfolio/
