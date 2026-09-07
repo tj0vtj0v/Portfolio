@@ -1,6 +1,9 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {Category} from '../../../shared/datatype/Category';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
@@ -9,6 +12,7 @@ import {CommonModule} from '@angular/common';
 @Component({
     selector: 'app-category',
     imports: [
+        GridFitDirective,
         AgGridModule,
         FormsModule,
         CommonModule
@@ -17,6 +21,8 @@ import {CommonModule} from '@angular/common';
     styleUrl: './category.component.css'
 })
 export class CategoryComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected categories: Category[] = [];
     protected category?: Category;
     protected categoryName?: string;
@@ -30,15 +36,8 @@ export class CategoryComponent {
     constructor(
         private accountingService: AccountingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         this.accountingService.get_categories().subscribe(
@@ -81,11 +80,14 @@ export class CategoryComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_category(this.category!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_category(this.category!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -98,11 +100,14 @@ export class CategoryComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_category(this.categoryName!, this.category!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_category(this.categoryName!, this.category!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -115,8 +120,10 @@ export class CategoryComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this category?')) {
-            this.accountingService.delete_category(this.categoryName!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_category(this.categoryName!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

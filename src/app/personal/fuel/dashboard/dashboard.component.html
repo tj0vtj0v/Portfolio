@@ -9,8 +9,8 @@
     </div>
 
 
-    <div [options]="travel_chart" class="chart" echarts></div>
-    <div [options]="fuel_chart" class="chart" echarts></div>
-    <div [options]="consumption_chart" class="chart" echarts></div>
-    <div [options]="price_chart" class="chart" echarts></div>
+    <app-chart-card [options]="travel_chart"></app-chart-card>
+    <app-chart-card [options]="fuel_chart"></app-chart-card>
+    <app-chart-card [options]="consumption_chart"></app-chart-card>
+    <app-chart-card [options]="price_chart"></app-chart-card>
 </div>

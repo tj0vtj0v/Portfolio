@@ -1,4 +1,6 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {UserService} from '../../shared/api/user.service';
 import {ModifyUser} from '../../shared/datatype/ModifyUser';
 import {ReadUser} from '../../shared/datatype/ReadUser';
@@ -15,6 +17,8 @@ import {FormsModule} from '@angular/forms';
     styleUrl: './account.component.css'
 })
 export class AccountComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     user: ModifyUser = {
         first_name: '',
         last_name: '',
@@ -48,6 +52,7 @@ export class AccountComponent {
 
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim()
 
         if (!this.user.first_name || !this.user.last_name || !this.user.email) {
@@ -60,7 +65,10 @@ export class AccountComponent {
             return;
         }
 
-        this.userService.update(this.user).subscribe(
+        this.statusMessage = '';
+
+
+        this.submission.run(() => this.userService.update(this.user)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => {
                 this.statusMessage = 'Edited successfully';
                 this.success = true;

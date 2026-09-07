@@ -1,22 +1,13 @@
-<div class="container">
-    <div class="sidebar">
-
-        <button (click)="selectOption('')">Dashboard</button>
-        <button (click)="selectOption('Expenses')">Expenses</button>
-        <button (click)="selectOption('Incomes')">Incomes</button>
-        <button (click)="selectOption('Transfers')">Transfers</button>
-        <button (click)="selectOption('Accounts')">Accounts</button>
-        <button (click)="selectOption('Categories')">Categories</button>
-
-    </div>
+<div class="container feature-layout">
+    <nav class="sidebar" aria-label="Accounting">
+        <a routerLink="./" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page">Dashboard</a>
+        <a routerLink="expenses" routerLinkActive="active" ariaCurrentWhenActive="page">Expenses</a>
+        <a routerLink="incomes" routerLinkActive="active" ariaCurrentWhenActive="page">Incomes</a>
+        <a routerLink="transfers" routerLinkActive="active" ariaCurrentWhenActive="page">Transfers</a>
+        <a routerLink="accounts" routerLinkActive="active" ariaCurrentWhenActive="page">Accounts</a>
+        <a routerLink="categories" routerLinkActive="active" ariaCurrentWhenActive="page">Categories</a>
+    </nav>
     <div class="content">
-        <div [ngSwitch]="selectedOption">
-            <app-expense *ngSwitchCase="'Expenses'"></app-expense>
-            <app-income *ngSwitchCase="'Incomes'"></app-income>
-            <app-transfer *ngSwitchCase="'Transfers'"></app-transfer>
-            <app-account *ngSwitchCase="'Accounts'"></app-account>
-            <app-category *ngSwitchCase="'Categories'"></app-category>
-            <app-dashboard *ngSwitchDefault></app-dashboard>
-        </div>
+        <router-outlet></router-outlet>
     </div>
 </div>

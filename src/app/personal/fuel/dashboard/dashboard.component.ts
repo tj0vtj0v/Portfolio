@@ -1,10 +1,7 @@
+import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
-import {NgxEchartsDirective, NgxEchartsModule, provideEchartsCore} from 'ngx-echarts';
+import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
 import {FormsModule} from '@angular/forms';
-import {MatOptionModule} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatFormFieldModule} from '@angular/material/form-field';
 import {CommonModule, DatePipe} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
 import {Refuel} from '../../../shared/datatype/Refuel';
@@ -16,19 +13,9 @@ import {forkJoin} from 'rxjs';
 @Component({
     selector: 'app-dashboard',
     imports: [
-        NgxEchartsDirective,
-        NgxEchartsModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
+        ChartCardComponent,
         FormsModule,
         CommonModule
-    ],
-    providers: [
-        provideEchartsCore({
-            echarts: () => import('echarts')
-        })
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
@@ -139,7 +126,7 @@ export class DashboardComponent {
                     const date = new DatePipe("en-US").transform(new Date(params[0].value[0]), 'dd.MM.yyyy');
                     const content = params.map((param: any) => {
                         const value = parseFloat(param.value[1]).toFixed(0);
-                        return `${param.seriesName}: ${value} km`
+                        return `${tooltipText(param.seriesName)}: ${value} km`
                     }).join('<br>')
                     return `${date}<br>${content}`;
                 },
@@ -183,7 +170,7 @@ export class DashboardComponent {
                 formatter: function (params: any) {
                     const consumption = (params.data[1] / (params.data[0] / 100)).toFixed(1)
                     const price = (params.data[2] / params.data[0]).toFixed(2)
-                    return `${params.seriesName}<br>${params.data[0]} km, ${params.data[1]} L<br>${consumption} L/100km<br>${price} €/km`;
+                    return `${tooltipText(params.seriesName)}<br>${tooltipText(params.data[0])} km, ${tooltipText(params.data[1])} L<br>${consumption} L/100km<br>${price} €/km`;
                 }
             },
             xAxis: {
@@ -233,7 +220,7 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    return `${params.seriesName}<br/>Min: ${params.data[1].toFixed(1)} L<br/>Median: ${params.data[3].toFixed(1)} L<br/>Max: ${params.data[5].toFixed(1)} L`;
+                    return `${tooltipText(params.seriesName)}<br/>Min: ${params.data[1].toFixed(1)} L<br/>Median: ${params.data[3].toFixed(1)} L<br/>Max: ${params.data[5].toFixed(1)} L`;
                 }
             },
             xAxis: {
@@ -282,8 +269,7 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    console.log(params)
-                    return `${params.name}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
+                    return `${tooltipText(params.name)}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
                 }
             },
             xAxis: {

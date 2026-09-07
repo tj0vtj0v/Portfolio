@@ -1,6 +1,6 @@
 <div *ngIf="!transaction">
     <ag-grid-angular
-        (gridReady)="onGridReady($event)"
+        appGridFit
         (rowClicked)="onRowClicked($event)"
         [columnDefs]="columnDefs"
         [domLayout]="'autoHeight'"

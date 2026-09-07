@@ -9,9 +9,11 @@
     </div>
 
 
-    <div [options]="balance_chart" class="chart" echarts></div>
-    <div [options]="history_chart" class="chart" echarts></div>
-    <div [options]="category_expense_chart" class="chart" echarts></div>
-    <div [options]="account_income_chart" class="chart" echarts></div>
-    <div [options]="transfer_chart" class="chart" echarts></div>
+    <p *ngIf="loading" role="status">Loading dashboard…</p>
+    <p *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+    <app-chart-card [options]="charts.balance"></app-chart-card>
+    <app-chart-card [options]="charts.history"></app-chart-card>
+    <app-chart-card [options]="charts.category_expense"></app-chart-card>
+    <app-chart-card [options]="charts.account_income"></app-chart-card>
+    <app-chart-card [options]="charts.transfer"></app-chart-card>
 </div>

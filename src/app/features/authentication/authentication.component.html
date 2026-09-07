@@ -1,28 +1,30 @@
+<p *ngIf="submission.pending" role="status">Signing in…</p>
 <div class="login-container">
     <h2>Login</h2>
+    <a *ngIf="returnUrl && (sessionCheckFailed || userService.isLoggedIn())" [routerLink]="returnUrl">Retry opening your page</a>
 
-    <form (ngSubmit)="onLogin()" *ngIf="!this.userService.isLoggedIn()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onLogin()" *ngIf="!this.userService.isLoggedIn()">
         <div class="form-group">
             <label for="username">Username</label>
-            <input [(ngModel)]="username" id="username" name="username" placeholder="Enter your username" required
+            <input [disabled]="submission.pending" [(ngModel)]="username" id="username" name="username" placeholder="Enter your username" required
                    type="text"/>
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input (keydown)="onPasswordClickOn()" (keyup.enter)="onLogin()" [(ngModel)]="password" id="password"
+            <input [disabled]="submission.pending" [(ngModel)]="password" id="password"
                    name="password"
                    placeholder="Enter your password"
                    required
                    type="password"/>
         </div>
 
-        <button class="login-button" type="submit">Login</button>
+        <button [disabled]="submission.pending" class="login-button" type="submit">Login</button>
 
         <div class="links">
             <a routerLink="/register">Register</a>
         </div>
     </form>
 
-    <p *ngIf="statusMessage != ''" class="status-text">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-text" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>

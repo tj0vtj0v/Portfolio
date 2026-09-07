@@ -1,42 +1,43 @@
+<p *ngIf="submission.pending" role="status">Saving changes…</p>
 <div class="account-page">
     <h2>Edit Profile</h2>
-    <form (ngSubmit)="onUpdate()" *ngIf="!success">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()" *ngIf="!success">
         <div class="form-group">
             <label for="first_name">First Name</label>
-            <input [(ngModel)]="user.first_name" id="first_name" name="first_name"
+            <input [disabled]="submission.pending" [(ngModel)]="user.first_name" id="first_name" name="first_name"
                    placeholder="Enter your first name" required type="text"/>
         </div>
 
         <div class="form-group">
             <label for="last_name">Last Name</label>
-            <input [(ngModel)]="user.last_name" id="last_name" name="last_name"
+            <input [disabled]="submission.pending" [(ngModel)]="user.last_name" id="last_name" name="last_name"
                    placeholder="Enter your last name" required type="text"/>
         </div>
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input [(ngModel)]="user.email" id="email" name="email"
+            <input [disabled]="submission.pending" [(ngModel)]="user.email" id="email" name="email"
                    placeholder="Enter your email" required type="email"/>
         </div>
 
         <div *ngIf="changePassword" class="password">
             <div class="form-group">
                 <label for="password">Password</label>
-                <input [(ngModel)]="user.password" id="password" name="password"
+                <input [disabled]="submission.pending" [(ngModel)]="user.password" id="password" name="password"
                        placeholder="Enter your password" required type="password"/>
             </div>
 
             <div class="form-group">
                 <label for="repeatPassword">Repeat Password</label>
-                <input [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword"
+                <input [disabled]="submission.pending" [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword"
                        placeholder="Confirm your password" required type="password"/>
             </div>
         </div>
 
-        <button type="submit">Update</button>
+        <button [disabled]="submission.pending" type="submit">Update</button>
     </form>
 
-    <button (click)="changePassword = true" *ngIf="!changePassword && !success">Change Password</button>
+    <button [disabled]="submission.pending" (click)="changePassword = true" *ngIf="!changePassword && !success">Change Password</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>

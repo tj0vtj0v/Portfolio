@@ -1,13 +1,15 @@
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
 import {Component} from '@angular/core';
 import {BankingService} from '../../../shared/api/banking.service';
 import {Transaction} from '../../../shared/datatype/Transaction';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AgGridModule} from 'ag-grid-angular';
 import {CommonModule} from '@angular/common';
 
 @Component({
     selector: 'app-transaction',
     imports: [
+        GridFitDirective,
         AgGridModule,
         CommonModule
     ],
@@ -33,15 +35,8 @@ export class TransactionComponent {
     constructor(
         private bankingService: BankingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule])
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         this.bankingService.get_transactions().subscribe(transactions => {

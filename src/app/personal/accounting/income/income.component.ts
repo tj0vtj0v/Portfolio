@@ -1,10 +1,14 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridReadyEvent} from 'ag-grid-community';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
 import {Income} from '../../../shared/datatype/Income';
 import {Account} from '../../../shared/datatype/Account';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {forkJoin} from 'rxjs';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
@@ -12,6 +16,7 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
 @Component({
     selector: 'app-income',
     imports: [
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
@@ -23,6 +28,8 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
     styleUrl: './income.component.css'
 })
 export class IncomeComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected incomes: Income[] = [];
     protected accounts: Account[] = [];
     protected income?: Income;
@@ -42,14 +49,10 @@ export class IncomeComponent {
     constructor(
         private accountingService: AccountingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
+
+    onGridReady(params: GridReadyEvent) {
 
         const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
 
@@ -134,11 +137,14 @@ export class IncomeComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_income(this.income!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_income(this.income!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -151,11 +157,14 @@ export class IncomeComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_income(this.income!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_income(this.income!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -168,8 +177,10 @@ export class IncomeComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this income?')) {
-            this.accountingService.delete_income(this.income!.id!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_income(this.income!.id!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

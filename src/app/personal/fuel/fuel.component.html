@@ -1,16 +1,10 @@
-<div class="container">
-    <div class="sidebar">
-
-        <button (click)="selectOption('')">Dashboard</button>
-        <button (click)="selectOption('Refuels')">Refuels</button>
-        <button (click)="selectOption('Cars')">Cars</button>
-
-    </div>
+<div class="container feature-layout">
+    <nav class="sidebar" aria-label="Fuel">
+        <a routerLink="./" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page">Dashboard</a>
+        <a routerLink="refuels" routerLinkActive="active" ariaCurrentWhenActive="page">Refuels</a>
+        <a routerLink="cars" routerLinkActive="active" ariaCurrentWhenActive="page">Cars</a>
+    </nav>
     <div class="content">
-        <div [ngSwitch]="selectedOption">
-            <app-car *ngSwitchCase="'Cars'"></app-car>
-            <app-refuel *ngSwitchCase="'Refuels'"></app-refuel>
-            <app-dashboard *ngSwitchDefault></app-dashboard>
-        </div>
+        <router-outlet></router-outlet>
     </div>
 </div>

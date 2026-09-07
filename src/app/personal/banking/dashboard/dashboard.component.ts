@@ -1,9 +1,6 @@
+import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
-import {NgxEchartsDirective, NgxEchartsModule, provideEchartsCore} from 'ngx-echarts';
-import {MatOptionModule} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
 import {FormsModule} from '@angular/forms';
 import {CommonModule, DatePipe} from '@angular/common';
 import {History} from '../../../shared/datatype/History';
@@ -15,19 +12,9 @@ import {forkJoin} from 'rxjs';
 @Component({
     selector: 'app-dashboard',
     imports: [
-        NgxEchartsDirective,
-        NgxEchartsModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
+        ChartCardComponent,
         FormsModule,
         CommonModule
-    ],
-    providers: [
-        provideEchartsCore({
-            echarts: () => import('echarts')
-        })
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
@@ -94,7 +81,7 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
-                    const content = params.map((item: any) => `${item.seriesName}: ${parseFloat(item.data[1]).toFixed(2)} €`).join('<br/>');
+                    const content = params.map((item: any) => `${tooltipText(item.seriesName)}: ${parseFloat(item.data[1]).toFixed(2)} €`).join('<br/>');
                     const date = new DatePipe("en-US").transform(new Date(params[0].data[0]), 'dd.MM.yyyy');
                     return `${date}<br>${content}`
                 }

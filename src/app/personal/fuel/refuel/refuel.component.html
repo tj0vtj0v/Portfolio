@@ -1,6 +1,7 @@
+<p *ngIf="submission.pending" role="status">Saving changes…</p>
 <div *ngIf="!(refuel || addingRefuel)">
     <ag-grid-angular
-        (gridReady)="onGridReady($event)"
+        appGridFit
         (rowClicked)="onRowClicked($event)"
         [columnDefs]="columnDefs"
         [domLayout]="'autoHeight'"
@@ -11,32 +12,32 @@
         class="ag-theme-alpine"
         style="width: 100%; height: 100%;"
     />
-    <button (click)="onAdd()">Add Refuel</button>
+    <button [disabled]="submission.pending" (click)="onAdd()">Add Refuel</button>
 </div>
 
 <div *ngIf="addingRefuel">
     <h3>Add Refuel</h3>
-    <form (ngSubmit)="onSave()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
         <div>
             <label for="add_date">Date</label>
-            <input [(ngModel)]="refuel!.date" id="add_date" name="add_date" required type="date"/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.date" id="add_date" name="add_date" required type="date"/>
         </div>
         <div>
             <label for="add_distance">Distance</label>
-            <input [(ngModel)]="refuel!.distance" id="add_distance" name="add_distance" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.distance" id="add_distance" name="add_distance" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_consumption">Consumption</label>
-            <input [(ngModel)]="refuel!.consumption" id="add_consumption" name="add_consumption" required
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.consumption" id="add_consumption" name="add_consumption" required
                    type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_cost">Cost</label>
-            <input [(ngModel)]="refuel!.cost" id="add_cost" name="add_cost" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.cost" id="add_cost" name="add_cost" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_fuel_type">Fuel</label>
-            <select [(ngModel)]="refuel!.fuel_type" id="add_fuel_type" name="add_fuel_type" required>
+            <select [disabled]="submission.pending" [(ngModel)]="refuel!.fuel_type" id="add_fuel_type" name="add_fuel_type" required>
                 <option *ngFor="let fuel_type of fuel_types" [ngValue]="fuel_type">
                     {{ fuel_type.name }}
                 </option>
@@ -44,43 +45,43 @@
         </div>
         <div>
             <label for="add_car">Car</label>
-            <select [(ngModel)]="refuel!.car" id="add_car" name="add_car" required>
+            <select [disabled]="submission.pending" [(ngModel)]="refuel!.car" id="add_car" name="add_car" required>
                 <option *ngFor="let car of cars" [ngValue]="car">
                     {{ car.name }}
                 </option>
             </select>
         </div>
 
-        <button type="submit">Save</button>
+        <button [disabled]="submission.pending" type="submit">Save</button>
     </form>
 
-    <button (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>
 
 <div *ngIf="!addingRefuel && refuel">
     <h3>edit Refuel</h3>
-    <form (ngSubmit)="onUpdate()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
         <div>
             <label for="date">Date</label>
-            <input [(ngModel)]="refuel!.date" id="date" name="date" required type="date"/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.date" id="date" name="date" required type="date"/>
         </div>
         <div>
             <label for="distance">Distance</label>
-            <input [(ngModel)]="refuel!.distance" id="distance" name="distance" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.distance" id="distance" name="distance" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="consumption">Consumption</label>
-            <input [(ngModel)]="refuel!.consumption" id="consumption" name="consumption" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.consumption" id="consumption" name="consumption" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="cost">Cost</label>
-            <input [(ngModel)]="refuel!.cost" id="cost" name="cost" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="refuel!.cost" id="cost" name="cost" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="fuel_type">Fuel</label>
-            <select [(ngModel)]="refuel!.fuel_type" id="fuel_type" name="fuel_type" required>
+            <select [disabled]="submission.pending" [(ngModel)]="refuel!.fuel_type" id="fuel_type" name="fuel_type" required>
                 <option *ngFor="let fuel_type of fuel_types" [ngValue]="fuel_type">
                     {{ fuel_type.name }}
                 </option>
@@ -88,18 +89,18 @@
         </div>
         <div>
             <label for="car">Car</label>
-            <select [(ngModel)]="refuel!.car" id="car" name="car" required>
+            <select [disabled]="submission.pending" [(ngModel)]="refuel!.car" id="car" name="car" required>
                 <option *ngFor="let car of cars" [ngValue]="car">
                     {{ car.name }}
                 </option>
             </select>
         </div>
 
-        <button type="submit">Update</button>
+        <button [disabled]="submission.pending" type="submit">Update</button>
     </form>
 
-    <button (click)="reset()">Back</button>
-    <button (click)="onDelete()">Delete Refuel</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="onDelete()">Delete Refuel</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>

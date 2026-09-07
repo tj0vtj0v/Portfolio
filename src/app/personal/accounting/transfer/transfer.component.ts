@@ -1,4 +1,8 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridReadyEvent} from 'ag-grid-community';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {Transfer} from '../../../shared/datatype/Transfer';
 import {FormsModule} from '@angular/forms';
@@ -12,6 +16,7 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
 @Component({
     selector: 'app-transfer',
     imports: [
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
@@ -21,6 +26,8 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
     styleUrl: './transfer.component.css'
 })
 export class TransferComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected accounts: Account[] = [];
     protected transfers: Transfer[] = [];
     protected transfer?: Transfer;
@@ -42,11 +49,8 @@ export class TransferComponent {
     ) {
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
+
+    onGridReady(params: GridReadyEvent) {
 
         const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
 
@@ -130,11 +134,14 @@ export class TransferComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_transfer(this.transfer!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -147,11 +154,14 @@ export class TransferComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_transfer(this.transfer!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -164,8 +174,10 @@ export class TransferComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this transfer?')) {
-            this.accountingService.delete_transfer(this.transfer!.id!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_transfer(this.transfer!.id!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

@@ -1,29 +1,10 @@
 import {Component} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {DashboardComponent} from './dashboard/dashboard.component';
-import {TransactionComponent} from './transaction/transaction.component';
-import {HistoryComponent} from './history/history.component';
-import {AllCommunityModule, ModuleRegistry} from 'ag-grid-community';
+import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 
 @Component({
     selector: 'app-banking',
-    imports: [
-        CommonModule,
-        DashboardComponent,
-        TransactionComponent,
-        HistoryComponent
-    ],
+    imports: [RouterLink, RouterLinkActive, RouterOutlet],
     templateUrl: './banking.component.html',
     styleUrl: './banking.component.css'
 })
-export class BankingComponent {
-    protected selectedOption: string = '';
-
-    constructor() {
-        ModuleRegistry.registerModules([AllCommunityModule]);
-    }
-
-    protected selectOption(option: string) {
-        this.selectedOption = option;
-    }
-}
+export class BankingComponent {}

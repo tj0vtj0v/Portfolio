@@ -1,11 +1,15 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridReadyEvent} from 'ag-grid-community';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Expense} from '../../../shared/datatype/Expense';
 import {Account} from '../../../shared/datatype/Account';
 import {Category} from '../../../shared/datatype/Category';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {forkJoin} from 'rxjs';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
@@ -13,6 +17,7 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
 @Component({
     selector: 'app-expense',
     imports: [
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
@@ -22,6 +27,8 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
     styleUrl: './expense.component.css'
 })
 export class ExpenseComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected expenses: Expense[] = [];
     protected accounts: Account[] = [];
     protected categories: Category[] = [];
@@ -43,14 +50,10 @@ export class ExpenseComponent {
     constructor(
         private accountingService: AccountingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
+
+    onGridReady(params: GridReadyEvent) {
 
         const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
 
@@ -144,11 +147,14 @@ export class ExpenseComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_expense(this.expense!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_expense(this.expense!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -161,11 +167,14 @@ export class ExpenseComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_expense(this.expense!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_expense(this.expense!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -178,8 +187,10 @@ export class ExpenseComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this expense?')) {
-            this.accountingService.delete_expense(this.expense!.id!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_expense(this.expense!.id!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

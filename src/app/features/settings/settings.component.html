@@ -9,7 +9,8 @@
 
     <div class="settings-actions">
         <a routerLink="/account">Edit Account</a>
-        <a (click)="delete()">Delete Account</a>
+        <button type="button" (click)="delete()" [disabled]="deleting">{{ deleting ? 'Deleting…' : 'Delete Account' }}</button>
         <a (click)="logout()">Logout</a>
     </div>
+    <p *ngIf="statusMessage" role="alert">{{ statusMessage }}</p>
 </div>

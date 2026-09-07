@@ -1,15 +1,19 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {AgGridModule} from 'ag-grid-angular';
 import {Account} from '../../../shared/datatype/Account';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 
 @Component({
     selector: 'app-account',
     imports: [
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridModule,
         FormsModule,
@@ -19,6 +23,8 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
     styleUrl: './account.component.css'
 })
 export class AccountComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected accounts: Account[] = [];
     protected account?: Account;
     protected accountName?: string;
@@ -36,15 +42,8 @@ export class AccountComponent {
     constructor(
         private accountingService: AccountingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         this.accountingService.get_accounts().subscribe(
@@ -92,11 +91,14 @@ export class AccountComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_account(this.account!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_account(this.account!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -109,11 +111,14 @@ export class AccountComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_account(this.accountName!, this.account!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_account(this.accountName!, this.account!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -126,8 +131,10 @@ export class AccountComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this account?')) {
-            this.accountingService.delete_account(this.accountName!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_account(this.accountName!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

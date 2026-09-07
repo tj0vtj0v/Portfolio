@@ -1,5 +1,7 @@
+<p *ngIf="submission.pending" role="status">Saving changes…</p>
 <div *ngIf="!(income || addingIncome)">
     <ag-grid-angular
+        appGridFit
         (gridReady)="onGridReady($event)"
         (rowClicked)="onRowClicked($event)"
         [columnDefs]="columnDefs"
@@ -11,70 +13,70 @@
         class="ag-theme-alpine"
         style="width: 100%; height: 100%;"
     />
-    <button (click)="onAdd()">Add Income</button>
+    <button [disabled]="submission.pending" (click)="onAdd()">Add Income</button>
 </div>
 
 <div *ngIf="addingIncome">
     <h3>Add Income</h3>
-    <form (ngSubmit)="onSave()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
         <div>
             <label for="add_date">Date</label>
-            <input [(ngModel)]="income!.date" id="add_date" name="date" required type="date"/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.date" id="add_date" name="date" required type="date"/>
         </div>
         <div>
             <label for="add_reason">Reason</label>
-            <input [(ngModel)]="income!.reason" id="add_reason" name="reason" required type="text"/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.reason" id="add_reason" name="reason" required type="text"/>
         </div>
         <div>
             <label for="add_amount">Amount</label>
-            <input [(ngModel)]="income!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="add_account">Account</label>
-            <select [(ngModel)]="income!.account" id="add_account" name="account" required>
+            <select [disabled]="submission.pending" [(ngModel)]="income!.account" id="add_account" name="account" required>
                 <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
         </div>
 
-        <button type="submit">Save</button>
+        <button [disabled]="submission.pending" type="submit">Save</button>
     </form>
 
-    <button (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>
 
 <div *ngIf="!addingIncome && income">
     <h3>Edit Income</h3>
-    <form (ngSubmit)="onUpdate()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
         <div>
             <label for="date">Date</label>
-            <input [(ngModel)]="income!.date" id="date" name="date" required type="date"/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.date" id="date" name="date" required type="date"/>
         </div>
         <div>
             <label for="reason">Reason</label>
-            <input [(ngModel)]="income!.reason" id="reason" name="add_reason" required type="text"/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.reason" id="reason" name="add_reason" required type="text"/>
         </div>
         <div>
             <label for="amount">Amount</label>
-            <input [(ngModel)]="income!.amount" id="amount" name="amount" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="income!.amount" id="amount" name="amount" required type="text" numberFormatter/>
         </div>
         <div>
             <label for="account">Account</label>
-            <select [(ngModel)]="income!.account" id="account" name="add_account" required>
+            <select [disabled]="submission.pending" [(ngModel)]="income!.account" id="account" name="add_account" required>
                 <option *ngFor="let account of accounts" [ngValue]="account">
                     {{ account.name }}
                 </option>
             </select>
         </div>
 
-        <button type="submit">Update</button>
+        <button [disabled]="submission.pending" type="submit">Update</button>
     </form>
 
-    <button (click)="reset()">Back</button>
-    <button (click)="onDelete()">Delete Income</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="onDelete()">Delete Income</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>

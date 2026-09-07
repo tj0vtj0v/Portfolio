@@ -1,13 +1,15 @@
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
 import {Component} from '@angular/core';
 import {AgGridModule} from 'ag-grid-angular';
 import {CommonModule} from '@angular/common';
 import {History} from '../../../shared/datatype/History';
-import {AllCommunityModule, ColDef, ModuleRegistry} from 'ag-grid-community';
+import {ColDef} from 'ag-grid-community';
 import {BankingService} from '../../../shared/api/banking.service';
 
 @Component({
     selector: 'app-history',
     imports: [
+        GridFitDirective,
         AgGridModule
     ],
     templateUrl: './history.component.html',
@@ -28,15 +30,8 @@ export class HistoryComponent {
     constructor(
         private bankingService: BankingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule])
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         this.bankingService.get_history().subscribe(transactions => {

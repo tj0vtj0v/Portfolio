@@ -1,14 +1,18 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {FuelService} from '../../../shared/api/fuel.service';
 
 @Component({
     selector: 'app-car',
     imports: [
+        GridFitDirective,
         AgGridModule,
         FormsModule,
         CommonModule
@@ -17,6 +21,8 @@ import {FuelService} from '../../../shared/api/fuel.service';
     styleUrl: './car.component.css'
 })
 export class CarComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected cars: Car[] = [];
     protected car?: Car;
     protected carName?: string;
@@ -32,15 +38,8 @@ export class CarComponent {
     constructor(
         private fuelService: FuelService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule])
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         this.fuelService.get_cars().subscribe(
@@ -101,11 +100,14 @@ export class CarComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.add_car(this.car!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.add_car(this.car!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -118,11 +120,14 @@ export class CarComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.update_car(this.carName!, this.car!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.update_car(this.carName!, this.car!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -135,8 +140,10 @@ export class CarComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this car?')) {
-            this.fuelService.delete_car(this.carName!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.fuelService.delete_car(this.carName!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

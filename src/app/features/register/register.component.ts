@@ -1,4 +1,6 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {RegisterUser} from '../../shared/datatype/RegisterUser';
 import {UserService} from '../../shared/api/user.service';
 import {CommonModule} from '@angular/common';
@@ -16,6 +18,8 @@ import {RouterLink} from '@angular/router';
     styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     user: RegisterUser = {
         first_name: '',
         last_name: '',
@@ -40,6 +44,7 @@ export class RegisterComponent {
     }
 
     onRegister(): void {
+        if (this.submission.pending) return;
         this.trim()
 
         if (!this.user.first_name || !this.user.last_name || !this.user.email ||
@@ -53,7 +58,10 @@ export class RegisterComponent {
             return;
         }
 
-        this.userService.register(this.user).subscribe(
+        this.statusMessage = '';
+
+
+        this.submission.run(() => this.userService.register(this.user)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => {
                 this.statusMessage = 'Registered successfully, please log in';
                 this.success = true;

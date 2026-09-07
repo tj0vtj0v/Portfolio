@@ -1,9 +1,12 @@
-import {Component} from '@angular/core';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {Refuel} from '../../../shared/datatype/Refuel';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {FuelService} from '../../../shared/api/fuel.service';
 import {forkJoin} from 'rxjs';
 import {Car} from '../../../shared/datatype/Car';
@@ -13,6 +16,7 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
 @Component({
     selector: 'app-refuel',
     imports: [
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridModule,
         FormsModule,
@@ -22,6 +26,8 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
     styleUrl: './refuel.component.css'
 })
 export class RefuelComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected refuels: Refuel[] = [];
     protected cars: Car[] = [];
     protected fuel_types: FuelType[] = [];
@@ -57,15 +63,8 @@ export class RefuelComponent {
     constructor(
         private fuelService: FuelService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule])
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
         forkJoin([
@@ -156,11 +155,14 @@ export class RefuelComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.add_refuel(this.refuel!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.add_refuel(this.refuel!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -173,11 +175,14 @@ export class RefuelComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.update_refuel(this.refuel!).subscribe(
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.update_refuel(this.refuel!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             () => this.reset(),
             (error) => {
                 if (error?.error?.detail) {
@@ -190,8 +195,10 @@ export class RefuelComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this refuel?')) {
-            this.fuelService.delete_refuel(this.refuel!.id!).subscribe(
+            this.statusMessage = '';
+            this.submission.run(() => this.fuelService.delete_refuel(this.refuel!.id!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
                 () => this.reset(),
                 (error) => {
                     if (error?.error?.detail) {

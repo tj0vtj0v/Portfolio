@@ -1,6 +1,7 @@
+<p *ngIf="submission.pending" role="status">Saving changes…</p>
 <div *ngIf="!(account || addingAccount)">
     <ag-grid-angular
-        (gridReady)="onGridReady($event)"
+        appGridFit
         (rowClicked)="onRowClicked($event)"
         [columnDefs]="columnDefs"
         [domLayout]="'autoHeight'"
@@ -11,48 +12,48 @@
         class="ag-theme-alpine"
         style="width: 100%; height: 100%;"
     />
-    <button (click)="onAdd()">Add Account</button>
+    <button [disabled]="submission.pending" (click)="onAdd()">Add Account</button>
 </div>
 
 <div *ngIf="addingAccount">
     <h3>Add Account</h3>
-    <form (ngSubmit)="onSave()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
         <div>
             <label for="add_name">Name</label>
-            <input [(ngModel)]="account!.name" id="add_name" name="add_name" placeholder="Enter the account name"
+            <input [disabled]="submission.pending" [(ngModel)]="account!.name" id="add_name" name="add_name" placeholder="Enter the account name"
                    required
                    type="text"/>
         </div>
         <div>
             <label for="add_balance">Balance</label>
-            <input [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="text" numberFormatter/>
         </div>
 
-        <button type="submit">Save</button>
+        <button [disabled]="submission.pending" type="submit">Save</button>
     </form>
 
-    <button (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>
 
 <div *ngIf="!addingAccount && account">
     <h3>Edit Account: {{ accountName }}</h3>
-    <form (ngSubmit)="onUpdate()">
+    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
         <div>
             <label for="name">Name</label>
-            <input [(ngModel)]="account.name" id="name" name="name" required type="text"/>
+            <input [disabled]="submission.pending" [(ngModel)]="account.name" id="name" name="name" required type="text"/>
         </div>
         <div>
             <label for="balance">Balance</label>
-            <input [(ngModel)]="account.balance" id="balance" name="balance" required type="text" numberFormatter/>
+            <input [disabled]="submission.pending" [(ngModel)]="account.balance" id="balance" name="balance" required type="text" numberFormatter/>
         </div>
 
-        <button type="submit">Update</button>
+        <button [disabled]="submission.pending" type="submit">Update</button>
     </form>
 
-    <button (click)="reset()">Back</button>
-    <button (click)="onDelete()">Delete Account</button>
+    <button [disabled]="submission.pending" (click)="reset()">Back</button>
+    <button [disabled]="submission.pending" (click)="onDelete()">Delete Account</button>
 
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
 </div>
