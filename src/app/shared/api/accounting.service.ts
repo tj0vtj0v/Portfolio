@@ -1,6 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {ConnectorService} from './connector.service';
-import {Observable} from 'rxjs';
+import {Observable, tap} from 'rxjs';
+import {AccountingSetupState} from './accounting-setup-state.service';
 import {Account} from '../datatype/Account';
 import {Transfer} from '../datatype/Transfer';
 import {Category} from '../datatype/Category';
@@ -11,6 +12,7 @@ import {Income} from '../datatype/Income';
     providedIn: 'root'
 })
 export class AccountingService {
+    private readonly setup = inject(AccountingSetupState);
 
     constructor(
         private connectorService: ConnectorService
@@ -19,11 +21,14 @@ export class AccountingService {
 
     // account management
     public add_account(account: Account): Observable<any> {
-        return this.connectorService.add('accounting/accounts', account);
+        return this.connectorService.add('accounting/accounts', account).pipe(tap(() => this.setup.accountsEmpty.set(false)));
     }
 
     public get_accounts(): Observable<any> {
-        return this.connectorService.get('accounting/accounts');
+        return this.connectorService.get('accounting/accounts').pipe(tap({
+            next: rows => this.setup.accountsEmpty.set(Array.isArray(rows) ? rows.length === 0 : null),
+            error: () => this.setup.accountsEmpty.set(null)
+        }));
     }
 
     public get_account_history(account_name: string): Observable<any> {
@@ -73,11 +78,14 @@ export class AccountingService {
 
     // category management
     public add_category(category: Category): Observable<any> {
-        return this.connectorService.add('accounting/categories', category);
+        return this.connectorService.add('accounting/categories', category).pipe(tap(() => this.setup.categoriesEmpty.set(false)));
     }
 
     public get_categories(): Observable<any> {
-        return this.connectorService.get('accounting/categories');
+        return this.connectorService.get('accounting/categories').pipe(tap({
+            next: rows => this.setup.categoriesEmpty.set(Array.isArray(rows) ? rows.length === 0 : null),
+            error: () => this.setup.categoriesEmpty.set(null)
+        }));
     }
 
     public update_category(name: string, category: Category): Observable<any> {

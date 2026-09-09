@@ -25,6 +25,35 @@ describe('DashboardComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('groups consumption per fuel type in litres per 100 km', () => {
+        const dashboard = component as any;
+        dashboard.refuels = Array.from({length: 5}, (_, index) => ({
+            date: '2026-02-02', distance: 100, consumption: index + 4, cost: (index + 4) * 2,
+            car: {name: 'Car'}, fuel_type: {name: 'Fuel'}
+        }));
+        component.update({period: 'custom', from: '2026-02-01', to: '2026-02-02', observedTo: '2026-02-02'});
+        expect(dashboard.fuel_consumption_chart.series[0].data).toEqual([[4, 5, 6, 7, 8]]);
+        component.update(null);
+        expect(dashboard.fuel_consumption_chart.series[0].data).toEqual([]);
+    });
+
+    it('summarizes only records inside the inclusive observed period and clears stale totals', () => {
+        const dashboard = component as any;
+        dashboard.refuels = ['2026-02-03', '2026-02-02', '2026-01-31', '2026-02-01'].map(date => ({
+            date, distance: 100, consumption: 6, cost: 12, car: {name: 'Car'}, fuel_type: {name: 'Fuel'}
+        }));
+        const range = {period: 'custom' as const, from: '2026-02-01', to: '2026-02-03', observedTo: '2026-02-02'};
+        component.update(range);
+        component.update(range);
+        expect(dashboard.travelSummary).toEqual({distance: 200, fuel: 12, cost: 24, lastRefuel: '2026-02-02'});
+        component.update({...range, from: '2026-01-01', to: '2026-01-02', observedTo: '2026-01-02'});
+        expect(dashboard.travelSummary).toEqual({distance: 0, fuel: 0, cost: 0, lastRefuel: ''});
+        component.update(null);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('.summary-grid')).toBeNull();
+        expect(fixture.nativeElement.textContent).not.toContain('Price per litre');
+    });
+
     it('rebuilds maps without mutating or duplicating source refuels', () => {
         const dashboard = component as any;
         dashboard.refuels = [

@@ -42,7 +42,13 @@
     margin: 0;
 }
 
-.workspace-content { min-width: 0; padding: 36px; }
+.workspace-content {
+    width: 100%;
+    max-width: calc(var(--layout-workspace-max) - var(--layout-sidebar));
+    min-width: 0;
+    margin-inline: auto;
+    padding: 36px;
+}
 .workspace-shell > .workspace-content { grid-column: 2; }
 
 @media (max-width: 1100px) {

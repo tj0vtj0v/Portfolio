@@ -1,11 +1,11 @@
 <div class="accounting-page">
-    <app-ui-page-header eyebrow="Accounting" heading="Accounts" description="Manage the real accounts used by expenses, income, transfers, and current balances."><button *ngIf="!(account || addingAccount) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add account</button></app-ui-page-header>
+    <app-ui-page-header eyebrow="Accounting" heading="Accounts" description="Manage your accounts to track where your money is and where it goes."><button *ngIf="!(account || addingAccount) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add account</button></app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading accounts..." />
     <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
     <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
     <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
     <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
-    <app-ui-feedback *ngIf="!loading && !loadError && !accounts.length && !account" kind="info" message="No accounts have been recorded." />
+    <app-ui-feedback *ngIf="!loading && !loadError && !accounts.length && !account" kind="info" message="No accounts yet. Create one to get started." />
     <app-ui-panel *ngIf="!(account || addingAccount) && !loading && !loadError" heading="Current accounts"><div class="grid-wrap"><ag-grid-angular appGridFit (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="accounts" style="width:100%;height:100%" /></div></app-ui-panel>
     <app-ui-panel *ngIf="addingAccount" heading="Add account">
         <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><div class="form-grid">

@@ -41,11 +41,11 @@ describe('DashboardComponent', () => {
         response.complete();
         fixture.detectChanges();
         expect(fixture.nativeElement.querySelector('app-ui-skeleton')).toBeNull();
-        expect(fixture.nativeElement.querySelectorAll('app-chart-card').length).toBe(5);
+        expect(fixture.nativeElement.querySelectorAll('app-chart-card').length).toBe(4 + (component as any).monthlyCharts.length);
     });
 
-    it('renders five charts after an empty response and clears loading feedback', () => {
-        expect(fixture.nativeElement.querySelectorAll('app-chart-card').length).toBe(5);
+    it('renders overview and monthly charts after an empty response and clears loading feedback', () => {
+        expect(fixture.nativeElement.querySelectorAll('app-chart-card').length).toBe(4 + (component as any).monthlyCharts.length);
         expect(fixture.nativeElement.querySelector('[role="status"]')).toBeNull();
     });
 

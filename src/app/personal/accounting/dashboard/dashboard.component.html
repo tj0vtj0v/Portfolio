@@ -1,6 +1,6 @@
 <div class="accounting-dashboard">
-    <app-ui-page-header eyebrow="Workspace" heading="Accounting" description="Track income, expenses, transfers, and current account balances.">
-        <a class="button" data-variant="primary" routerLink="/accounting/expenses" [queryParams]="{mode: 'add'}">+ Expense</a>
+    <app-ui-page-header eyebrow="Workspace" heading="Accounting" description="Track where your money is, what you spend, and how much you save.">
+        <a class="button" routerLink="/accounting/expenses" [queryParams]="{mode: 'add'}">+ Expense</a>
         <a class="button" routerLink="/accounting/incomes" [queryParams]="{mode: 'add'}">+ Income</a>
         <a class="button" routerLink="/accounting/transfers" [queryParams]="{mode: 'add'}">+ Transaction</a>
         <a class="button" routerLink="/accounting/accounts">View accounts</a>
@@ -20,10 +20,22 @@
             <article><span>Period net change</span><strong>{{ periodIncome - periodExpenses | currency:'EUR' }}</strong></article>
         </section>
 
-        <section class="primary-charts">
-            <app-ui-panel heading="Balance history"><app-chart-card [options]="charts.history" /></app-ui-panel>
+        <app-ui-panel heading="Expenses and income" eyebrow="Monthly comparison">
+            <div #monthlyScroll class="monthly-scroll" tabindex="0" role="region" aria-label="Monthly expenses and income; scroll horizontally for more months">
+                <article *ngFor="let month of monthlyCharts" class="monthly-chart" [attr.aria-label]="month.month + ': expenses ' + (month.expenses | currency:'EUR') + ', income ' + (month.income | currency:'EUR')">
+                    <app-chart-card [options]="month.options" [colorTokens]="comparisonColors" />
+                    <h3>{{ month.month + '-01' | date:'MMM yyyy' }}</h3>
+                </article>
+            </div>
+            <p *ngIf="!monthlyCharts.length" class="comparison-empty">No months available for this period.</p>
+        </app-ui-panel>
+
+        <app-ui-panel heading="Balance history"><app-chart-card [options]="charts.history" /></app-ui-panel>
+        <section class="primary-charts" aria-label="Account liquidity and expenses">
+            <app-ui-panel heading="Account liquidity"><app-chart-card [options]="charts.balance" /></app-ui-panel>
             <app-ui-panel heading="Expenses by category"><app-chart-card [options]="charts.category_expense" /></app-ui-panel>
         </section>
+        <app-ui-panel heading="Transfer flow"><app-chart-card [options]="charts.transfer" /></app-ui-panel>
 
         <app-ui-panel heading="Recent activity" eyebrow="Selected period">
             <div class="activity-toolbar" role="group" aria-label="Filter recent activity">
@@ -53,10 +65,5 @@
             </button>
         </app-ui-panel>
 
-        <section class="secondary-charts" aria-label="Additional accounting charts">
-            <app-ui-panel heading="Account liquidity"><app-chart-card [options]="charts.balance" /></app-ui-panel>
-            <app-ui-panel heading="Income by account"><app-chart-card [options]="charts.account_income" /></app-ui-panel>
-            <app-ui-panel heading="Transfer flow"><app-chart-card [options]="charts.transfer" /></app-ui-panel>
-        </section>
     </ng-container>
 </div>

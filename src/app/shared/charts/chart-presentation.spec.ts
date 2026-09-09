@@ -24,7 +24,7 @@ describe('chart data and presentation updates', () => {
             for (const value of [10, 20]) {
                 card.options = {tooltip: {formatter}, legend: {}, xAxis: {type: 'category', data: ['A']}, yAxis: {}, series: [{name: 'Balance', type: 'bar', data: [value]}]};
                 chart.setOption((card as any).presentationOptions, true);
-                expect((chart.getOption()['color'] as string[])[0]).toBe(resolvedChartColors().primary);
+                expect((chart.getOption()['color'] as string[])[0]).toBe(resolvedChartColors().palette![0]);
                 expect((chart.getOption()['tooltip'] as any[])[0].formatter).toBe(formatter);
             }
             chart.dispatchAction({type: 'legendUnSelect', name: 'Balance'});

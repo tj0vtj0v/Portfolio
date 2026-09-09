@@ -1,6 +1,7 @@
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
+import {RouterLink} from '@angular/router';
 import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
 import {CommonModule, DatePipe} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
@@ -10,14 +11,14 @@ import {EChartsCoreOption} from 'echarts';
 import {FuelService} from '../../../shared/api/fuel.service';
 import {forkJoin} from 'rxjs';
 import {DateRangeComponent} from '../../../shared/date-range/date-range.component';
-import {PeriodRange} from '../../../shared/date-range/period-range';
+import {PeriodRange, formatLocalDate} from '../../../shared/date-range/period-range';
 import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
 import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [UiSkeletonComponent,
+    imports: [UiSkeletonComponent, RouterLink,
         ChartCardComponent,
         CommonModule,
         DateRangeComponent,
@@ -46,7 +47,9 @@ export class DashboardComponent {
     protected travel_chart: EChartsCoreOption = {};
     protected fuel_chart: EChartsCoreOption = {};
     protected consumption_chart: EChartsCoreOption = {};
-    protected price_chart: EChartsCoreOption = {};
+    protected fuel_consumption_chart: EChartsCoreOption = {};
+    protected travelSummary = {distance: 0, fuel: 0, cost: 0, lastRefuel: ''};
+    protected validPeriod = false;
     protected loading = true;
     protected errorMessage = '';
 
@@ -86,15 +89,23 @@ export class DashboardComponent {
     update(range: PeriodRange | null | undefined = this.range): void {
         this.range = range ?? undefined;
         this.filterData(range);
+        this.validPeriod = !!range;
+        this.travelSummary = this.filteredRefuels.reduce((summary, refuel) => ({
+            distance: summary.distance + refuel.distance,
+            fuel: summary.fuel + refuel.consumption,
+            cost: summary.cost + refuel.cost,
+            lastRefuel: refuel.date > summary.lastRefuel ? refuel.date : summary.lastRefuel
+        }), {distance: 0, fuel: 0, cost: 0, lastRefuel: ''});
         this.build_travel_chart();
         this.build_fuel_chart();
         this.build_consumption_chart();
-        this.build_price_chart();
+        this.build_fuel_consumption_chart();
     }
 
     private build_travel_chart(): void {
+        const today = formatLocalDate(new Date());
         const carMap = new Map<string, { date: string, distance: number }[]>();
-        this.filteredRefuels.forEach(refuel => {
+        this.filteredRefuels.filter(refuel => refuel.date <= today).forEach(refuel => {
             let car = refuel.car!.name;
 
             if (!carMap.has(car)) {
@@ -123,7 +134,7 @@ export class DashboardComponent {
                 dateMap.set(entry.date, cumulativeDistance);
             });
 
-            if (this.range) dateMap.set(this.range.observedTo, cumulativeDistance);
+            if (this.range) dateMap.set(this.range.to < today ? this.range.to : today, cumulativeDistance);
 
             refuels = Array.from(dateMap.entries()).map(([date, distance]) => (
                 {date, distance}
@@ -152,6 +163,8 @@ export class DashboardComponent {
             xAxis: {
                 type: 'time',
                 name: 'Date',
+                min: this.range?.from,
+                max: this.range?.to,
             },
             yAxis: {
                 type: 'value',
@@ -250,19 +263,21 @@ export class DashboardComponent {
         };
     }
 
-    private build_price_chart(): void {
+    private build_fuel_consumption_chart(): void {
         const refinedData: { name: string, data: [number, number, number, number, number][] }[] = [];
         this.fuelRefuelMap.forEach((refuels: Refuel[], fuel: string) => {
             if (refuels.length < 5) return;
 
-            const prices = refuels.map(entry => entry.cost / entry.consumption);
-            prices.sort((a, b) => a - b);
+            const validRefuels = refuels.filter(entry => entry.distance > 0);
+            if (validRefuels.length < 5) return;
+            const consumptions = validRefuels.map(entry => entry.consumption / entry.distance * 100);
+            consumptions.sort((a, b) => a - b);
 
-            const min = prices[0];
-            const q1 = prices[Math.floor(prices.length * 0.25)];
-            const median = prices[Math.floor(prices.length * 0.5)];
-            const q3 = prices[Math.floor(prices.length * 0.75)];
-            const max = prices[prices.length - 1];
+            const min = consumptions[0];
+            const q1 = consumptions[Math.floor(consumptions.length * 0.25)];
+            const median = consumptions[Math.floor(consumptions.length * 0.5)];
+            const q3 = consumptions[Math.floor(consumptions.length * 0.75)];
+            const max = consumptions[consumptions.length - 1];
 
             refinedData.push({
                 name: fuel,
@@ -271,16 +286,17 @@ export class DashboardComponent {
         });
 
 
-        this.price_chart = {
+        const unit = 'L/100 km';
+        const chart: EChartsCoreOption = {
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    return `${tooltipText(params.name)}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
+                    return `${tooltipText(params.name)}<br/>Min: ${params.data[1].toFixed(3)} ${unit}<br/>Median: ${params.data[3].toFixed(3)} ${unit}<br/>Max: ${params.data[5].toFixed(3)} ${unit}`;
                 }
             },
             xAxis: {
                 type: 'value',
-                name: 'Price'
+                name: 'Consumption (L/100 km)'
             },
             yAxis: {
                 type: 'category',
@@ -289,9 +305,11 @@ export class DashboardComponent {
             },
             series: [{
                 type: 'boxplot',
+                colorBy: 'data',
                 data: refinedData.map(s => s.data[0])
             }]
         };
+        this.fuel_consumption_chart = chart;
     }
 
     private filterData(range: PeriodRange | null | undefined): void {

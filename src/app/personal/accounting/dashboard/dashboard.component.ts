@@ -1,5 +1,5 @@
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
-import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, DestroyRef, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
@@ -8,6 +8,7 @@ import {DateRangeComponent} from '../../../shared/date-range/date-range.componen
 import {PeriodRange} from '../../../shared/date-range/period-range';
 import {AccountingActivity, AccountingActivityType, AccountingDashboardData, accountingActivity, filterAccountingData} from './dashboard-data';
 import {DashboardDataService} from './dashboard-data.service';
+import {monthlyComparison} from './monthly-comparison';
 import {buildAccountingCharts} from './dashboard-charts';
 import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
@@ -20,7 +21,7 @@ import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-sta
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewChecked {
     private readonly service = inject(DashboardDataService);
     private readonly destroyRef = inject(DestroyRef);
     private data: AccountingDashboardData = {
@@ -31,6 +32,19 @@ export class DashboardComponent implements OnInit {
     protected loading = true;
     protected errorMessage = '';
     protected charts = buildAccountingCharts(this.view);
+    protected monthlyCharts = monthlyComparison(this.view);
+    protected readonly comparisonColors = ['--color-chart-expense', '--color-chart-income'];
+    @ViewChild('monthlyScroll') private monthlyScroll?: ElementRef<HTMLElement>;
+    private scrollToLatest = true;
+
+    ngAfterViewChecked(): void {
+        if (this.scrollToLatest && this.monthlyScroll) {
+            const element = this.monthlyScroll.nativeElement;
+            element.scrollLeft = element.scrollWidth;
+            this.scrollToLatest = false;
+        }
+    }
+
     protected currentBalance = 0;
     protected periodIncome = 0;
     protected periodExpenses = 0;
@@ -62,6 +76,8 @@ export class DashboardComponent implements OnInit {
             ? filterAccountingData(this.data, range.from, range.observedTo)
             : filterAccountingData(this.data, '9999-12-31', '0000-01-01');
         this.charts = buildAccountingCharts(this.view);
+        this.monthlyCharts = monthlyComparison(this.view, range?.to);
+        this.scrollToLatest = true;
         this.currentBalance = this.view.accounts.reduce((sum, account) => sum + account.balance, 0);
         this.periodIncome = this.view.filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
         this.periodExpenses = this.view.filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);

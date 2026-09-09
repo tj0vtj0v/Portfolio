@@ -1,4 +1,5 @@
 .topbar {
+    width: 100%;
     position: relative;
     z-index: 3;
     display: grid;
@@ -30,12 +31,16 @@
 .account-menu-panel :is(a, button):hover { background: var(--color-surface-soft); }
 
 @media (max-width: 700px) {
-    .topbar { grid-template-columns: 1fr auto; padding-inline: 22px; }
-    .view-switch { grid-column: 1 / -1; grid-row: 2; justify-self: center; order: 3; }
+    .topbar { grid-template-columns: minmax(0, 1fr) auto auto; gap: var(--space-2); padding-inline: var(--space-3); }
+    .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .view-switch, .topbar-actions { flex-wrap: nowrap; white-space: nowrap; }
+    .view-switch a { padding-inline: var(--space-2); }
 }
 
 @media (max-width: 420px) {
-    .theme-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-    .view-switch { width: 100%; }
-    .view-switch a { flex: 1; text-align: center; }
+    .topbar { gap: var(--space-1); padding-inline: var(--space-2); }
+    .name { font-size: 14px; }
+    .view-switch a, .theme-toggle, .account-menu summary, .login-link { font-size: var(--font-size-label); padding-inline: var(--space-2); }
+    .topbar-actions, .theme-toggle { gap: var(--space-1); }
+    .account-menu summary::after { margin-left: var(--space-1); }
 }

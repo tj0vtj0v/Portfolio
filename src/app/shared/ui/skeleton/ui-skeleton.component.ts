@@ -13,13 +13,16 @@ export type SkeletonLayout = 'accounting' | 'banking' | 'fuel' | 'table' | 'form
                 <div class="heading"><i class="bar short"></i><i class="bar title"></i><i class="bar description"></i></div>
                 @if (isDashboard) { <div class="bar toolbar"></div> }
             }
-            @if (layout === 'accounting') {
+            @if (layout === 'accounting' || layout === 'fuel') {
                 <div class="summaries">@for (item of four; track $index) {
                     <div class="panel"><i class="bar short"></i><i class="bar value"></i></div>
                 }</div>
             }
+            @if (layout === 'accounting') {
+                <div class="panel"><i class="bar short"></i><div class="chart" style="height: 96px"></div></div>
+            }
             @if (isDashboard) {
-                <div class="charts" [class.single]="layout === 'banking'">
+                <div class="charts" [class.single]="layout === 'banking'" [class.accounting]="layout === 'accounting'">
                     @for (item of chartSlots; track $index) {
                         <div class="panel"><i class="bar short"></i><div class="chart"></div></div>
                     }
@@ -48,5 +51,5 @@ export class UiSkeletonComponent {
     protected readonly four = [0, 1, 2, 3];
     protected readonly rows = [0, 1, 2, 3, 4, 5, 6, 7];
     protected get isDashboard(): boolean { return ['accounting', 'banking', 'fuel'].includes(this.layout); }
-    protected get chartSlots(): number[] { return this.layout === 'fuel' ? this.four : this.layout === 'banking' ? [0] : [0, 1]; }
+    protected get chartSlots(): number[] { return this.layout === 'fuel' ? this.four : this.layout === 'banking' ? [0] : this.four; }
 }

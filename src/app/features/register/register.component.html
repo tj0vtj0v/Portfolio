@@ -13,7 +13,11 @@
             </div>
             <div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Register</button><a routerLink="/login">Back to login</a></div>
         </form>
-        <app-ui-feedback *ngIf="statusMessage" [kind]="feedbackKind" [message]="statusMessage" />
-        <a *ngIf="success" class="button primary" data-variant="primary" routerLink="/login">Continue to login</a>
+        <div *ngIf="statusMessage || success" class="registration-result" [class.registration-result--error]="!success">
+            <app-ui-feedback *ngIf="statusMessage" [kind]="feedbackKind" [message]="statusMessage" />
+            <div *ngIf="success" class="registration-result-actions">
+                <a class="button" data-variant="primary" routerLink="/login">Continue to login</a>
+            </div>
+        </div>
     </app-ui-panel>
 </div>

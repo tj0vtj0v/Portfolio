@@ -1,13 +1,15 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {ConnectorService} from './connector.service';
 import {Car} from '../datatype/Car';
-import {Observable} from 'rxjs';
+import {Observable, tap} from 'rxjs';
+import {FuelSetupState} from './fuel-setup-state.service';
 import {Refuel} from '../datatype/Refuel';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FuelService {
+    private readonly setup = inject(FuelSetupState);
 
     constructor(
         private connectorService: ConnectorService
@@ -16,11 +18,14 @@ export class FuelService {
 
     //car management
     public add_car(car: Car): Observable<any> {
-        return this.connectorService.add('fuel/cars', car);
+        return this.connectorService.add('fuel/cars', car).pipe(tap(() => this.setup.carsEmpty.set(false)));
     }
 
     public get_cars(): Observable<any> {
-        return this.connectorService.get('fuel/cars');
+        return this.connectorService.get('fuel/cars').pipe(tap({
+            next: rows => this.setup.carsEmpty.set(Array.isArray(rows) ? rows.length === 0 : null),
+            error: () => this.setup.carsEmpty.set(null)
+        }));
     }
 
     public update_car(car_name: string, car: Car): Observable<any> {
