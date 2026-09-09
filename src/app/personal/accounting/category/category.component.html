@@ -1,49 +1,18 @@
-<div *ngIf="!(category || addingCategory)">
-    <ag-grid-angular
-        (gridReady)="onGridReady($event)"
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="categories"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-    <button (click)="onAdd()">Add Category</button>
-</div>
-
-<div *ngIf="addingCategory">
-    <h3>Add Category</h3>
-    <form (ngSubmit)="onSave()">
-        <div>
-            <label for="add_name">Name</label>
-            <input [(ngModel)]="category!.name" id="add_name" name="add_name" placeholder="Enter the category name"
-                   required type="text"/>
-        </div>
-
-        <button type="submit">Save</button>
-    </form>
-
-    <button (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingCategory && category">
-    <h3>Edit Category: {{ categoryName }}</h3>
-    <form (ngSubmit)="onUpdate()">
-        <div>
-            <label for="name">Name</label>
-            <input [(ngModel)]="category.name" id="name" name="name" required type="text"/>
-        </div>
-
-        <button type="submit">Update</button>
-    </form>
-
-    <button (click)="reset()">Back</button>
-    <button (click)="onDelete()">Delete Category</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+<div class="accounting-page">
+    <app-ui-page-header eyebrow="Accounting" heading="Categories" description="Organize expenses with the categories provided to the expense editor."><button *ngIf="!(category || addingCategory) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add category</button></app-ui-page-header>
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading categories..." />
+    <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+    <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
+    <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
+    <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+    <app-ui-feedback *ngIf="!loading && !loadError && !categories.length && !category" kind="info" message="No categories have been recorded." />
+    <app-ui-panel *ngIf="!(category || addingCategory) && !loading && !loadError" heading="Expense categories"><div class="grid-wrap"><ag-grid-angular appGridFit (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="categories" style="width:100%;height:100%" /></div></app-ui-panel>
+    <app-ui-panel *ngIf="addingCategory" heading="Add category">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><div class="form-grid"><div class="form-field form-field--wide"><label for="add_name">Name</label><input [disabled]="submission.pending" [(ngModel)]="category!.name" id="add_name" name="name" required type="text" [appFieldError]="fieldErrors['name']"></div></div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Save category</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
+    <app-ui-panel *ngIf="!addingCategory && category" heading="Edit category">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()"><div class="form-grid"><div class="form-field form-field--wide"><label for="name">Name</label><input [disabled]="submission.pending" [(ngModel)]="category.name" id="name" name="name" required type="text" [appFieldError]="fieldErrors['name']"></div></div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Update category</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div><div class="destructive-section"><button data-variant="danger" [disabled]="submission.pending" type="button" (click)="onDelete()">Delete category</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>

@@ -1,16 +1,1 @@
-<div class="container">
-    <div class="sidebar">
-
-        <button (click)="selectOption('')">Dashboard</button>
-        <button (click)="selectOption('History')">History</button>
-        <button (click)="selectOption('Transactions')">Transactions</button>
-
-    </div>
-    <div class="content">
-        <div [ngSwitch]="selectedOption">
-            <app-history *ngSwitchCase="'History'"></app-history>
-            <app-transaction *ngSwitchCase="'Transactions'"></app-transaction>
-            <app-dashboard *ngSwitchDefault></app-dashboard>
-        </div>
-    </div>
-</div>
+<router-outlet />

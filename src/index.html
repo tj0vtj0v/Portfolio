@@ -6,7 +6,17 @@
     <base href="/">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <link href="favicon.ico" rel="icon" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>
+        (() => {
+            let theme;
+            try {
+                const saved = localStorage.getItem('portfolio.theme');
+                if (saved === 'light' || saved === 'dark') theme = saved;
+            } catch {}
+            if (!theme) theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.dataset.theme = theme;
+        })();
+    </script>
 </head>
 <body>
 <app-root></app-root>

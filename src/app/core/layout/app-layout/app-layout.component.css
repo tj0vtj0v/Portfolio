@@ -1,0 +1,65 @@
+:host { display: block; }
+.app-surface { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+.route-shell { flex: 1; }
+
+.portfolio-shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, var(--layout-portfolio-max));
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 0 64px;
+}
+
+.portfolio-shell > .portfolio-content, .portfolio-shell > app-footer { display: block; }
+
+.portfolio-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-6);
+    min-height: 56px;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.portfolio-nav a {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.portfolio-nav a:hover, .portfolio-nav a.active { color: var(--color-text); }
+.portfolio-nav a.active { text-decoration: underline; text-decoration-color: var(--color-primary); text-decoration-thickness: 2px; text-underline-offset: 8px; }
+.portfolio-content { flex: 1; min-width: 0; padding: var(--space-10) 0 var(--space-16); }
+
+.workspace-shell {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: var(--layout-sidebar) minmax(0, 1fr);
+    width: 100%;
+    margin: 0;
+}
+
+.workspace-content { min-width: 0; padding: 36px; }
+.workspace-shell > .workspace-content { grid-column: 2; }
+
+@media (max-width: 1100px) {
+    .portfolio-shell { padding-inline: 40px; }
+    .workspace-shell { grid-template-columns: var(--layout-sidebar-compact) minmax(0, 1fr); }
+    .workspace-content { padding-inline: 28px; }
+}
+
+@media (max-width: 800px) {
+    .portfolio-shell { padding-inline: 28px; }
+    .workspace-shell { display: flex; flex-direction: column; }
+    .workspace-content { flex: 1; padding: 28px; }
+}
+
+@media (max-width: 580px) {
+    .portfolio-shell { padding-inline: 22px; }
+    .portfolio-nav { justify-content: flex-start; gap: var(--space-5); overflow-x: auto; }
+    .portfolio-content { padding-top: var(--space-8); }
+    .workspace-content { padding: 22px; }
+}

@@ -1,6 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {CategoryComponent} from './category.component';
+import {AccountingService} from '../../../shared/api/accounting.service';
+import {of} from 'rxjs';
 
 describe('CategoryComponent', () => {
     let component: CategoryComponent;
@@ -8,7 +10,8 @@ describe('CategoryComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [CategoryComponent]
+            imports: [CategoryComponent],
+            providers: [{provide: AccountingService, useValue: {get_categories: () => of([])}}]
         })
             .compileComponents();
 

@@ -1,15 +1,23 @@
-<div class="settings-container">
-    <h2>Account Settings</h2>
-
-    <div class="user-details">
-        <p><strong>Username:</strong> {{ user?.username }}</p>
-        <p><strong>Email:</strong> {{ user?.email }}</p>
-        <p><strong>Role:</strong> {{ user?.role?.name }}</p>
-    </div>
-
-    <div class="settings-actions">
-        <a routerLink="/account">Edit Account</a>
-        <a (click)="delete()">Delete Account</a>
-        <a (click)="logout()">Logout</a>
-    </div>
+<div class="settings-page">
+    <app-ui-page-header eyebrow="Workspace" heading="Account settings" description="Review your account details and manage your session." />
+    <app-ui-panel heading="Account details">
+        <app-ui-skeleton *ngIf="loading" layout="form" message="Loading account details…" />
+        <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+        <button *ngIf="loadError" type="button" (click)="ngOnInit()">Try again</button>
+        <dl *ngIf="user" class="account-details">
+            <div><dt>Username</dt><dd>{{ user.username }}</dd></div>
+            <div><dt>Email</dt><dd>{{ user.email }}</dd></div>
+            <div><dt>Role</dt><dd>{{ user.role.name }}</dd></div>
+        </dl>
+        <div class="settings-actions">
+            <a class="button primary" data-variant="primary" routerLink="/account">Edit account</a>
+            <button type="button" (click)="logout()">Logout</button>
+        </div>
+        <div class="destructive-section">
+            <h2>Delete account</h2>
+            <p class="danger-copy">Permanently delete your account and its associated access. This action requires confirmation.</p>
+            <button data-variant="danger" type="button" (click)="delete()" [disabled]="deleting">{{ deleting ? 'Deleting…' : 'Delete account' }}</button>
+        </div>
+        <app-ui-feedback *ngIf="statusMessage" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>

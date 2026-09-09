@@ -1,0 +1,17 @@
+<aside class="project-sidebar">
+    <label for="workspace-project">Project</label>
+    <select id="workspace-project" aria-label="Workspace project" [value]="project ?? ''" (change)="selectProject($event)">
+        @if (!project) { <option value="" disabled selected>Choose project</option> }
+        @for (item of projects; track item.id) { <option [value]="item.id" [selected]="item.id === project">{{ item.name }}</option> }
+    </select>
+
+    @if (selected; as current) {
+        <nav class="project-nav" [attr.aria-label]="current.name + ' navigation'">
+            @for (item of current.children; track item.path; let first = $first) {
+                <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: first}" ariaCurrentWhenActive="page">{{ item.label }}</a>
+            }
+        </nav>
+    } @else {
+        <p class="project-hint">Choose a project to open its navigation.</p>
+    }
+</aside>

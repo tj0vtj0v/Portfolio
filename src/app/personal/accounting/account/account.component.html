@@ -1,58 +1,24 @@
-<div *ngIf="!(account || addingAccount)">
-    <ag-grid-angular
-        (gridReady)="onGridReady($event)"
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="accounts"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-    <button (click)="onAdd()">Add Account</button>
-</div>
-
-<div *ngIf="addingAccount">
-    <h3>Add Account</h3>
-    <form (ngSubmit)="onSave()">
-        <div>
-            <label for="add_name">Name</label>
-            <input [(ngModel)]="account!.name" id="add_name" name="add_name" placeholder="Enter the account name"
-                   required
-                   type="text"/>
-        </div>
-        <div>
-            <label for="add_balance">Balance</label>
-            <input [(ngModel)]="account!.balance" id="add_balance" name="add_balance" required type="text" numberFormatter/>
-        </div>
-
-        <button type="submit">Save</button>
-    </form>
-
-    <button (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingAccount && account">
-    <h3>Edit Account: {{ accountName }}</h3>
-    <form (ngSubmit)="onUpdate()">
-        <div>
-            <label for="name">Name</label>
-            <input [(ngModel)]="account.name" id="name" name="name" required type="text"/>
-        </div>
-        <div>
-            <label for="balance">Balance</label>
-            <input [(ngModel)]="account.balance" id="balance" name="balance" required type="text" numberFormatter/>
-        </div>
-
-        <button type="submit">Update</button>
-    </form>
-
-    <button (click)="reset()">Back</button>
-    <button (click)="onDelete()">Delete Account</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message">{{ statusMessage }}</p>
+<div class="accounting-page">
+    <app-ui-page-header eyebrow="Accounting" heading="Accounts" description="Manage the real accounts used by expenses, income, transfers, and current balances."><button *ngIf="!(account || addingAccount) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add account</button></app-ui-page-header>
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading accounts..." />
+    <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+    <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
+    <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
+    <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+    <app-ui-feedback *ngIf="!loading && !loadError && !accounts.length && !account" kind="info" message="No accounts have been recorded." />
+    <app-ui-panel *ngIf="!(account || addingAccount) && !loading && !loadError" heading="Current accounts"><div class="grid-wrap"><ag-grid-angular appGridFit (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="accounts" style="width:100%;height:100%" /></div></app-ui-panel>
+    <app-ui-panel *ngIf="addingAccount" heading="Add account">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><div class="form-grid">
+            <div class="form-field"><label for="add_name">Name</label><input [disabled]="submission.pending" [(ngModel)]="account!.name" id="add_name" name="name" required type="text" [appFieldError]="fieldErrors['name']"></div>
+            <div class="form-field"><label for="add_balance">Current balance</label><input [disabled]="submission.pending" [(ngModel)]="account!.balance" id="add_balance" name="balance" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['balance']"></div>
+        </div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Save account</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
+    <app-ui-panel *ngIf="!addingAccount && account" heading="Edit account">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()"><div class="form-grid">
+            <div class="form-field"><label for="name">Name</label><input [disabled]="submission.pending" [(ngModel)]="account.name" id="name" name="name" required type="text" [appFieldError]="fieldErrors['name']"></div>
+            <div class="form-field"><label for="balance">Current balance</label><input [disabled]="submission.pending" [(ngModel)]="account.balance" id="balance" name="balance" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['balance']"></div>
+        </div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Update account</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div><div class="destructive-section"><button data-variant="danger" [disabled]="submission.pending" type="button" (click)="onDelete()">Delete account</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>

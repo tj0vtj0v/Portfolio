@@ -1,0 +1,2 @@
+.proximity-page { display: grid; min-width: 0; gap: var(--space-6); }
+.proximity-page app-ui-page-header { margin-bottom: calc(var(--space-8) * -1 + var(--space-6)); }

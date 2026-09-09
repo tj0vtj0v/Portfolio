@@ -1,477 +1,89 @@
-import {Component, OnInit} from '@angular/core';
-import {NgxEchartsDirective, NgxEchartsModule, provideEchartsCore} from 'ngx-echarts';
-import {EChartsCoreOption} from 'echarts';
-import {FormsModule} from '@angular/forms';
-import {CommonModule, DatePipe} from '@angular/common';
-import {forkJoin} from 'rxjs';
-import {MatOptionModule} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {AccountingService} from '../../../shared/api/accounting.service';
-import {Account} from '../../../shared/datatype/Account';
-import {Transfer} from '../../../shared/datatype/Transfer';
-import {Expense} from '../../../shared/datatype/Expense';
-import {Income} from '../../../shared/datatype/Income';
-import {Category} from '../../../shared/datatype/Category';
-import {BalanceHistory} from '../../../shared/datatype/BalanceHistory';
+import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
+import {DateRangeComponent} from '../../../shared/date-range/date-range.component';
+import {PeriodRange} from '../../../shared/date-range/period-range';
+import {AccountingActivity, AccountingActivityType, AccountingDashboardData, accountingActivity, filterAccountingData} from './dashboard-data';
+import {DashboardDataService} from './dashboard-data.service';
+import {buildAccountingCharts} from './dashboard-charts';
+import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
+import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
+import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-state.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [
-        NgxEchartsDirective,
-        NgxEchartsModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        FormsModule,
-        CommonModule
-    ],
-    providers: [
-        provideEchartsCore({
-            echarts: () => import('echarts')
-        })
-    ],
+    imports: [UiSkeletonComponent, CommonModule, RouterLink, ChartCardComponent, DateRangeComponent, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
-    //original data
-    protected accounts: Account[] = [];
-    protected categories: Category[] = [];
-    private expenses: Expense[] = [];
-    private incomes: Income[] = [];
-    private transfers: Transfer[] = [];
-    private histories: Map<string, BalanceHistory[]> = new Map();
+    private readonly service = inject(DashboardDataService);
+    private readonly destroyRef = inject(DestroyRef);
+    private data: AccountingDashboardData = {
+        accounts: [], expenses: [], incomes: [], transfers: [], histories: new Map()
+    };
+    private range?: PeriodRange;
+    private view = filterAccountingData(this.data);
+    protected loading = true;
+    protected errorMessage = '';
+    protected charts = buildAccountingCharts(this.view);
+    protected currentBalance = 0;
+    protected periodIncome = 0;
+    protected periodExpenses = 0;
+    protected activities: AccountingActivity[] = [];
+    protected activityFilter: 'all' | AccountingActivityType = 'all';
+    protected showAllActivity = false;
 
-    //filter
-    protected startDate?: string = new Date(Date.UTC(new Date().getFullYear(), 0, 1)).toISOString().split('T')[0];
-    protected endDate?: string;
-    private minMovementDate?: string;
+    ngOnInit(): void { this.load(); }
 
-    //visual data
-    protected filteredHistories: Map<string, BalanceHistory[]> = new Map();
-    protected filteredExpenses: Expense[] = [];
-    protected categoryExpenseMap: Map<string, number> = new Map();
-    protected accountIncomeMap: Map<string, number> = new Map();
-    protected filteredIncomes: Income[] = [];
-    protected filteredTransfers: Transfer[] = [];
-
-    //visuals
-    protected balance_chart: EChartsCoreOption = {};
-    protected category_expense_chart: EChartsCoreOption = {};
-    protected account_income_chart: EChartsCoreOption = {};
-    protected history_chart: EChartsCoreOption = {};
-    protected transfer_chart: EChartsCoreOption = {};
-
-    constructor(
-        private accountingService: AccountingService
-    ) {
-    }
-
-    ngOnInit(): void {
-        this.accountingService.get_accounts().subscribe(accounts => {
-            this.accounts = accounts;
-            this.update();
-
-            const historyRequests = accounts.map((account: Account) =>
-                this.accountingService.get_account_history(account.name)
-            );
-
-            forkJoin(
-                [...historyRequests]
-            ).subscribe((results) => {
-                accounts.forEach((account: Account, i: number) => this.histories.set(account.name, results[i]));
-
-                this.update();
-            });
-
-            forkJoin([
-                this.accountingService.get_categories(),
-                this.accountingService.get_expenses(),
-                this.accountingService.get_incomes(),
-                this.accountingService.get_transfers()
-            ]).subscribe(([categories, expenses, incomes, transfers]) => {
-                this.categories = categories;
-                this.expenses = expenses;
-                this.incomes = incomes;
-                this.transfers = transfers;
-
-                this.update();
-            });
-        });
-    }
-
-    protected update(): void {
-        this.filterData();
-        this.build_balance_chart();
-        this.build_category_expense_chart();
-        this.build_account_income_chart();
-        this.build_history_chart();
-        this.build_transfer_chart()
-    }
-
-    private build_balance_chart(): void {
-        const totalBalance = this.accounts.reduce((sum, account) => sum + account.balance, 0);
-        const refinedAccounts = this.accounts.map(account => (
-            {
-                name: account.name,
-                value: account.balance
-            }
-        ));
-
-        this.balance_chart = {
-            title: {
-                text: `Account Liquidity - Total: ${totalBalance.toFixed(2)}€`,
-                left: 'center',
+    protected load(): void {
+        this.loading = true;
+        this.errorMessage = "";
+        this.service.load().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: data => {
+                this.data = data;
+                this.update(this.range);
+                this.loading = false;
             },
-            tooltip: {
-                trigger: 'item',
-                formatter: (params: any) => {
-                    const percentage = Math.round(params.percent);
-                    const value = parseFloat(params.value).toFixed(2);
-                    return `${params.name}: ${value}€<br>${percentage}%`;
-                },
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left',
-                width: '20%',
-                top: 40,
-                selectedMode: 'multiple'
-            },
-            grid: {
-                left: '20%',
-                containLabel: true
-            },
-            series: [
-                {
-                    name: 'Balance',
-                    type: 'pie',
-                    radius: '50%',
-                    center: ['60%', '40%'],
-                    data: refinedAccounts,
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)',
-                        },
-                    },
-                },
-            ],
-        };
-    }
-
-    private build_category_expense_chart(): void {
-        const totalExpenses = Array.from(this.categoryExpenseMap.values()).reduce((sum, expense) => sum + expense, 0);
-        const refinedCategories = Array.from(this.categoryExpenseMap.entries()).map(entry => (
-            {
-                name: entry[0],
-                value: entry[1]
-            }
-        )).sort((a, b) => b.value - a.value);
-
-        this.category_expense_chart = {
-            title: {
-                text: `Expenses by Category - Total: ${totalExpenses.toFixed(2)}€`,
-                left: 'center',
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: (params: any) => {
-                    const percentage = ((params.value / totalExpenses) * 100).toFixed(1);
-                    const value = parseFloat(params.value).toFixed(2);
-                    return `${params.name}: ${value}€<br>${percentage}%`;
-                },
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left',
-                selectedMode: 'multiple',
-            },
-            xAxis: {
-                type: 'category',
-                data: refinedCategories.map(entry => entry.name),
-                axisLabel: {
-                    interval: 0,
-                    rotate: 30
-                },
-            },
-            yAxis: {
-                type: 'value',
-                name: 'Amount (€)'
-            },
-            series: [
-                {
-                    type: 'bar',
-                    data: refinedCategories.map(entry => entry.value),
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)',
-                        },
-                    },
-                },
-            ],
-        };
-    }
-
-    private build_account_income_chart(): void {
-        const totalIncome = Array.from(this.accountIncomeMap.values()).reduce((sum, income) => sum + income, 0);
-        const refinedAccounts = Array.from(this.accountIncomeMap.entries()).map(entry => (
-            {
-                name: entry[0],
-                value: entry[1]
-            }
-        ));
-
-        this.account_income_chart = {
-            title: {
-                text: `Income by Account - Total: ${totalIncome.toFixed(2)}€`,
-                left: 'center',
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: (params: any) => {
-                    const percentage = parseFloat(params.percent).toFixed(1);
-                    const value = parseFloat(params.value).toFixed(2);
-                    return `${params.name}: ${value}€<br>${percentage}%`;
-                },
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left',
-                width: '20%',
-                top: 40,
-                selectedMode: 'multiple'
-            },
-            series: [
-                {
-                    name: 'Account Incomes',
-                    type: 'pie',
-                    radius: '50%',
-                    center: ['60%', '40%'],
-                    data: refinedAccounts,
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)',
-                        },
-                    },
-                },
-            ],
-        };
-    }
-
-    private build_history_chart(): void {
-        const dates = this.getDateRange(this.startDate ?? this.minMovementDate!, this.endDate ?? new Date().toISOString().split('T')[0]);
-
-        const refinedHistories = Array.from(this.filteredHistories)
-            .map(([accountName, history]) => {
-                const historyMap = new Map(history.map(entry => [entry.date, entry.balance]));
-
-                let balance: number;
-                if (this.startDate && (new Date(history[0].date) < new Date(this.startDate))) {
-                    balance = history[0].balance
-                }
-
-                const data = dates.map(date => {
-                    if (historyMap.has(date)) {
-                        balance = historyMap.get(date)!;
-                    }
-
-                    return balance;
-                });
-
-                return {
-                    name: accountName,
-                    type: 'line',
-                    showSymbol: false,
-                    smooth: true,
-                    data: data
-                };
-            });
-
-        this.history_chart = {
-            title: {
-                text: 'Account Balance Over Time',
-                left: 'center',
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: (params: any) => {
-                    const content = params.map((item: any) => `${item.seriesName}: ${parseFloat(item.value).toFixed(2)}€`).join('<br/>');
-                    const date = new DatePipe("en-US").transform(new Date(params[0].name), 'dd.MM.yyyy');
-                    return `${date}<br>${content}`
-                },
-            },
-            legend: {
-                orient: 'vertical',
-                left: 'left',
-                top: 50,
-                selectedMode: 'multiple',
-            },
-            grid: {
-                left: 150,
-                top: 50,
-                containLabel: true
-            },
-            xAxis: {
-                type: 'category',
-                data: dates,
-            },
-            yAxis: {
-                type: 'value',
-            },
-            series: refinedHistories,
-        };
-    }
-
-    private build_transfer_chart(): void {
-        const combinedTransfers = new Map<string, { source: string; target: string; value: number }>();
-
-        this.filteredTransfers.forEach(transfer => {
-            const source = transfer.source!.name;
-            const target = transfer.target!.name;
-            const amount = transfer.amount;
-            const key = `${source}${target}`;
-
-            if (!combinedTransfers.has(key)) {
-                combinedTransfers.set(key, {source: source, target: target, value: amount});
-            } else {
-                combinedTransfers.get(key)!.value += amount;
+            error: () => {
+                this.errorMessage = 'Unable to load dashboard data. Please try again.';
+                this.loading = false;
             }
         });
-
-        const refinedTransfers = Array.from(combinedTransfers.values()).map(entry => ({
-            source: `${entry.source} `,
-            target: entry.target,
-            value: entry.value
-        }));
-
-        this.transfer_chart = {
-            title: {
-                text: 'Transaction Flow Between Accounts',
-                left: 'center'
-            },
-            tooltip: {
-                trigger: 'item',
-                formatter: (params: any) => {
-                    return `${params.data.source.split('_')[0] || ''} → ${params.data.target.split('_')[0] || ''}: ${parseFloat(params.data.value).toFixed(2)}€`;
-                },
-            },
-            series: [
-                {
-                    type: 'sankey',
-                    top: 50,
-                    data: this.getNodesFromTransactions(refinedTransfers),
-                    links: refinedTransfers,
-                    label: {
-                        show: true,
-                        position: 'right',
-                        formatter: '{b}',
-                    },
-                    emphasis: {
-                        focus: 'adjacency',
-                    },
-                },
-            ],
-        };
     }
 
-    private getDateRange(startDate: string, endDate: string): string[] {
-        const dates: string[] = [];
-        let currentDate = new Date(startDate);
-
-        while (currentDate <= new Date(endDate)) {
-            dates.push(currentDate.toISOString().split('T')[0]);
-            currentDate.setDate(currentDate.getDate() + 1);
-        }
-
-        return dates;
+    protected update(range: PeriodRange | null | undefined): void {
+        this.range = range ?? undefined;
+        this.view = range
+            ? filterAccountingData(this.data, range.from, range.observedTo)
+            : filterAccountingData(this.data, '9999-12-31', '0000-01-01');
+        this.charts = buildAccountingCharts(this.view);
+        this.currentBalance = this.view.accounts.reduce((sum, account) => sum + account.balance, 0);
+        this.periodIncome = this.view.filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
+        this.periodExpenses = this.view.filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+        this.activities = accountingActivity(this.view);
+        this.showAllActivity = false;
     }
 
-    private getNodesFromTransactions(transactions: { source: string, target: string, value: number }[]): any[] {
-        const nodesSet = new Set<string>();
-
-        transactions.forEach(tx => {
-            nodesSet.add(tx.source);
-            nodesSet.add(tx.target);
-        });
-
-        return Array.from(nodesSet).map(name => ({
-            name,
-        }));
+    protected get filteredActivities(): AccountingActivity[] {
+        const matching = this.activityFilter === 'all' ? this.activities : this.activities.filter(activity => activity.type === this.activityFilter);
+        return this.showAllActivity ? matching : matching.slice(0, 10);
     }
 
-    private filterData(): void {
-        this.minMovementDate = undefined;
-        this.startDate = this.startDate === '' ? undefined : this.startDate;
-        this.endDate = this.endDate === '' ? undefined : this.endDate;
+    protected get matchingActivityCount(): number {
+        return this.activityFilter === 'all' ? this.activities.length : this.activities.filter(activity => activity.type === this.activityFilter).length;
+    }
 
-        this.filteredHistories = new Map();
-        this.histories.forEach((history, name) => {
-            let earlier: BalanceHistory | undefined;
-            const filteredHistory = history.filter((entry: BalanceHistory) => {
-                const isAfterStart = this.startDate ? entry.date >= this.startDate : true;
-                const isBeforeEnd = this.endDate ? entry.date <= this.endDate : true;
-                if (!isAfterStart) {
-                    earlier = entry;
-                }
-                return isAfterStart && isBeforeEnd;
-            });
+    protected setActivityFilter(filter: 'all' | AccountingActivityType): void {
+        this.activityFilter = filter;
+        this.showAllActivity = false;
+    }
 
-            if (!this.startDate && filteredHistory.length > 0) {
-                this.minMovementDate = !this.minMovementDate || new Date(filteredHistory[0].date) < new Date(this.minMovementDate)
-                    ? filteredHistory[0].date
-                    : this.minMovementDate;
-            }
-
-            if (earlier) {
-                this.filteredHistories.set(name, [earlier, ...filteredHistory]);
-            } else {
-                this.filteredHistories.set(name, filteredHistory);
-            }
-        })
-
-        this.categoryExpenseMap = new Map();
-        this.filteredExpenses = this.expenses.filter(expense => {
-            const isAfterStart = this.startDate ? expense.date >= this.startDate : true;
-            const isBeforeEnd = this.endDate ? expense.date <= this.endDate : true;
-
-            if (isAfterStart && isBeforeEnd) {
-                const categoryName = expense.category!.name;
-                const currentAmount = this.categoryExpenseMap.get(categoryName) || 0;
-                this.categoryExpenseMap.set(categoryName, currentAmount + expense.amount);
-                return true;
-            }
-
-            return false
-        });
-
-        this.accountIncomeMap = new Map();
-        this.filteredIncomes = this.incomes.filter(income => {
-            const isAfterStart = this.startDate ? income.date >= this.startDate : true;
-            const isBeforeEnd = this.endDate ? income.date <= this.endDate : true;
-
-            if (isAfterStart && isBeforeEnd) {
-                const accountName = income.account!.name;
-                const currentIncome = this.accountIncomeMap.get(accountName) || 0;
-                this.accountIncomeMap.set(accountName, currentIncome + income.amount);
-                return true;
-            }
-
-            return false;
-        });
-
-        this.filteredTransfers = this.transfers.filter(transfer => {
-            const isAfterStart = this.startDate ? transfer.date >= this.startDate : true;
-            const isBeforeEnd = this.endDate ? transfer.date <= this.endDate : true;
-            return isAfterStart && isBeforeEnd;
-        });
+    protected activityRoute(activity: AccountingActivity): string {
+        return `/accounting/${activity.type === 'income' ? 'incomes' : `${activity.type}s`}`;
     }
 }

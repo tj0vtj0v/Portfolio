@@ -1,0 +1,9 @@
+:host { display: block; }
+.accounting-page { display: grid; min-width: 0; gap: var(--space-6); }
+app-ui-panel { display: block; min-width: 0; }
+.grid-panel { min-width: 0; }
+.grid-wrap { min-width: 0; overflow-x: auto; }
+.grid-wrap ag-grid-angular { min-width: 620px; }
+.editor-copy { margin: 0 0 var(--space-5); color: var(--color-text-muted); }
+.status-message { margin-top: var(--space-4); }
+@media (max-width: 580px) { .grid-wrap { margin-inline: calc(var(--space-4) * -1); padding-inline: var(--space-4); } }

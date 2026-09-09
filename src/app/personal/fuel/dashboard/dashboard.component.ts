@@ -1,10 +1,7 @@
+import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
-import {NgxEchartsDirective, NgxEchartsModule, provideEchartsCore} from 'ngx-echarts';
-import {FormsModule} from '@angular/forms';
-import {MatOptionModule} from '@angular/material/core';
-import {MatSelectModule} from '@angular/material/select';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
 import {CommonModule, DatePipe} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
 import {Refuel} from '../../../shared/datatype/Refuel';
@@ -12,23 +9,21 @@ import {FuelType} from '../../../shared/datatype/FuelType';
 import {EChartsCoreOption} from 'echarts';
 import {FuelService} from '../../../shared/api/fuel.service';
 import {forkJoin} from 'rxjs';
+import {DateRangeComponent} from '../../../shared/date-range/date-range.component';
+import {PeriodRange} from '../../../shared/date-range/period-range';
+import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
+import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-dashboard',
-    imports: [
-        NgxEchartsDirective,
-        NgxEchartsModule,
-        MatOptionModule,
-        MatSelectModule,
-        MatProgressSpinnerModule,
-        MatFormFieldModule,
-        FormsModule,
-        CommonModule
-    ],
-    providers: [
-        provideEchartsCore({
-            echarts: () => import('echarts')
-        })
+    imports: [UiSkeletonComponent,
+        ChartCardComponent,
+        CommonModule,
+        DateRangeComponent,
+        UiPageHeaderComponent,
+        UiPanelComponent,
+        UiFeedbackComponent
     ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css'
@@ -40,8 +35,7 @@ export class DashboardComponent {
     private refuels: Refuel[] = [];
 
     //filter
-    protected startDate?: string = new Date(Date.UTC(new Date().getFullYear(), 0, 1)).toISOString().split('T')[0];
-    protected endDate?: string;
+    private range?: PeriodRange;
 
     //visual data
     protected filteredRefuels: Refuel[] = [];
@@ -53,6 +47,8 @@ export class DashboardComponent {
     protected fuel_chart: EChartsCoreOption = {};
     protected consumption_chart: EChartsCoreOption = {};
     protected price_chart: EChartsCoreOption = {};
+    protected loading = true;
+    protected errorMessage = '';
 
     constructor(
         private fuelService: FuelService
@@ -60,23 +56,36 @@ export class DashboardComponent {
     }
 
     ngOnInit(): void {
+        this.loadData();
+    }
+
+    protected loadData(): void {
+        this.loading = true;
+        this.errorMessage = '';
         forkJoin(
             [
                 this.fuelService.get_fuel_types(),
                 this.fuelService.get_cars(),
                 this.fuelService.get_refuels()
             ]
-        ).subscribe(([fuelTypes, cars, refuels]) => {
-            this.fuelTypes = fuelTypes;
-            this.cars = cars;
-            this.refuels = refuels;
-
-            this.update();
+        ).subscribe({
+            next: ([fuelTypes, cars, refuels]) => {
+                this.fuelTypes = fuelTypes;
+                this.cars = cars;
+                this.refuels = refuels;
+                this.loading = false;
+                this.update(this.range);
+            },
+            error: () => {
+                this.loading = false;
+                this.errorMessage = 'Fuel data could not be loaded.';
+            }
         });
     }
 
-    update(): void {
-        this.filterData();
+    update(range: PeriodRange | null | undefined = this.range): void {
+        this.range = range ?? undefined;
+        this.filterData(range);
         this.build_travel_chart();
         this.build_fuel_chart();
         this.build_consumption_chart();
@@ -100,13 +109,13 @@ export class DashboardComponent {
 
         const refinedData: { name: string, type: string, showSymbol: boolean, data: [string, number][] }[] = [];
         carMap.forEach((refuels, car) => {
-            refuels.reverse();
+            refuels = [...refuels].sort((a, b) => a.date.localeCompare(b.date));
 
             let cumulativeDistance = 0;
             const dateMap = new Map<string, number>();
 
-            if (this.startDate) {
-                dateMap.set(this.startDate, 0);
+            if (this.range?.from) {
+                dateMap.set(this.range.from, 0);
             }
 
             refuels.forEach(entry => {
@@ -114,7 +123,7 @@ export class DashboardComponent {
                 dateMap.set(entry.date, cumulativeDistance);
             });
 
-            dateMap.set(this.endDate || new Date().toISOString().split('T')[0], cumulativeDistance);
+            if (this.range) dateMap.set(this.range.observedTo, cumulativeDistance);
 
             refuels = Array.from(dateMap.entries()).map(([date, distance]) => (
                 {date, distance}
@@ -129,17 +138,13 @@ export class DashboardComponent {
         });
 
         this.travel_chart = {
-            title: {
-                text: 'Cumulative Distance Over Time',
-                left: 'center',
-            },
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
                     const date = new DatePipe("en-US").transform(new Date(params[0].value[0]), 'dd.MM.yyyy');
                     const content = params.map((param: any) => {
                         const value = parseFloat(param.value[1]).toFixed(0);
-                        return `${param.seriesName}: ${value} km`
+                        return `${tooltipText(param.seriesName)}: ${value} km`
                     }).join('<br>')
                     return `${date}<br>${content}`;
                 },
@@ -174,16 +179,12 @@ export class DashboardComponent {
 
 
         this.fuel_chart = {
-            title: {
-                text: 'Consumption over Distance',
-                left: 'center',
-            },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
                     const consumption = (params.data[1] / (params.data[0] / 100)).toFixed(1)
                     const price = (params.data[2] / params.data[0]).toFixed(2)
-                    return `${params.seriesName}<br>${params.data[0]} km, ${params.data[1]} L<br>${consumption} L/100km<br>${price} €/km`;
+                    return `${tooltipText(params.seriesName)}<br>${tooltipText(params.data[0])} km, ${tooltipText(params.data[1])} L<br>${consumption} L/100km<br>${price} €/km`;
                 }
             },
             xAxis: {
@@ -226,14 +227,10 @@ export class DashboardComponent {
 
 
         this.consumption_chart = {
-            title: {
-                text: 'Consumption',
-                left: 'center',
-            },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    return `${params.seriesName}<br/>Min: ${params.data[1].toFixed(1)} L<br/>Median: ${params.data[3].toFixed(1)} L<br/>Max: ${params.data[5].toFixed(1)} L`;
+                    return `${tooltipText(params.seriesName)}<br/>Min: ${params.data[1].toFixed(1)} L<br/>Median: ${params.data[3].toFixed(1)} L<br/>Max: ${params.data[5].toFixed(1)} L`;
                 }
             },
             xAxis: {
@@ -275,15 +272,10 @@ export class DashboardComponent {
 
 
         this.price_chart = {
-            title: {
-                text: 'Price per Liter',
-                left: 'center',
-            },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params: any) {
-                    console.log(params)
-                    return `${params.name}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
+                    return `${tooltipText(params.name)}<br/>Min: ${params.data[1].toFixed(3)} €<br/>Median: ${params.data[3].toFixed(3)} €<br/>Max: ${params.data[5].toFixed(3)} €`;
                 }
             },
             xAxis: {
@@ -302,14 +294,16 @@ export class DashboardComponent {
         };
     }
 
-    private filterData(): void {
-        this.startDate = this.startDate === '' ? undefined : this.startDate;
-        this.endDate = this.endDate === '' ? undefined : this.endDate;
-
+    private filterData(range: PeriodRange | null | undefined): void {
         this.carRefuelMap = new Map();
+        this.fuelRefuelMap = new Map();
+        if (!range) {
+            this.filteredRefuels = [];
+            return;
+        }
         this.filteredRefuels = this.refuels.filter(refuel => {
-            const isAfterStart = this.startDate ? refuel.date >= this.startDate : true;
-            const isBeforeEnd = this.endDate ? refuel.date <= this.endDate : true;
+            const isAfterStart = range.from ? refuel.date >= range.from : true;
+            const isBeforeEnd = refuel.date <= range.observedTo;
 
             if (isAfterStart && isBeforeEnd) {
                 if (!this.carRefuelMap.has(refuel.car!.name)) {

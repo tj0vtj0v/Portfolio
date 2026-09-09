@@ -1,33 +1,24 @@
+import {authGuard} from './core/auth/auth.guard';
 import {Routes} from '@angular/router';
-import {HomeComponent} from './features/home/home.component';
-import {AuthenticationComponent} from './features/authentication/authentication.component';
-import {BankingComponent} from './personal/banking/banking.component';
-import {PageNotFoundComponent} from './features/page-not-found/page-not-found.component';
-import {AboutComponent} from './features/about/about.component';
-import {ProjectsComponent} from './features/projects/projects.component';
-import {AccountingComponent} from './personal/accounting/accounting.component';
-import {ProximityComponent} from './personal/proximity/proximity.component';
-import {ContactComponent} from './features/contact/contact.component';
-import {ImprintComponent} from './features/imprint/imprint.component';
-import {RegisterComponent} from './features/register/register.component';
-import {AccountComponent} from './features/account/account.component';
-import {SettingsComponent} from './features/settings/settings.component';
-import {FuelComponent} from './personal/fuel/fuel.component';
 
 export const routes: Routes = [
-    {path: '', redirectTo: '/home', pathMatch: 'full'},
-    {path: 'home', component: HomeComponent},
-    {path: 'about', component: AboutComponent},
-    {path: 'contact', component: ContactComponent},
-    {path: 'imprint', component: ImprintComponent},
-    {path: 'projects', component: ProjectsComponent},
-    {path: 'login', component: AuthenticationComponent},
-    {path: 'register', component: RegisterComponent},
-    {path: 'settings', component: SettingsComponent},
-    {path: 'account', component: AccountComponent},
-    {path: 'accounting', component: AccountingComponent},
-    {path: 'fuel', component: FuelComponent},
-    {path: 'banking', component: BankingComponent},
-    {path: 'proximity', component: ProximityComponent},
-    {path: '**', component: PageNotFoundComponent}
+    {
+        path: '',
+        loadComponent: () => import('./core/layout/app-layout/app-layout.component').then(m => m.AppLayoutComponent),
+        children: [
+            {path: '', redirectTo: '/accounting', pathMatch: 'full'},
+            {path: 'home', redirectTo: '/accounting', pathMatch: 'full'},
+            {path: 'about', redirectTo: '/accounting', pathMatch: 'full'},
+            {path: 'contact', redirectTo: '/accounting', pathMatch: 'full'},
+            {path: 'imprint', data: {shell: 'portfolio'}, loadComponent: () => import('./features/imprint/imprint.component').then(m => m.ImprintComponent)},
+            {path: 'projects', redirectTo: '/accounting', pathMatch: 'full'},
+            {path: 'login', data: {shell: 'portfolio'}, loadComponent: () => import('./features/authentication/authentication.component').then(m => m.AuthenticationComponent)},
+            {path: 'register', data: {shell: 'portfolio'}, loadComponent: () => import('./features/register/register.component').then(m => m.RegisterComponent)},
+            {path: 'settings', data: {shell: 'workspace'}, canActivate: [authGuard], canActivateChild: [authGuard], loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent)},
+            {path: 'account', data: {shell: 'workspace'}, canActivate: [authGuard], canActivateChild: [authGuard], loadComponent: () => import('./features/account/account.component').then(m => m.AccountComponent)},
+            {path: 'accounting', data: {shell: 'workspace', project: 'accounting'}, canActivate: [authGuard], canActivateChild: [authGuard], loadChildren: () => import('./personal/accounting/accounting.routes').then(m => m.routes)},
+            {path: 'fuel', data: {shell: 'workspace', project: 'fuel'}, canActivate: [authGuard], canActivateChild: [authGuard], loadChildren: () => import('./personal/fuel/fuel.routes').then(m => m.routes)},
+            {path: '**', data: {shell: 'portfolio'}, loadComponent: () => import('./features/page-not-found/page-not-found.component').then(m => m.PageNotFoundComponent)}
+        ]
+    }
 ];

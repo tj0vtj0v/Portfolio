@@ -1,16 +1,13 @@
-<div>
-    <h1>Dashboard</h1>
-    <div>
-        <label for="start">Start Date:</label>
-        <input (change)="update()" [(ngModel)]="startDate" id="start" name="start" required type="date"/>
-
-        <label for="end">End Date:</label>
-        <input (change)="update()" [(ngModel)]="endDate" id="end" name="end" required type="date"/>
-    </div>
-
-
-    <div [options]="travel_chart" class="chart" echarts></div>
-    <div [options]="fuel_chart" class="chart" echarts></div>
-    <div [options]="consumption_chart" class="chart" echarts></div>
-    <div [options]="price_chart" class="chart" echarts></div>
+<div class="fuel-dashboard">
+    <app-ui-page-header eyebrow="Workspace" heading="Fuel" description="Review journeys, refuelling, consumption, and running fuel prices." />
+    <app-date-range (rangeChange)="update($event)" />
+    <app-ui-skeleton *ngIf="loading" layout="fuel" message="Loading fuel data…" />
+    <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
+    <button *ngIf="errorMessage" type="button" (click)="loadData()">Retry</button>
+    <section *ngIf="!loading && !errorMessage" class="fuel-charts" aria-label="Fuel charts">
+        <app-ui-panel heading="Travel"><app-chart-card [options]="travel_chart" /></app-ui-panel>
+        <app-ui-panel heading="Fuel used"><app-chart-card [options]="fuel_chart" /></app-ui-panel>
+        <app-ui-panel heading="Consumption"><app-chart-card [options]="consumption_chart" emptyMessage="At least five refuels per vehicle are needed for this chart." /></app-ui-panel>
+        <app-ui-panel heading="Price per litre"><app-chart-card [options]="price_chart" emptyMessage="At least five refuels per fuel type are needed for this chart." /></app-ui-panel>
+    </section>
 </div>

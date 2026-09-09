@@ -1,4 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideRouter} from '@angular/router';
 
 import {HeaderComponent} from './header.component';
 
@@ -8,7 +11,8 @@ describe('HeaderComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HeaderComponent]
+            imports: [HeaderComponent],
+            providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
         })
             .compileComponents();
 
@@ -19,5 +23,14 @@ describe('HeaderComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('keeps remembered period queries separate from the Workspace path', () => {
+        fixture.componentRef.setInput('workspaceTarget', '/accounting?period=year#activity');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/accounting?period=year#activity');
+        fixture.componentRef.setInput('workspaceTarget', '/banking');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/accounting');
     });
 });

@@ -1,29 +1,46 @@
-import {Component} from '@angular/core';
+import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
+import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {AgGridModule} from 'ag-grid-angular';
 import {Account} from '../../../shared/datatype/Account';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
+import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
+import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-account',
-    imports: [
+    providers: [EditorGridFocus],
+    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
+        GridFitDirective,
         NumberFormatterDirective,
         AgGridModule,
         FormsModule,
-        CommonModule
+        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent
     ],
     templateUrl: './account.component.html',
     styleUrl: './account.component.css'
 })
 export class AccountComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected accounts: Account[] = [];
     protected account?: Account;
     protected accountName?: string;
     protected addingAccount: boolean = false;
     protected statusMessage = '';
+    protected loading = true;
+    protected loadError = '';
+    protected fieldErrors: Record<string, string> = {};
+    protected successMessage = '';
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Account', field: 'name', sortable: true, filter: true},
@@ -36,20 +53,18 @@ export class AccountComponent {
     constructor(
         private accountingService: AccountingService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule]);
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
+
+    ngOnInit(): void { this.load(); }
+
+    protected load(): void {
+        this.loading = true;
+        this.loadError = '';
+        this.accountingService.get_accounts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: (accounts: Account[]) => { this.accounts = accounts; this.loading = false; },
+            error: () => { this.loading = false; this.loadError = 'Unable to load accounts.'; }
         });
-    }
-
-    ngOnInit(): void {
-        this.accountingService.get_accounts().subscribe(
-            (accounts: Account[]) => this.accounts = accounts
-        );
     }
 
     trim(): void {
@@ -61,8 +76,10 @@ export class AccountComponent {
     }
 
     check(): boolean {
+        this.fieldErrors = {};
         if (this.account!.name === '') {
             this.statusMessage = 'The account must have a name';
+            this.fieldErrors['name'] = this.statusMessage;
             return false;
         }
 
@@ -70,7 +87,8 @@ export class AccountComponent {
     }
 
     reset(): void {
-        this.ngOnInit();
+        this.fieldErrors = {};
+        this.load();
 
         this.account = undefined;
         this.accountName = undefined;
@@ -78,12 +96,15 @@ export class AccountComponent {
         this.statusMessage = '';
     }
 
-    onRowClicked(event: RowClickedEvent): void {
+    onRowClicked(event: {data: Account}): void {
         this.account = {...event.data};
         this.accountName = event.data.name;
     }
 
     onAdd(): void {
+        this.fieldErrors = {};
+        this.successMessage = '';
+        this.statusMessage = '';
         this.addingAccount = true;
         this.account = {
             name: '',
@@ -92,12 +113,15 @@ export class AccountComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.add_account(this.account!).subscribe(
-            () => this.reset(),
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.add_account(this.account!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Adding failed: ${error.error.detail}`;
@@ -109,12 +133,15 @@ export class AccountComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.accountingService.update_account(this.accountName!, this.account!).subscribe(
-            () => this.reset(),
+        this.statusMessage = '';
+
+        this.submission.run(() => this.accountingService.update_account(this.accountName!, this.account!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Edit failed: ${error.error.detail}`;
@@ -126,9 +153,11 @@ export class AccountComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this account?')) {
-            this.accountingService.delete_account(this.accountName!).subscribe(
-                () => this.reset(),
+            this.statusMessage = '';
+            this.submission.run(() => this.accountingService.delete_account(this.accountName!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+                () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
                 (error) => {
                     if (error?.error?.detail) {
                         this.statusMessage = `Delete failed: ${error.error.detail}`;

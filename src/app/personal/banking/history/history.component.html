@@ -1,13 +1,19 @@
-<div>
-    <ag-grid-angular
-        (gridReady)="onGridReady($event)"
+<div class="banking-page">
+    <app-ui-page-header eyebrow="Banking" heading="Balance history" description="Read-only imported account balances over time." />
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading banking history…" />
+    <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
+    <button *ngIf="errorMessage" type="button" (click)="loadData()">Retry</button>
+    <app-ui-empty-state *ngIf="!loading && !errorMessage && !histories.length" heading="No history" message="No imported balance history is available." />
+    <app-ui-panel *ngIf="!loading && !errorMessage && histories.length" heading="Imported balances">
+      <div class="grid-wrap"><ag-grid-angular
+        appGridFit
         [columnDefs]="columnDefs"
         [domLayout]="'autoHeight'"
         [paginationPageSizeSelector]="[10, 20, 50]"
         [paginationPageSize]="10"
         [pagination]="true"
         [rowData]="histories"
-        class="ag-theme-alpine"
         style="width: 100%; height: 100%;"
-    />
+      /></div>
+    </app-ui-panel>
 </div>

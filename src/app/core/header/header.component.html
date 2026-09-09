@@ -1,16 +1,27 @@
-<nav>
-    <a routerLink="/">Home</a>
-    <a routerLink="/about">About Me</a>
-    <a routerLink="/projects">Projects</a>
-    <a routerLink="/contact">Contact</a>
+<header class="topbar">
+    <a class="name" routerLink="/accounting">Tjorven Burdorf</a>
 
-    <a *ngIf="userService.isLoggedIn()" routerLink="/settings">Settings</a>
-    <a *ngIf="!userService.isLoggedIn()" routerLink="/login">Login</a>
-
-    <nav *ngIf="userService.isLoggedIn()">
-        <a routerLink="/accounting">Accounting</a>
-        <a routerLink="/fuel">Fuel</a>
-        <a routerLink="/banking">Banking</a>
-        <a routerLink="/proximity">Proximity</a>
+    <nav class="view-switch" aria-label="Site area">
+        <a [routerLink]="workspaceLink" [attr.aria-current]="shell === 'workspace' ? 'page' : null" [class.active]="shell === 'workspace'">Workspace</a>
     </nav>
-</nav>
+
+    <div class="topbar-actions">
+        <button class="theme-toggle" type="button" (click)="theme.toggle()" [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'" [attr.aria-pressed]="theme.theme() === 'dark'">
+            <span aria-hidden="true">{{ theme.theme() === 'dark' ? '☾' : '☼' }}</span>
+            <span class="theme-label">{{ theme.theme() === 'dark' ? 'Dark' : 'Light' }}</span>
+        </button>
+
+        @if (auth.isLoggedIn()) {
+            <details class="account-menu">
+                <summary aria-label="Open account menu">Account</summary>
+                <div class="account-menu-panel">
+                    <a routerLink="/settings">Settings</a>
+                    <a routerLink="/account">Account</a>
+                    <button type="button" (click)="logout()">Logout</button>
+                </div>
+            </details>
+        } @else {
+            <a class="login-link" routerLink="/login">Login</a>
+        }
+    </div>
+</header>

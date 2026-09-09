@@ -1,27 +1,45 @@
-import {Component} from '@angular/core';
+import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
+import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
+import {SubmissionState} from '../../../shared/forms/submission-state';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
-import {AllCommunityModule, ColDef, ModuleRegistry, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {FuelService} from '../../../shared/api/fuel.service';
+import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
+import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
+import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-state.component';
 
 @Component({
     selector: 'app-car',
-    imports: [
+    providers: [EditorGridFocus],
+    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
+        GridFitDirective,
         AgGridModule,
         FormsModule,
-        CommonModule
+        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent
     ],
     templateUrl: './car.component.html',
     styleUrl: './car.component.css'
 })
 export class CarComponent {
+    readonly submission = new SubmissionState();
+    private readonly destroyRef = inject(DestroyRef);
     protected cars: Car[] = [];
     protected car?: Car;
     protected carName?: string;
     protected addingCar: boolean = false;
     protected statusMessage: string = '';
+    protected fieldErrors: Record<string, string> = {};
+    protected successMessage = '';
+    protected loading = true;
+    protected loadError = '';
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Name', field: 'name', sortable: true, filter: true},
@@ -32,20 +50,20 @@ export class CarComponent {
     constructor(
         private fuelService: FuelService
     ) {
-        ModuleRegistry.registerModules([AllCommunityModule])
     }
 
-    onGridReady(params: any) {
-        params.api.sizeColumnsToFit();
-        window.addEventListener('resize', () => {
-            params.api.sizeColumnsToFit();
-        });
-    }
 
     ngOnInit(): void {
-        this.fuelService.get_cars().subscribe(
-            (cars: Car[]) => this.cars = cars
-        );
+        this.loadData();
+    }
+
+    protected loadData(): void {
+        this.loading = true;
+        this.loadError = '';
+        this.fuelService.get_cars().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: (cars: Car[]) => { this.cars = cars; this.loading = false; },
+            error: () => { this.loading = false; this.loadError = 'Vehicles could not be loaded.'; }
+        });
     }
 
     trim(): void {
@@ -57,21 +75,26 @@ export class CarComponent {
     }
 
     check(): boolean {
+        this.fieldErrors = {};
         if (this.car!.name === '') {
             this.statusMessage = 'The car must have a name';
+            this.fieldErrors['name'] = this.statusMessage;
             return false;
         }
         if (this.car!.usage_start === '') {
             this.statusMessage = 'The car must have a start usage';
+            this.fieldErrors['usage_start'] = this.statusMessage;
             return false;
         }
 
         if (new Date(this.car!.usage_start) > new Date()) {
             this.statusMessage = 'The start of usage must not be in the future'
+            this.fieldErrors['usage_start'] = this.statusMessage;
             return false;
         }
         if (this.car!.usage_end && new Date(this.car!.usage_start) > new Date(this.car!.usage_end)) {
             this.statusMessage = 'The start must not be after the end of usage'
+            this.fieldErrors['usage_end'] = this.statusMessage;
             return false;
         }
 
@@ -79,7 +102,8 @@ export class CarComponent {
     }
 
     reset(): void {
-        this.ngOnInit();
+        this.fieldErrors = {};
+        this.loadData();
 
         this.car = undefined;
         this.carName = undefined;
@@ -87,12 +111,15 @@ export class CarComponent {
         this.statusMessage = '';
     }
 
-    onRowClicked(event: RowClickedEvent): void {
+    onRowClicked(event: {data: Car}): void {
         this.car = {...event.data};
         this.carName = event.data.name;
     }
 
     onAdd(): void {
+        this.fieldErrors = {};
+        this.successMessage = '';
+        this.statusMessage = '';
         this.addingCar = true;
         this.car = {
             name: '',
@@ -101,12 +128,15 @@ export class CarComponent {
     }
 
     onSave(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.add_car(this.car!).subscribe(
-            () => this.reset(),
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.add_car(this.car!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Adding failed: ${error.error.detail}`;
@@ -118,12 +148,15 @@ export class CarComponent {
     }
 
     onUpdate(): void {
+        if (this.submission.pending) return;
         this.trim();
         if (!this.check())
             return;
 
-        this.fuelService.update_car(this.carName!, this.car!).subscribe(
-            () => this.reset(),
+        this.statusMessage = '';
+
+        this.submission.run(() => this.fuelService.update_car(this.carName!, this.car!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Edit failed: ${error.error.detail}`;
@@ -135,9 +168,11 @@ export class CarComponent {
     }
 
     onDelete(): void {
+        if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this car?')) {
-            this.fuelService.delete_car(this.carName!).subscribe(
-                () => this.reset(),
+            this.statusMessage = '';
+            this.submission.run(() => this.fuelService.delete_car(this.carName!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
+                () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
                 (error) => {
                     if (error?.error?.detail) {
                         this.statusMessage = `Delete failed: ${error.error.detail}`;
