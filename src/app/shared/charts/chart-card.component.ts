@@ -1,7 +1,7 @@
 import {Component, Input, computed, inject, signal} from '@angular/core';
 import {EChartsCoreOption} from 'echarts';
 import {NgxEchartsDirective, provideEchartsCore} from 'ngx-echarts';
-import {chartThemeForOptions, themedChartOptions} from './chart-theme';
+import {chartThemeForOptions, themedChartOptions, resolvedChartColors} from './chart-theme';
 import {ThemeService} from '../../core/theme/theme.service';
 
 @Component({
@@ -26,18 +26,32 @@ import {ThemeService} from '../../core/theme/theme.service';
 })
 export class ChartCardComponent {
     private readonly dataOptions = signal<EChartsCoreOption>({});
+    private readonly paletteTokens = signal<readonly string[]>([]);
+    @Input() set colorTokens(value: readonly string[]) {
+        this.paletteTokens.set(value);
+        this.presentationOptions = themedChartOptions(this.options, this.colors());
+    }
     protected presentationOptions: EChartsCoreOption = {};
     @Input({required: true}) set options(value: EChartsCoreOption) {
         this.dataOptions.set(value);
-        this.presentationOptions = themedChartOptions(value);
+        this.presentationOptions = themedChartOptions(value, this.colors());
     }
     get options(): EChartsCoreOption { return this.dataOptions(); }
     @Input() emptyMessage = 'No data for this period.';
     private readonly theme = inject(ThemeService);
     protected readonly themeOptions = computed(() => {
         this.theme.theme();
-        return chartThemeForOptions(this.dataOptions());
+        return chartThemeForOptions(this.dataOptions(), this.colors());
     });
+    private colors() {
+        const colors = resolvedChartColors();
+        const tokens = this.paletteTokens();
+        if (tokens.length) {
+            const styles = getComputedStyle(document.documentElement);
+            colors.palette = tokens.map((token, index) => styles.getPropertyValue(token).trim() || colors.palette![index % colors.palette!.length]);
+        }
+        return colors;
+    }
     protected readonly chartHasData = chartHasData;
 }
 

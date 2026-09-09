@@ -1,6 +1,7 @@
 import {EChartsCoreOption} from 'echarts';
 
 export interface ChartColors {
+    palette?: string[];
     text: string;
     muted: string;
     primary: string;
@@ -11,6 +12,8 @@ export interface ChartColors {
     headingFont: string;
 }
 
+const CHART_PALETTE = ['#2c6557', '#b26135', '#4b72a6', '#95608d', '#92751d', '#3b8790', '#b14e60', '#718342'];
+
 const FALLBACKS: ChartColors = {
     text: '#263e37', muted: '#667062', primary: '#2c6557', secondary: '#b5c2a2',
     border: '#d8d7bf', surface: '#fffcf0', font: 'system-ui, sans-serif', headingFont: 'Georgia, serif'
@@ -20,8 +23,9 @@ export function resolvedChartColors(root: Element = document.documentElement): C
     const styles = getComputedStyle(root);
     const token = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
     return {
-        text: token('--color-text', FALLBACKS.text),
-        muted: token('--color-text-muted', FALLBACKS.muted),
+        palette: CHART_PALETTE.map((fallback, index) => token(`--color-chart-${index + 1}`, fallback)),
+        text: token('--color-chart-text', token('--color-text', FALLBACKS.text)),
+        muted: token('--color-chart-legend', token('--color-text-muted', FALLBACKS.muted)),
         primary: token('--color-primary', FALLBACKS.primary),
         secondary: token('--color-chart-secondary', FALLBACKS.secondary),
         border: token('--color-border', FALLBACKS.border),
@@ -36,12 +40,12 @@ export function chartThemeOptions(colors = resolvedChartColors()): EChartsCoreOp
     const axis = {
         axisLine: {lineStyle: {color: colors.border}},
         axisTick: {lineStyle: {color: colors.border}},
-        axisLabel: {color: colors.muted},
-        nameTextStyle: {color: colors.muted},
+        axisLabel: {color: colors.text},
+        nameTextStyle: {color: colors.text},
         splitLine: {lineStyle: {color: colors.border}}
     };
     return {
-        color: Array.from({length: 12}, (_, index) => [colors.primary, colors.secondary, colors.muted][index % 3]),
+        color: colors.palette ?? [colors.primary, ...CHART_PALETTE.slice(1)],
         backgroundColor: 'transparent',
         textStyle: {fontFamily: colors.font, color: colors.text},
         title: {textStyle: {color: colors.text, fontFamily: colors.headingFont}},
@@ -55,6 +59,10 @@ export function chartThemeOptions(colors = resolvedChartColors()): EChartsCoreOp
 /** Axis-free charts must stay axis-free on both initial render and theme changes. */
 export function chartThemeForOptions(options: EChartsCoreOption, colors = resolvedChartColors()): EChartsCoreOption {
     const theme = chartThemeOptions(colors);
+    const series = options['series'];
+    if (series) theme['series'] = (Array.isArray(series) ? series : [series]).map(() => ({
+        label: {color: colors.text}, emphasis: {label: {color: colors.text}}
+    }));
     if (!options['xAxis']) delete theme['xAxis'];
     if (!options['yAxis']) delete theme['yAxis'];
     return theme;
@@ -63,7 +71,11 @@ export function chartThemeForOptions(options: EChartsCoreOption, colors = resolv
 /** Compose fresh data with presentation before ngx-echarts replaces its option model. */
 export function themedChartOptions(options: EChartsCoreOption, colors = resolvedChartColors()): EChartsCoreOption {
     const merge = (data: any, style: any): any => {
-        if (!style || typeof style !== 'object' || Array.isArray(style)) return style;
+        if (Array.isArray(style)) {
+            const entries = Array.isArray(data) ? data : data ? [data] : [];
+            return style.map((item, index) => merge(entries[index], item));
+        }
+        if (!style || typeof style !== 'object') return style;
         if (Array.isArray(data)) return data.map(item => merge(item, style));
         const result = {...data};
         for (const key of Object.keys(style)) result[key] = merge(data?.[key], style[key]);

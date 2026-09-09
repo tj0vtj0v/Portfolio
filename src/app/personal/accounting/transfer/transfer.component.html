@@ -1,5 +1,5 @@
 <div class="accounting-page">
-    <app-ui-page-header eyebrow="Accounting" heading="Transfers" description="Move money between your accounting accounts."><button *ngIf="!(transfer || addingTransfer) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add transfer</button></app-ui-page-header>
+    <app-ui-page-header eyebrow="Accounting" heading="Transfers" description="Track transactions between your own accounts."><button *ngIf="!(transfer || addingTransfer) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add transfer</button></app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading transfers..." />
     <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
     <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
@@ -9,7 +9,7 @@
     <app-ui-feedback *ngIf="!loading && !loadError && !transfers.length && !transfer" kind="info" message="No transfers have been recorded." />
     <app-ui-panel *ngIf="!(transfer || addingTransfer) && !loading && !loadError" heading="Transfer records"><div class="grid-wrap"><ag-grid-angular appGridFit (gridReady)="onGridReady($event)" (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="transfers" style="width:100%;height:100%" /></div></app-ui-panel>
     <app-ui-panel *ngIf="addingTransfer" heading="Transfer between accounts">
-        <p class="editor-copy">Move money between your accounting accounts. Transfers do not count as income or expenses.</p>
+        <p class="editor-copy">Track transactions between your own accounts. Transfers do not count as income or expenses.</p>
         <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><div class="form-grid">
             <div class="form-field"><label for="add_date">Date</label><input [disabled]="submission.pending" [(ngModel)]="transfer!.date" id="add_date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
             <div class="form-field"><label for="add_amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>
@@ -19,7 +19,7 @@
         <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
     </app-ui-panel>
     <app-ui-panel *ngIf="!addingTransfer && transfer" heading="Edit transfer">
-        <p class="editor-copy">Move money between your accounting accounts.</p>
+        <p class="editor-copy">Track transactions between your own accounts.</p>
         <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()"><div class="form-grid">
             <div class="form-field"><label for="date">Date</label><input [disabled]="submission.pending" [(ngModel)]="transfer.date" id="date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
             <div class="form-field"><label for="amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="transfer.amount" id="amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>

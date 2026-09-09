@@ -1,13 +1,22 @@
 <div class="fuel-dashboard">
-    <app-ui-page-header eyebrow="Workspace" heading="Fuel" description="Review journeys, refuelling, consumption, and running fuel prices." />
+    <app-ui-page-header eyebrow="Workspace" heading="Fuel" description="Track your journeys, fuel consumption, and costs.">
+        <a class="button" routerLink="/fuel/refuels">View refuels</a>
+        <a class="button" routerLink="/fuel/cars">View cars</a>
+    </app-ui-page-header>
     <app-date-range (rangeChange)="update($event)" />
     <app-ui-skeleton *ngIf="loading" layout="fuel" message="Loading fuel data…" />
     <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
     <button *ngIf="errorMessage" type="button" (click)="loadData()">Retry</button>
+    <section *ngIf="!loading && !errorMessage && validPeriod" class="summary-grid" aria-label="Travel summary for selected period">
+        <article><span>Total kilometres</span><strong>{{ travelSummary.distance | number:'1.0-2' }} km</strong></article>
+        <article><span>Fuel used</span><strong>{{ travelSummary.fuel | number:'1.0-2' }} L</strong></article>
+        <article><span>Last refuel</span><strong>{{ travelSummary.lastRefuel ? (travelSummary.lastRefuel | date:'mediumDate') : 'No refuels' }}</strong></article>
+        <article><span>Total cost</span><strong>{{ travelSummary.cost | currency:'EUR' }}</strong></article>
+    </section>
     <section *ngIf="!loading && !errorMessage" class="fuel-charts" aria-label="Fuel charts">
-        <app-ui-panel heading="Travel"><app-chart-card [options]="travel_chart" /></app-ui-panel>
-        <app-ui-panel heading="Fuel used"><app-chart-card [options]="fuel_chart" /></app-ui-panel>
-        <app-ui-panel heading="Consumption"><app-chart-card [options]="consumption_chart" emptyMessage="At least five refuels per vehicle are needed for this chart." /></app-ui-panel>
-        <app-ui-panel heading="Price per litre"><app-chart-card [options]="price_chart" emptyMessage="At least five refuels per fuel type are needed for this chart." /></app-ui-panel>
+        <app-ui-panel heading="Distance over time"><app-chart-card [options]="travel_chart" /></app-ui-panel>
+        <app-ui-panel heading="Fuel consumption"><app-chart-card [options]="fuel_chart" /></app-ui-panel>
+        <app-ui-panel heading="Consumption by car"><app-chart-card [options]="consumption_chart" emptyMessage="At least five refuels per vehicle are needed for this chart." /></app-ui-panel>
+        <app-ui-panel heading="Consumption per fuel type"><app-chart-card [options]="fuel_consumption_chart" emptyMessage="At least five refuels with a positive distance per fuel type are needed for this chart." /></app-ui-panel>
     </section>
 </div>

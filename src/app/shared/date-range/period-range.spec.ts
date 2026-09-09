@@ -24,6 +24,13 @@ describe('period range', () => {
         expect(formatLocalDate(new Date(2026, 9, 25))).toBe('2026-10-25');
     });
 
+    it('honors future custom end dates including URL-restored ranges', () => {
+        const range = customPeriodRange('2026-01-01', '2026-01-03', today)!;
+        expect(range.observedTo).toBe('2026-01-03');
+        expect(dateRange(range)).toEqual(['2026-01-01', '2026-01-02', '2026-01-03']);
+        expect(parsePeriodQuery(convertToParamMap(serializePeriodQuery(range)), today)).toEqual(range);
+    });
+
     it('defaults missing/invalid URL state to current year and preserves explicit selections', () => {
         const custom = parsePeriodQuery(convertToParamMap({period: 'custom', from: '2025-12-31', to: '2026-01-01'}), today);
         expect(serializePeriodQuery(custom)).toEqual({period: 'custom', from: '2025-12-31', to: '2026-01-01'});

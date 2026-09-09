@@ -2,13 +2,12 @@ import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {DatePipe} from '@angular/common';
 import {EChartsCoreOption} from 'echarts';
 import {AccountingDashboardView} from './dashboard-data';
-import {dateRange} from '../../../shared/date-range/period-range';
+import {dateRange, formatLocalDate} from '../../../shared/date-range/period-range';
 
 export function buildAccountingCharts(data: AccountingDashboardView) {
     const charts = {
         balance: build_balance_chart(data),
         category_expense: build_category_expense_chart(data),
-        account_income: build_account_income_chart(data),
         history: build_history_chart(data),
         transfer: build_transfer_chart(data),
     };
@@ -97,68 +96,19 @@ function build_category_expense_chart(data: AccountingDashboardView): EChartsCor
             left: 'left',
             selectedMode: 'multiple',
         },
+        grid: {left: 16, right: 24, top: 40, bottom: 24, containLabel: true},
         xAxis: {
-            type: 'value',
-            name: 'Amount (\u20ac)'
-        },
-        yAxis: {
             type: 'category',
             data: refinedCategories.map(entry => entry.name),
-            name: 'Amount (€)'
+            axisLabel: {interval: 0, rotate: 30, width: 100, overflow: 'truncate'}
         },
+        yAxis: {type: 'value', name: 'Amount (EUR)'},
         series: [
             {
                 type: 'bar',
+                colorBy: 'data',
                 data: refinedCategories.map(entry => entry.value),
-                label: {show: true, position: 'right', formatter: ({value}: any) => `${Number(value).toFixed(2)}\u20ac`},
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.5)',
-                    },
-                },
-            },
-        ],
-    };
-}
-
-function build_account_income_chart(data: AccountingDashboardView): EChartsCoreOption {
-    const totalIncome = Array.from(data.accountIncomeMap.values()).reduce((sum, income) => sum + income, 0);
-    const refinedAccounts = Array.from(data.accountIncomeMap.entries()).map(entry => (
-        {
-            name: entry[0],
-            value: entry[1]
-        }
-    ));
-
-    return {
-        title: {
-            text: `Income by Account - Total: ${totalIncome.toFixed(2)}€`,
-            left: 'center',
-        },
-        tooltip: {
-            trigger: 'item',
-            formatter: (params: any) => {
-                const percentage = parseFloat(params.percent).toFixed(1);
-                const value = parseFloat(params.value).toFixed(2);
-                return `${tooltipText(params.name)}: ${value}€<br>${percentage}%`;
-            },
-        },
-        legend: {
-            orient: 'vertical',
-            left: 'left',
-            width: '20%',
-            top: 40,
-            selectedMode: 'multiple'
-        },
-        series: [
-            {
-                name: 'Account Incomes',
-                type: 'pie',
-                radius: '50%',
-                center: ['60%', '40%'],
-                data: refinedAccounts,
+                label: {show: true, position: 'top', formatter: ({value}: any) => `${Number(value).toFixed(2)}\u20ac`},
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -172,6 +122,7 @@ function build_account_income_chart(data: AccountingDashboardView): EChartsCoreO
 }
 
 function build_history_chart(data: AccountingDashboardView): EChartsCoreOption {
+    const today = formatLocalDate(new Date());
     const dates = dateRange({from: data.startDate ?? data.minMovementDate, observedTo: data.endDate ?? data.minMovementDate ?? ''});
 
     const refinedHistories = Array.from(data.filteredHistories)
@@ -184,6 +135,7 @@ function build_history_chart(data: AccountingDashboardView): EChartsCoreOption {
             }
 
             const balances = dates.map(date => {
+                if (date > today) return null;
                 if (historyMap.has(date)) {
                     balance = historyMap.get(date)!;
                 }

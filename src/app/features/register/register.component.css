@@ -1,1 +1,4 @@
 :host { display: block; }
+.registration-result { display: grid; gap: var(--space-6); }
+.registration-result--error { margin-top: var(--space-5); }
+.registration-result-actions { display: flex; flex-wrap: wrap; }

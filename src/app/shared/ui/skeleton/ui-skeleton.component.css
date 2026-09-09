@@ -20,3 +20,5 @@
 .input { height: var(--control-min-height); }
 @media (max-width: 980px) { .summaries { grid-template-columns: repeat(2, minmax(0, 1fr)); } .charts { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 580px) { .panel { padding: var(--space-3); } .summaries { gap: var(--space-3); } .row { gap: var(--space-3); } }
+
+.charts.accounting > :first-child, .charts.accounting > :last-child { grid-column: 1 / -1; }

@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {
-    customPeriodRange, formatPeriodLabel, PERIOD_PRESETS, PeriodPreset, PeriodRange, periodRange
+    customPeriodRange, formatLocalDate, formatPeriodLabel, PERIOD_PRESETS, PeriodPreset, PeriodRange, periodRange
 } from './period-range';
 import {isValidPeriodQuery, parsePeriodQuery, serializePeriodQuery} from './period-query';
 import {FieldErrorDirective} from '../ui/field-error.directive';
@@ -14,10 +14,11 @@ import {FieldErrorDirective} from '../ui/field-error.directive';
     imports: [CommonModule, FormsModule, FieldErrorDirective],
     template: `
         <section class="period-toolbar" aria-label="Dashboard period">
-            <label for="dashboard-period">Period</label>
-            <select id="dashboard-period" name="period" [(ngModel)]="period" (ngModelChange)="selectPeriod($event)">
-                <option *ngFor="let preset of presets" [ngValue]="preset.value">{{ preset.label }}</option>
-            </select>
+            <span class="period-label" id="dashboard-period-label">Period</span>
+            <div class="period-presets" role="group" aria-labelledby="dashboard-period-label">
+                <button *ngFor="let preset of presets" type="button"
+                    [attr.aria-pressed]="period === preset.value" (click)="selectPeriod(preset.value)">{{ preset.label }}</button>
+            </div>
             <div *ngIf="period === 'custom'" class="custom-range">
                 <label for="dashboard-from">From</label>
                 <input id="dashboard-from" name="from" type="date" [(ngModel)]="from" (ngModelChange)="applyCustom()" [appFieldError]="error">
@@ -34,9 +35,11 @@ import {FieldErrorDirective} from '../ui/field-error.directive';
     styles: `
         :host { display: block; }
         .period-toolbar { display: flex; align-items: end; flex-wrap: wrap; gap: var(--space-2) var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); }
-        label { align-self: center; margin: 0; font-size: var(--font-size-label); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+        .period-presets { display: flex; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+        .period-presets button[aria-pressed="true"] { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
+        label, .period-label { align-self: center; margin: 0; font-size: var(--font-size-label); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
         select, input { min-height: var(--control-min-height); }
-        .custom-range { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+        .custom-range { display: flex; flex-basis: 100%; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
         .period-summary, .period-error { flex-basis: 100%; margin: 0; }
         .period-summary { color: var(--color-text-muted); }
         .period-summary span { margin-left: var(--space-2); }
@@ -67,11 +70,12 @@ export class DateRangeComponent implements OnInit {
     }
 
     protected selectPeriod(period: PeriodPreset): void {
+        this.period = period;
         this.error = '';
         if (period === 'custom') {
             this.current = undefined;
             this.from = '';
-            this.to = '';
+            this.to = this.startOfMonth();
             this.rangeChange.emit(null);
             return;
         }
@@ -79,6 +83,7 @@ export class DateRangeComponent implements OnInit {
     }
 
     protected applyCustom(): void {
+        if (!this.to) this.to = this.startOfMonth();
         const range = customPeriodRange(this.from, this.to);
         if (!range) {
             this.current = undefined;
@@ -89,6 +94,11 @@ export class DateRangeComponent implements OnInit {
         }
         this.error = '';
         this.navigate(range);
+    }
+
+    private startOfMonth(): string {
+        const today = new Date();
+        return formatLocalDate(new Date(today.getFullYear(), today.getMonth(), 1));
     }
 
     private navigate(range: PeriodRange, replaceUrl = false): void {

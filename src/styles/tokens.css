@@ -39,6 +39,17 @@
 }
 
 :root[data-theme='light'] {
+    --color-chart-expense: #bf6d7a;
+    --color-chart-income: #65947a;
+    --color-chart-1: #528073;
+    --color-chart-2: #c07d57;
+    --color-chart-3: #6b8bb3;
+    --color-chart-4: #a87c9f;
+    --color-chart-5: #a68d43;
+    --color-chart-6: #5e9ca1;
+    --color-chart-7: #bf6d7a;
+    --color-chart-8: #899860;
+
     --color-background: #f7f2dc;
     --color-surface: #fffcf0;
     --color-surface-soft: #efe9d2;
@@ -66,9 +77,22 @@
     --radius-panel: 5px;
     --focus-ring: rgba(44, 101, 87, 0.28);
     color-scheme: light;
+    --color-chart-text: #6e736b;
+    --color-chart-legend: #666c64;
 }
 
 :root[data-theme='dark'] {
+    --color-chart-expense: #a76172;
+    --color-chart-income: #4f8970;
+    --color-chart-1: #4f78cd;
+    --color-chart-2: #b28857;
+    --color-chart-3: #9078b5;
+    --color-chart-4: #5a9186;
+    --color-chart-5: #ad6d7f;
+    --color-chart-6: #9d9c66;
+    --color-chart-7: #5b96ad;
+    --color-chart-8: #8d8176;
+
     --color-background: #080f1c;
     --color-surface: #101c30;
     --color-surface-soft: #172943;
@@ -96,6 +120,8 @@
     --radius-panel: 0px;
     --focus-ring: rgba(99, 149, 255, 0.3);
     color-scheme: dark;
+    --color-chart-text: #b1b6bf;
+    --color-chart-legend: #969eaa;
 }
 
 :root[data-theme] {

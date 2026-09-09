@@ -8,7 +8,8 @@
     @if (selected; as current) {
         <nav class="project-nav" [attr.aria-label]="current.name + ' navigation'">
             @for (item of current.children; track item.path; let first = $first) {
-                <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: first}" ariaCurrentWhenActive="page">{{ item.label }}</a>
+                <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact: first}" ariaCurrentWhenActive="page"
+                   [class.setup-needed]="needsSetup(item.path)" [attr.title]="needsSetup(item.path) ? 'No ' + item.label.toLowerCase() + ' yet. Add your first one.' : null">{{ item.label }}</a>
             }
         </nav>
     } @else {

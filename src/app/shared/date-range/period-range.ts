@@ -51,10 +51,9 @@ export function periodRange(period: Exclude<PeriodPreset, 'custom'>, today = new
     return {period, from, to, observedTo: formatLocalDate(localToday)};
 }
 
-export function customPeriodRange(from: string, to: string, today = new Date()): PeriodRange | undefined {
+export function customPeriodRange(from: string, to: string, _today = new Date()): PeriodRange | undefined {
     if (!parseLocalDate(from) || !parseLocalDate(to) || from > to) return undefined;
-    const todayValue = formatLocalDate(today);
-    return {period: 'custom', from, to, observedTo: to < todayValue ? to : todayValue};
+    return {period: 'custom', from, to, observedTo: to};
 }
 
 export function dateRange(range: Pick<PeriodRange, 'from' | 'observedTo'>): string[] {

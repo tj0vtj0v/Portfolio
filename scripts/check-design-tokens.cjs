@@ -14,6 +14,8 @@ const themeVariables = {
     background: '--color-background', surface: '--color-surface', surfaceSoft: '--color-surface-soft',
     text: '--color-text', textMuted: '--color-text-muted', primary: '--color-primary', onPrimary: '--color-on-primary',
     border: '--color-border', controlBorder: '--color-control-border', secondaryAccent: '--color-secondary-accent', artBackground: '--color-art-background',
+    chartExpense: '--color-chart-expense', chartIncome: '--color-chart-income',
+    chartText: '--color-chart-text', chartLegend: '--color-chart-legend',
     chartSecondary: '--color-chart-secondary', featuredBackground: '--color-featured-background',
     featuredText: '--color-featured-text', featuredMuted: '--color-featured-muted', sidebarBackground: '--color-sidebar-background',
     gridLine: '--pointer-grid-line', danger: '--color-danger', success: '--color-success', warning: '--color-warning',
@@ -26,6 +28,9 @@ for (const theme of ['light', 'dark']) {
     for (const [key, variable] of Object.entries(themeVariables)) {
         assert.equal(declaration(block[1], variable), normalize(tokens.themes[theme][key]), `${theme}.${key}`);
     }
+    tokens.themes[theme].chartPalette.forEach((color, index) => {
+        assert.equal(declaration(block[1], `--color-chart-${index + 1}`), color, `${theme}.chartPalette[${index}]`);
+    });
     assert.equal(declaration(block[1], '--font-size-hero'), normalize(tokens.typography[theme === 'light' ? 'heroLight' : 'heroDark']), `${theme}.hero`);
 }
 
@@ -71,11 +76,15 @@ const contrast = (foreground, background) => {
 };
 for (const [theme, values] of Object.entries(tokens.themes)) {
     for (const [foreground, background] of [
-        ['text', 'background'], ['text', 'surface'], ['textMuted', 'background'], ['textMuted', 'surface'],
+        ['chartText', 'surface'], ['chartLegend', 'surface'], ['text', 'background'], ['text', 'surface'], ['textMuted', 'background'], ['textMuted', 'surface'],
         ['onPrimary', 'primary'], ['danger', 'surface'], ['success', 'surface'], ['warning', 'surface'],
         ['featuredText', 'featuredBackground'], ['featuredMuted', 'featuredBackground']
     ]) {
         assert.ok(contrast(values[foreground], values[background]) >= 4.5, `${theme}.${foreground} on ${background} must reach 4.5:1`);
+    }
+    assert.equal(new Set(values.chartPalette).size, values.chartPalette.length, `${theme} chart colors must be distinct`);
+    for (const color of [...values.chartPalette, values.chartExpense, values.chartIncome]) {
+        assert.ok(contrast(color, values.surface) >= 3, `${theme} chart color ${color} must reach 3:1 on surface`);
     }
     for (const background of ['background', 'surface']) {
         assert.ok(contrast(values.controlBorder, values[background]) >= 3, `${theme}.controlBorder on ${background} must reach 3:1`);

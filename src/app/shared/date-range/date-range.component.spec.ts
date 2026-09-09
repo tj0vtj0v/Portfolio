@@ -24,6 +24,37 @@ describe('DateRangeComponent', () => {
         router.navigate.calls.reset();
     });
 
+    it('selects presets through buttons and opens custom date inputs', () => {
+        const buttons = Array.from(fixture.nativeElement.querySelectorAll('.period-presets button')) as HTMLButtonElement[];
+        expect(buttons.find(button => button.textContent?.includes('Last 30'))?.getAttribute('aria-pressed')).toBe('true');
+        buttons.find(button => button.textContent?.includes('Current month'))!.click();
+        expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({queryParams: {period: 'month'}}));
+        buttons.find(button => button.textContent?.includes('Custom'))!.click();
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelectorAll('input[type="date"]').length).toBe(2);
+    });
+
+    it('defaults custom To to the start of the month and preserves explicit dates', () => {
+        jasmine.clock().install();
+        try {
+            jasmine.clock().mockDate(new Date(2026, 11, 31, 12));
+            const component = fixture.componentInstance as any;
+            component.selectPeriod('custom');
+            expect(component.to).toBe('2026-12-01');
+            component.from = '2026-12-01';
+            component.to = '';
+            component.applyCustom();
+            expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+                queryParams: {period: 'custom', from: '2026-12-01', to: '2026-12-01'}
+            }));
+            component.to = '2026-12-20';
+            component.applyCustom();
+            expect(component.to).toBe('2026-12-20');
+        } finally {
+            jasmine.clock().uninstall();
+        }
+    });
+
     it('restores valid browser URL state', () => {
         expect((fixture.componentInstance as any).period).toBe('30');
         query.next(convertToParamMap({period: 'custom', from: '2026-02-01', to: '2026-02-02'}));

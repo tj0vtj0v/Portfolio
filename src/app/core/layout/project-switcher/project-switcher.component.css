@@ -15,6 +15,13 @@ select { margin-bottom: var(--space-6); }
 .project-nav a.active { color: var(--color-text); background: var(--color-surface); box-shadow: inset 3px 0 var(--color-primary); }
 .project-hint { color: var(--color-text-muted); }
 
+.project-nav a.setup-needed { position: relative; }
+.project-nav a.setup-needed::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-control); background: color-mix(in srgb, var(--color-primary) 16%, transparent); pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+    .project-nav a.setup-needed::before { animation: setup-pulse 2s ease-in-out infinite; }
+}
+@keyframes setup-pulse { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+
 @media (max-width: 800px) {
     .project-sidebar { height: auto; padding: var(--space-4) 28px 0; border-right: 0; border-bottom: 1px solid var(--color-border); }
     .project-sidebar select { max-width: 280px; margin-bottom: var(--space-4); }
