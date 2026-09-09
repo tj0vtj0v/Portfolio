@@ -1,19 +1,62 @@
-<div>
-    <h1>Dashboard</h1>
-    <div>
-        <label for="start">Start Date:</label>
-        <input (change)="update()" [(ngModel)]="startDate" id="start" name="start" required type="date"/>
+<div class="accounting-dashboard">
+    <app-ui-page-header eyebrow="Workspace" heading="Accounting" description="Track income, expenses, transfers, and current account balances.">
+        <a class="button" data-variant="primary" routerLink="/accounting/expenses" [queryParams]="{mode: 'add'}">+ Expense</a>
+        <a class="button" routerLink="/accounting/incomes" [queryParams]="{mode: 'add'}">+ Income</a>
+        <a class="button" routerLink="/accounting/transfers" [queryParams]="{mode: 'add'}">+ Transaction</a>
+        <a class="button" routerLink="/accounting/accounts">View accounts</a>
+    </app-ui-page-header>
 
-        <label for="end">End Date:</label>
-        <input (change)="update()" [(ngModel)]="endDate" id="end" name="end" required type="date"/>
-    </div>
+    <app-date-range (rangeChange)="update($event)" />
+    <app-ui-skeleton *ngIf="loading" layout="accounting" message="Loading accounting data…" />
+    <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
 
+    <button *ngIf="errorMessage" type="button" (click)="load()">Retry</button>
 
-    <p *ngIf="loading" role="status">Loading dashboard…</p>
-    <p *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
-    <app-chart-card [options]="charts.balance"></app-chart-card>
-    <app-chart-card [options]="charts.history"></app-chart-card>
-    <app-chart-card [options]="charts.category_expense"></app-chart-card>
-    <app-chart-card [options]="charts.account_income"></app-chart-card>
-    <app-chart-card [options]="charts.transfer"></app-chart-card>
+    <ng-container *ngIf="!loading && !errorMessage">
+        <section class="summary-grid" aria-label="Accounting summary">
+            <article><span>Current balance</span><strong>{{ currentBalance | currency:'EUR' }}</strong></article>
+            <article><span>Period income</span><strong>{{ periodIncome | currency:'EUR' }}</strong></article>
+            <article><span>Period expenses</span><strong>{{ periodExpenses | currency:'EUR' }}</strong></article>
+            <article><span>Period net change</span><strong>{{ periodIncome - periodExpenses | currency:'EUR' }}</strong></article>
+        </section>
+
+        <section class="primary-charts">
+            <app-ui-panel heading="Balance history"><app-chart-card [options]="charts.history" /></app-ui-panel>
+            <app-ui-panel heading="Expenses by category"><app-chart-card [options]="charts.category_expense" /></app-ui-panel>
+        </section>
+
+        <app-ui-panel heading="Recent activity" eyebrow="Selected period">
+            <div class="activity-toolbar" role="group" aria-label="Filter recent activity">
+                <button type="button" [attr.aria-pressed]="activityFilter === 'all'" (click)="setActivityFilter('all')">All</button>
+                <button type="button" [attr.aria-pressed]="activityFilter === 'expense'" (click)="setActivityFilter('expense')">Expenses</button>
+                <button type="button" [attr.aria-pressed]="activityFilter === 'income'" (click)="setActivityFilter('income')">Income</button>
+                <button type="button" [attr.aria-pressed]="activityFilter === 'transfer'" (click)="setActivityFilter('transfer')">Transfers</button>
+            </div>
+            <p class="activity-count">{{ matchingActivityCount }} {{ matchingActivityCount === 1 ? 'record' : 'records' }}</p>
+            <app-ui-empty-state *ngIf="!matchingActivityCount" heading="No activity" message="No matching accounting records fall within this period." />
+            <div *ngIf="matchingActivityCount" class="activity-table-wrap">
+                <table>
+                    <thead><tr><th>Date</th><th>Type</th><th>Details</th><th>Amount</th><th><span class="visually-hidden">Action</span></th></tr></thead>
+                    <tbody>
+                        <tr *ngFor="let activity of filteredActivities">
+                            <td>{{ activity.date | date:'mediumDate' }}</td>
+                            <td><span class="activity-type">{{ activity.type | titlecase }}</span></td>
+                            <td><strong>{{ activity.description }}</strong><span>{{ activity.context }}</span></td>
+                            <td [class.negative]="activity.amount < 0">{{ activity.amount | currency:'EUR' }}</td>
+                            <td><a [routerLink]="activityRoute(activity)" [queryParams]="{recordId: activity.id}">Edit</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button *ngIf="matchingActivityCount > 10" type="button" class="activity-toggle" (click)="showAllActivity = !showAllActivity">
+                {{ showAllActivity ? 'Show latest 10' : 'View all' }}
+            </button>
+        </app-ui-panel>
+
+        <section class="secondary-charts" aria-label="Additional accounting charts">
+            <app-ui-panel heading="Account liquidity"><app-chart-card [options]="charts.balance" /></app-ui-panel>
+            <app-ui-panel heading="Income by account"><app-chart-card [options]="charts.account_income" /></app-ui-panel>
+            <app-ui-panel heading="Transfer flow"><app-chart-card [options]="charts.transfer" /></app-ui-panel>
+        </section>
+    </ng-container>
 </div>

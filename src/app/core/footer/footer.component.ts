@@ -10,5 +10,5 @@ import {RouterLink} from '@angular/router';
     styleUrl: './footer.component.css'
 })
 export class FooterComponent {
-
+    protected readonly year = new Date().getFullYear();
 }

@@ -8,7 +8,7 @@ export class ConnectorService {
     private readonly http = inject(HttpClient);
 
     add<T = any>(suffix: string, body: unknown): Observable<T> {
-        return this.http.post<T>(`${API_BASE_URL}${suffix}`, body, {headers: {accept: 'application/json'}});
+        return this.http.post<T>(`${API_BASE_URL}${suffix}`, body, {headers: {accept: 'application/json', 'Content-Type': 'application/json'}});
     }
 
     get<T = any>(suffix: string): Observable<T> {
@@ -16,7 +16,7 @@ export class ConnectorService {
     }
 
     update<T = any>(suffix: string, body: unknown): Observable<T> {
-        return this.http.patch<T>(`${API_BASE_URL}${suffix}`, body, {headers: {accept: 'application/json'}});
+        return this.http.patch<T>(`${API_BASE_URL}${suffix}`, body, {headers: {accept: 'application/json', 'Content-Type': 'application/json'}});
     }
 
     delete<T = any>(suffix: string): Observable<T> {

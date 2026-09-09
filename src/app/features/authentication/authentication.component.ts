@@ -1,3 +1,4 @@
+import {FieldErrorDirective} from '../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../shared/forms/submission-state';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Component, DestroyRef, inject} from '@angular/core';
@@ -6,18 +7,25 @@ import {NgIf} from '@angular/common';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {safeReturnUrl} from '../../core/auth/return-url';
 import {UserService} from '../../shared/api/user.service';
+import {UiPageHeaderComponent} from '../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../shared/ui/panel/ui-panel.component';
+import {FeedbackKind, UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-authentication',
-    imports: [
+    imports: [FieldErrorDirective,
         FormsModule,
         NgIf,
-        RouterLink
+        RouterLink,
+        UiPageHeaderComponent,
+        UiPanelComponent,
+        UiFeedbackComponent
     ],
     templateUrl: './authentication.component.html',
     styleUrl: './authentication.component.css'
 })
 export class AuthenticationComponent {
+    protected fieldErrors: Record<string, string> = {};
     readonly submission = new SubmissionState();
     private readonly destroyRef = inject(DestroyRef);
     protected username: string = '';
@@ -25,6 +33,11 @@ export class AuthenticationComponent {
     protected statusMessage: string = '';
     protected returnUrl?: string;
     protected sessionCheckFailed = false;
+
+    protected get feedbackKind(): FeedbackKind {
+        if (this.statusMessage === 'Login successful') return 'success';
+        return this.statusMessage.startsWith('Login failed') || this.statusMessage.startsWith('Please') ? 'error' : 'info';
+    }
 
     constructor(protected userService: UserService, private route: ActivatedRoute, private router: Router) {
     }
@@ -47,9 +60,12 @@ export class AuthenticationComponent {
 
     onLogin() {
         if (this.submission.pending) return;
+        this.fieldErrors = {};
         this.trim()
 
         if (!this.username || !this.password) {
+            if (!this.username) this.fieldErrors['username'] = 'Enter a username.';
+            if (!this.password) this.fieldErrors['password'] = 'Enter a password.';
             this.statusMessage = 'Please enter both, username and password.';
             return;
         }
@@ -61,7 +77,7 @@ export class AuthenticationComponent {
             () => {
                 this.statusMessage = 'Login successful';
                 this.password = '';
-                if (this.returnUrl) void this.router.navigateByUrl(this.returnUrl);
+                void this.router.navigateByUrl(this.returnUrl ?? '/accounting');
             },
             (error) => {
                 if ([0, 502, 503, 504].includes(error?.status)) {

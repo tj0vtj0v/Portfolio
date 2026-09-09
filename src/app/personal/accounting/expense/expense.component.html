@@ -1,98 +1,42 @@
-<p *ngIf="submission.pending" role="status">Saving changes…</p>
-<div *ngIf="!(expense || addingExpense)">
-    <ag-grid-angular
-        appGridFit
-        (gridReady)="onGridReady($event)"
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="expenses"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-    <button [disabled]="submission.pending" (click)="onAdd()">Add Expense</button>
-</div>
-
-<div *ngIf="addingExpense">
-    <h3>Add Expense</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
-        <div>
-            <label for="add_date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.date" id="add_date" name="date" required type="date"/>
-        </div>
-        <div>
-            <label for="add_reason">Reason</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.reason" id="add_reason" name="add_reason" required type="text"/>
-        </div>
-        <div>
-            <label for="add_amount">Amount</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="add_account">Account</label>
-            <select [disabled]="submission.pending" [(ngModel)]="expense!.account" id="add_account" name="add_account" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="add_category">Category</label>
-            <select [disabled]="submission.pending" [(ngModel)]="expense!.category" id="add_category" name="add_category" required>
-                <option *ngFor="let category of categories" [ngValue]="category">
-                    {{ category.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Save</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingExpense && expense">
-    <h3>Edit Expense</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
-        <div>
-            <label for="date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.date" id="date" name="date" required type="date"/>
-        </div>
-        <div>
-            <label for="reason">Reason</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.reason" id="reason" name="add_reason" required type="text"/>
-        </div>
-        <div>
-            <label for="amount">Amount</label>
-            <input [disabled]="submission.pending" [(ngModel)]="expense!.amount" id="amount" name="amount" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="account">Account</label>
-            <select [disabled]="submission.pending" [(ngModel)]="expense!.account" id="account" name="add_account" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="category">Category</label>
-            <select [disabled]="submission.pending" [(ngModel)]="expense!.category" id="category" name="add_category" required>
-                <option *ngFor="let category of categories" [ngValue]="category">
-                    {{ category.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Update</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-    <button [disabled]="submission.pending" (click)="onDelete()">Delete Expense</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
+<div class="accounting-page">
+    <app-ui-page-header eyebrow="Accounting" heading="Expenses" description="Review spending or add a new expense with its account and category.">
+        <button *ngIf="!(expense || addingExpense) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add expense</button>
+    </app-ui-page-header>
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading expenses..." />
+    <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+    <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
+    <app-ui-feedback *ngIf="statusMessage && !expense" kind="error" [message]="statusMessage" />
+    <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
+    <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+    <app-ui-feedback *ngIf="!loading && !loadError && !expenses.length && !expense" kind="info" message="No expenses have been recorded." />
+    <app-ui-panel *ngIf="!(expense || addingExpense) && !loading && !loadError" heading="Expense records">
+        <div class="grid-wrap"><ag-grid-angular appGridFit (gridReady)="onGridReady($event)" (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10, 20, 50]" [paginationPageSize]="10" [pagination]="true" [rowData]="expenses" style="width:100%;height:100%" /></div>
+    </app-ui-panel>
+    <app-ui-panel *ngIf="addingExpense" heading="Add expense">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
+            <div class="form-grid">
+                <div class="form-field"><label for="add_date">Date</label><input [disabled]="submission.pending" [(ngModel)]="expense!.date" id="add_date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
+                <div class="form-field"><label for="add_amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="expense!.amount" id="add_amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>
+                <div class="form-field form-field--wide"><label for="add_reason">Reason</label><input [disabled]="submission.pending" [(ngModel)]="expense!.reason" id="add_reason" name="reason" required type="text" [appFieldError]="fieldErrors['reason']"></div>
+                <div class="form-field"><label for="add_account">Account</label><select [disabled]="submission.pending" [(ngModel)]="expense!.account" id="add_account" name="account" required [appFieldError]="fieldErrors['account']"><option [ngValue]="undefined">Choose an account</option><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+                <div class="form-field"><label for="add_category">Category</label><select [disabled]="submission.pending" [(ngModel)]="expense!.category" id="add_category" name="category" required [appFieldError]="fieldErrors['category']"><option [ngValue]="undefined">Choose a category</option><option *ngFor="let category of categories" [ngValue]="category">{{ category.name }}</option></select></div>
+            </div>
+            <div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Save expense</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div>
+        </form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
+    <app-ui-panel *ngIf="!addingExpense && expense" heading="Edit expense">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
+            <div class="form-grid">
+                <div class="form-field"><label for="date">Date</label><input [disabled]="submission.pending" [(ngModel)]="expense.date" id="date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
+                <div class="form-field"><label for="amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="expense.amount" id="amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>
+                <div class="form-field form-field--wide"><label for="reason">Reason</label><input [disabled]="submission.pending" [(ngModel)]="expense.reason" id="reason" name="reason" required type="text" [appFieldError]="fieldErrors['reason']"></div>
+                <div class="form-field"><label for="account">Account</label><select [disabled]="submission.pending" [(ngModel)]="expense.account" id="account" name="account" required [appFieldError]="fieldErrors['account']"><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+                <div class="form-field"><label for="category">Category</label><select [disabled]="submission.pending" [(ngModel)]="expense.category" id="category" name="category" required [appFieldError]="fieldErrors['category']"><option *ngFor="let category of categories" [ngValue]="category">{{ category.name }}</option></select></div>
+            </div>
+            <div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Update expense</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div>
+            <div class="destructive-section"><button data-variant="danger" [disabled]="submission.pending" type="button" (click)="onDelete()">Delete expense</button></div>
+        </form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>

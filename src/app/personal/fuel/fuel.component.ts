@@ -1,10 +1,9 @@
 import {Component} from '@angular/core';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
     selector: 'app-fuel',
-    imports: [RouterLink, RouterLinkActive, RouterOutlet],
-    templateUrl: './fuel.component.html',
-    styleUrl: './fuel.component.css'
+    imports: [RouterOutlet],
+    templateUrl: './fuel.component.html'
 })
 export class FuelComponent {}

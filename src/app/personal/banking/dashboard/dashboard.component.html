@@ -1,13 +1,10 @@
-<div>
-    <h1>Dashboard</h1>
-    <div>
-        <label for="start">Start Date:</label>
-        <input (change)="update()" [(ngModel)]="startDate" id="start" name="start" required type="date"/>
-
-        <label for="end">End Date:</label>
-        <input (change)="update()" [(ngModel)]="endDate" id="end" name="end" required type="date"/>
-    </div>
-
-
-    <app-chart-card [options]="balance_chart"></app-chart-card>
+<div class="banking-dashboard">
+    <app-ui-page-header eyebrow="Workspace" heading="Banking" description="Review imported bank balances and transactions. Banking data is read-only here." />
+    <app-date-range (rangeChange)="update($event)" />
+    <app-ui-skeleton *ngIf="loading" layout="banking" message="Loading banking data…" />
+    <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
+    <button *ngIf="errorMessage" type="button" (click)="loadData()">Retry</button>
+    <app-ui-panel *ngIf="!loading && !errorMessage" heading="Balance history" eyebrow="Selected period">
+        <app-chart-card [options]="balance_chart" emptyMessage="No balance history is available for this period." />
+    </app-ui-panel>
 </div>

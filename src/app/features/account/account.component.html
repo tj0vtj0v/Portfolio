@@ -1,43 +1,28 @@
-<p *ngIf="submission.pending" role="status">Saving changes…</p>
-<div class="account-page">
-    <h2>Edit Profile</h2>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()" *ngIf="!success">
-        <div class="form-group">
-            <label for="first_name">First Name</label>
-            <input [disabled]="submission.pending" [(ngModel)]="user.first_name" id="first_name" name="first_name"
-                   placeholder="Enter your first name" required type="text"/>
-        </div>
-
-        <div class="form-group">
-            <label for="last_name">Last Name</label>
-            <input [disabled]="submission.pending" [(ngModel)]="user.last_name" id="last_name" name="last_name"
-                   placeholder="Enter your last name" required type="text"/>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input [disabled]="submission.pending" [(ngModel)]="user.email" id="email" name="email"
-                   placeholder="Enter your email" required type="email"/>
-        </div>
-
-        <div *ngIf="changePassword" class="password">
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input [disabled]="submission.pending" [(ngModel)]="user.password" id="password" name="password"
-                       placeholder="Enter your password" required type="password"/>
+<div class="form-page">
+    <app-ui-page-header eyebrow="Account" heading="Edit profile" description="Update your name, email address, or password." />
+    <app-ui-panel>
+        <app-ui-skeleton *ngIf="loading" layout="form" message="Loading profile details…" />
+        <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+        <button *ngIf="loadError" type="button" (click)="ngOnInit()">Try again</button>
+        <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+        <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()" *ngIf="!success && !loading && !loadError">
+            <div class="form-grid">
+                <div class="form-field"><label for="first_name">First Name</label><input [disabled]="submission.pending" [(ngModel)]="user.first_name" id="first_name" name="first_name" autocomplete="given-name" required type="text" [appFieldError]="fieldErrors['first_name']" /></div>
+                <div class="form-field"><label for="last_name">Last Name</label><input [disabled]="submission.pending" [(ngModel)]="user.last_name" id="last_name" name="last_name" autocomplete="family-name" required type="text" [appFieldError]="fieldErrors['last_name']" /></div>
+                <div class="form-field form-field--wide"><label for="email">Email</label><input [disabled]="submission.pending" [(ngModel)]="user.email" id="email" name="email" autocomplete="email" required type="email" [appFieldError]="fieldErrors['email']" /></div>
+                <div *ngIf="changePassword" class="password-fields">
+                    <div class="form-field"><label for="password">New password</label><input [disabled]="submission.pending" [(ngModel)]="user.password" id="password" name="password" autocomplete="new-password" required type="password" [appFieldError]="fieldErrors['password']" /></div>
+                    <div class="form-field"><label for="repeatPassword">Repeat new password</label><input [disabled]="submission.pending" [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword" autocomplete="new-password" required type="password" [appFieldError]="fieldErrors['repeatPassword']" /></div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="repeatPassword">Repeat Password</label>
-                <input [disabled]="submission.pending" [(ngModel)]="repeatPassword" id="repeatPassword" name="repeatPassword"
-                       placeholder="Confirm your password" required type="password"/>
+            <div class="form-actions">
+                <button data-variant="primary" [disabled]="submission.pending" type="submit">Update profile</button>
+                <button [disabled]="submission.pending" type="button" (click)="changePassword = true" *ngIf="!changePassword">Change password</button>
+                <button [disabled]="submission.pending" type="button" (click)="cancelPasswordChange()" *ngIf="changePassword">Cancel password change</button>
+                <a routerLink="/settings">Back to settings</a>
             </div>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Update</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="changePassword = true" *ngIf="!changePassword && !success">Change Password</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
+        </form>
+        <app-ui-feedback *ngIf="statusMessage" [kind]="feedbackKind" [message]="statusMessage" />
+        <a *ngIf="success" class="button primary" data-variant="primary" routerLink="/settings">Back to settings</a>
+    </app-ui-panel>
 </div>

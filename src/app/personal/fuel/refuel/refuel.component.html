@@ -1,106 +1,32 @@
-<p *ngIf="submission.pending" role="status">Saving changes…</p>
-<div *ngIf="!(refuel || addingRefuel)">
-    <ag-grid-angular
-        appGridFit
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="refuels"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-    <button [disabled]="submission.pending" (click)="onAdd()">Add Refuel</button>
+<div class="fuel-page">
+    <app-ui-page-header eyebrow="Fuel" heading="Refuels" description="Record fuel purchases and keep distance, volume, cost, vehicle, and fuel type together.">
+        <button *ngIf="!(refuel || addingRefuel) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add refuel</button>
+    </app-ui-page-header>
+    <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading refuels…" />
+    <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+    <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+    <button *ngIf="loadError" type="button" (click)="loadData()">Retry</button>
+    <app-ui-empty-state *ngIf="!loading && !loadError && !(refuel || addingRefuel) && !refuels.length" heading="No refuels" message="No refuels have been recorded yet." />
+    <app-ui-panel *ngIf="!loading && !loadError && !(refuel || addingRefuel) && refuels.length" heading="Recorded refuels"><div class="grid-wrap"><ag-grid-angular appGridFit (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="refuels" style="width:100%;height:100%" /></div></app-ui-panel>
+
+    <app-ui-panel *ngIf="addingRefuel" heading="Add refuel">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><ng-container *ngTemplateOutlet="refuelFields; context: {$implicit: 'add_'}" /><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Save refuel</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
+    <app-ui-panel *ngIf="!addingRefuel && refuel" heading="Edit refuel">
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()"><ng-container *ngTemplateOutlet="refuelFields; context: {$implicit: ''}" /><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Update refuel</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div><div class="destructive-section"><button data-variant="danger" [disabled]="submission.pending" type="button" (click)="onDelete()">Delete refuel</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>
 
-<div *ngIf="addingRefuel">
-    <h3>Add Refuel</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
-        <div>
-            <label for="add_date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.date" id="add_date" name="add_date" required type="date"/>
-        </div>
-        <div>
-            <label for="add_distance">Distance</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.distance" id="add_distance" name="add_distance" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="add_consumption">Consumption</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.consumption" id="add_consumption" name="add_consumption" required
-                   type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="add_cost">Cost</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.cost" id="add_cost" name="add_cost" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="add_fuel_type">Fuel</label>
-            <select [disabled]="submission.pending" [(ngModel)]="refuel!.fuel_type" id="add_fuel_type" name="add_fuel_type" required>
-                <option *ngFor="let fuel_type of fuel_types" [ngValue]="fuel_type">
-                    {{ fuel_type.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="add_car">Car</label>
-            <select [disabled]="submission.pending" [(ngModel)]="refuel!.car" id="add_car" name="add_car" required>
-                <option *ngFor="let car of cars" [ngValue]="car">
-                    {{ car.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Save</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingRefuel && refuel">
-    <h3>edit Refuel</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
-        <div>
-            <label for="date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.date" id="date" name="date" required type="date"/>
-        </div>
-        <div>
-            <label for="distance">Distance</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.distance" id="distance" name="distance" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="consumption">Consumption</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.consumption" id="consumption" name="consumption" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="cost">Cost</label>
-            <input [disabled]="submission.pending" [(ngModel)]="refuel!.cost" id="cost" name="cost" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="fuel_type">Fuel</label>
-            <select [disabled]="submission.pending" [(ngModel)]="refuel!.fuel_type" id="fuel_type" name="fuel_type" required>
-                <option *ngFor="let fuel_type of fuel_types" [ngValue]="fuel_type">
-                    {{ fuel_type.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="car">Car</label>
-            <select [disabled]="submission.pending" [(ngModel)]="refuel!.car" id="car" name="car" required>
-                <option *ngFor="let car of cars" [ngValue]="car">
-                    {{ car.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Update</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-    <button [disabled]="submission.pending" (click)="onDelete()">Delete Refuel</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
-</div>
+<ng-template #refuelFields let-prefix>
+    <div class="form-grid">
+        <div class="form-field"><label [for]="prefix + 'date'">Date</label><input [disabled]="submission.pending" [(ngModel)]="refuel!.date" [id]="prefix + 'date'" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
+        <div class="form-field"><label [for]="prefix + 'distance'">Distance (km)</label><input [disabled]="submission.pending" [(ngModel)]="refuel!.distance" [id]="prefix + 'distance'" name="distance" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['distance']"></div>
+        <div class="form-field"><label [for]="prefix + 'consumption'">Fuel volume (L)</label><input [disabled]="submission.pending" [(ngModel)]="refuel!.consumption" [id]="prefix + 'consumption'" name="consumption" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['consumption']"></div>
+        <div class="form-field"><label [for]="prefix + 'cost'">Cost</label><input [disabled]="submission.pending" [(ngModel)]="refuel!.cost" [id]="prefix + 'cost'" name="cost" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['cost']"></div>
+        <div class="form-field"><label [for]="prefix + 'fuel_type'">Fuel type</label><select [disabled]="submission.pending" [(ngModel)]="refuel!.fuel_type" [id]="prefix + 'fuel_type'" name="fuel_type" required [appFieldError]="fieldErrors['fuel_type']"><option *ngFor="let fuel_type of fuel_types" [ngValue]="fuel_type">{{ fuel_type.name }}</option></select></div>
+        <div class="form-field"><label [for]="prefix + 'car'">Vehicle</label><select [disabled]="submission.pending" [(ngModel)]="refuel!.car" [id]="prefix + 'car'" name="car" required [appFieldError]="fieldErrors['car']"><option *ngFor="let car of cars" [ngValue]="car">{{ car.name }}</option></select></div>
+    </div>
+</ng-template>

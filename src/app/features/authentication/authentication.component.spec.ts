@@ -36,10 +36,10 @@ describe('AuthenticationComponent', () => {
         component.onLogin();
     }
 
-    it('keeps the existing successful login screen when there is no return destination', () => {
+    it('opens Accounting when there is no return destination', () => {
         const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
         login();
-        expect(navigate).not.toHaveBeenCalled();
+        expect(navigate).toHaveBeenCalledWith('/accounting');
         fixture.detectChanges();
         expect(fixture.nativeElement.textContent).toContain('Login successful');
     });
@@ -57,10 +57,11 @@ describe('AuthenticationComponent', () => {
         component.ngOnInit();
         const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
         login();
-        expect(navigate).not.toHaveBeenCalled();
+        expect(navigate).toHaveBeenCalledWith('/accounting');
     });
 
     it('sends only one login while pending and clears the password immediately on success', () => {
+        spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
         const response = new Subject<void>();
         userService.login.and.returnValue(response);
         login();

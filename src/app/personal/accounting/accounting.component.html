@@ -1,13 +1,1 @@
-<div class="container feature-layout">
-    <nav class="sidebar" aria-label="Accounting">
-        <a routerLink="./" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page">Dashboard</a>
-        <a routerLink="expenses" routerLinkActive="active" ariaCurrentWhenActive="page">Expenses</a>
-        <a routerLink="incomes" routerLinkActive="active" ariaCurrentWhenActive="page">Incomes</a>
-        <a routerLink="transfers" routerLinkActive="active" ariaCurrentWhenActive="page">Transfers</a>
-        <a routerLink="accounts" routerLinkActive="active" ariaCurrentWhenActive="page">Accounts</a>
-        <a routerLink="categories" routerLinkActive="active" ariaCurrentWhenActive="page">Categories</a>
-    </nav>
-    <div class="content">
-        <router-outlet></router-outlet>
-    </div>
-</div>
+<router-outlet />

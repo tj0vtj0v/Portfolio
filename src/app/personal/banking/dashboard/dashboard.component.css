@@ -1,0 +1,4 @@
+.banking-dashboard { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: var(--space-6); }
+.banking-dashboard > * { min-width: 0; }
+.banking-dashboard app-ui-panel { display: block; overflow: hidden; }
+.banking-dashboard app-ui-page-header { margin-bottom: calc(var(--space-8) * -1 + var(--space-6)); }

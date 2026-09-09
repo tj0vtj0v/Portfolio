@@ -1,0 +1,127 @@
+:root {
+    --font-body: 'Segoe UI', Arial, sans-serif;
+    --font-mono: Consolas, 'Courier New', monospace;
+    --font-heading: Georgia, 'Times New Roman', serif;
+    --font-size-body: 14px;
+    --font-size-reading: 16px;
+    --font-size-label: 12px;
+    --font-size-input: 16px;
+    --font-size-table: 13px;
+    --font-size-metadata: 11px;
+    --font-size-page-heading: 42px;
+    --font-size-panel-heading: 23px;
+    --line-height-body: 1.6;
+    --line-height-reading: 1.85;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+    --layout-portfolio-max: 1320px;
+    --layout-workspace-max: 1680px;
+    --layout-sidebar: 210px;
+    --layout-sidebar-compact: 178px;
+    --layout-topbar-min-height: 66px;
+    --control-min-height: 44px;
+    --panel-gap: 24px;
+    --mobile-gap: 16px;
+    --mobile-gutter: 16px;
+    --pointer-grid-cell: 36px;
+    --pointer-grid-radius: 230px;
+    --pointer-grid-fade: 450ms;
+    --pointer-grid-mask: radial-gradient(circle 230px at var(--pointer-x, -300px) var(--pointer-y, -300px), #000 0%, rgba(0, 0, 0, 0.55) 38%, transparent 100%);
+}
+
+:root[data-theme='light'] {
+    --color-background: #f7f2dc;
+    --color-surface: #fffcf0;
+    --color-surface-soft: #efe9d2;
+    --color-text: #263e37;
+    --color-text-muted: #667062;
+    --color-primary: #2c6557;
+    --color-on-primary: #fffbea;
+    --color-border: #d8d7bf;
+    --color-control-border: #7f8878;
+    --color-secondary-accent: #d7b955;
+    --color-art-background: #e9e4c9;
+    --color-chart-secondary: #b5c2a2;
+    --color-featured-background: #2c554b;
+    --color-featured-text: #fcf5dd;
+    --color-featured-muted: #d1dfcf;
+    --color-sidebar-background: #f7f2dc;
+    --pointer-grid-line: rgba(100,105,102,0.12);
+    --color-danger: #a63030;
+    --color-success: #2c6557;
+    --color-warning: #79550b;
+    --font-heading: Georgia, 'Times New Roman', serif;
+    --font-heading-weight: 400;
+    --font-size-hero: clamp(36px, 4.1vw, 57px);
+    --radius-control: 4px;
+    --radius-panel: 5px;
+    --focus-ring: rgba(44, 101, 87, 0.28);
+    color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+    --color-background: #080f1c;
+    --color-surface: #101c30;
+    --color-surface-soft: #172943;
+    --color-text: #e6eef9;
+    --color-text-muted: #a3adbe;
+    --color-primary: #6395ff;
+    --color-on-primary: #080f1c;
+    --color-border: #354452;
+    --color-control-border: #667487;
+    --color-secondary-accent: #a5abb6;
+    --color-art-background: #0d1a30;
+    --color-chart-secondary: #748399;
+    --color-featured-background: #112447;
+    --color-featured-text: #e6eef9;
+    --color-featured-muted: #a3adbe;
+    --color-sidebar-background: #0b1421;
+    --pointer-grid-line: rgba(165,173,188,0.18);
+    --color-danger: #ff9b9b;
+    --color-success: #b6d1bb;
+    --color-warning: #dbcaa0;
+    --font-heading: 'Segoe UI', Arial, sans-serif;
+    --font-heading-weight: 600;
+    --font-size-hero: clamp(34px, 3.7vw, 53px);
+    --radius-control: 0px;
+    --radius-panel: 0px;
+    --focus-ring: rgba(99, 149, 255, 0.3);
+    color-scheme: dark;
+}
+
+:root[data-theme] {
+    --bs-body-bg: var(--color-background);
+    --bs-body-color: var(--color-text);
+    --bs-border-color: var(--color-border);
+    --bs-secondary-bg: var(--color-surface-soft);
+    --bs-tertiary-bg: var(--color-surface);
+    --bs-link-color: var(--color-primary);
+    --bs-link-hover-color: var(--color-primary);
+    --bs-primary: var(--color-primary);
+    --bs-danger: var(--color-danger);
+    --bs-success: var(--color-success);
+    --bs-warning: var(--color-warning);
+    --bs-border-radius: var(--radius-control);
+    --bs-border-radius-sm: var(--radius-control);
+    --bs-border-radius-lg: var(--radius-panel);
+}
+
+@media (max-width: 580px) {
+    :root {
+        --font-size-hero: 36px;
+        --font-size-page-heading: 36px;
+    }
+
+    :root[data-theme='dark'] {
+        --font-size-hero: 33px;
+    }
+}

@@ -1,90 +1,31 @@
-<p *ngIf="submission.pending" role="status">Saving changes…</p>
-<div *ngIf="!(transfer || addingTransfer)">
-    <ag-grid-angular
-        appGridFit
-        (gridReady)="onGridReady($event)"
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="transfers"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-    <button [disabled]="submission.pending" (click)="onAdd()">Add Transfer</button>
-</div>
-
-<div *ngIf="addingTransfer">
-    <h3>Add Transfer</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()">
-        <div>
-            <label for="add_date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="transfer!.date" id="add_date" name="date" required type="date"/>
-        </div>
-        <div>
-            <label for="add_amount">Amount</label>
-            <input [disabled]="submission.pending" [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="add_source">Source</label>
-            <select [disabled]="submission.pending" [(ngModel)]="transfer!.source" id="add_source" name="source" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="add_target">Target</label>
-            <select [disabled]="submission.pending" [(ngModel)]="transfer!.target" id="add_target" name="target" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Save</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
-</div>
-
-<div *ngIf="!addingTransfer && transfer">
-    <h3>Edit Transfer</h3>
-    <form [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()">
-        <div>
-            <label for="date">Date</label>
-            <input [disabled]="submission.pending" [(ngModel)]="transfer!.date" id="date" name="date" required type="date"/>
-        </div>
-        <div>
-            <label for="amount">Amount</label>
-            <input [disabled]="submission.pending" [(ngModel)]="transfer!.amount" id="amount" name="amount" required type="text" numberFormatter/>
-        </div>
-        <div>
-            <label for="source">Source</label>
-            <select [disabled]="submission.pending" [(ngModel)]="transfer!.source" id="source" name="source" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-        <div>
-            <label for="target">Target</label>
-            <select [disabled]="submission.pending" [(ngModel)]="transfer!.target" id="target" name="target" required>
-                <option *ngFor="let account of accounts" [ngValue]="account">
-                    {{ account.name }}
-                </option>
-            </select>
-        </div>
-
-        <button [disabled]="submission.pending" type="submit">Update</button>
-    </form>
-
-    <button [disabled]="submission.pending" (click)="reset()">Back</button>
-    <button [disabled]="submission.pending" (click)="onDelete()">Delete Transfer</button>
-
-    <p *ngIf="statusMessage != ''" class="status-message" role="status" aria-live="polite">{{ statusMessage }}</p>
+<div class="accounting-page">
+    <app-ui-page-header eyebrow="Accounting" heading="Transfers" description="Move money between your accounting accounts."><button *ngIf="!(transfer || addingTransfer) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add transfer</button></app-ui-page-header>
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading transfers..." />
+    <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
+    <button *ngIf="loadError" type="button" (click)="load()">Retry</button>
+    <app-ui-feedback *ngIf="statusMessage && !transfer" kind="error" [message]="statusMessage" />
+    <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />
+    <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Saving changes…" />
+    <app-ui-feedback *ngIf="!loading && !loadError && !transfers.length && !transfer" kind="info" message="No transfers have been recorded." />
+    <app-ui-panel *ngIf="!(transfer || addingTransfer) && !loading && !loadError" heading="Transfer records"><div class="grid-wrap"><ag-grid-angular appGridFit (gridReady)="onGridReady($event)" (appGridActivate)="onRowClicked($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="transfers" style="width:100%;height:100%" /></div></app-ui-panel>
+    <app-ui-panel *ngIf="addingTransfer" heading="Transfer between accounts">
+        <p class="editor-copy">Move money between your accounting accounts. Transfers do not count as income or expenses.</p>
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onSave()"><div class="form-grid">
+            <div class="form-field"><label for="add_date">Date</label><input [disabled]="submission.pending" [(ngModel)]="transfer!.date" id="add_date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
+            <div class="form-field"><label for="add_amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="transfer!.amount" id="add_amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>
+            <div class="form-field"><label for="add_source">Source account</label><select [disabled]="submission.pending" [(ngModel)]="transfer!.source" id="add_source" name="source" required [appFieldError]="fieldErrors['source']"><option [ngValue]="undefined">Choose a source</option><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+            <div class="form-field"><label for="add_target">Target account</label><select [disabled]="submission.pending" [(ngModel)]="transfer!.target" id="add_target" name="target" required [appFieldError]="fieldErrors['target']"><option [ngValue]="undefined">Choose a target</option><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+        </div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Save transfer</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
+    <app-ui-panel *ngIf="!addingTransfer && transfer" heading="Edit transfer">
+        <p class="editor-copy">Move money between your accounting accounts.</p>
+        <form class="form-page" [attr.aria-busy]="submission.pending" (ngSubmit)="onUpdate()"><div class="form-grid">
+            <div class="form-field"><label for="date">Date</label><input [disabled]="submission.pending" [(ngModel)]="transfer.date" id="date" name="date" required type="date" [appFieldError]="fieldErrors['date']"></div>
+            <div class="form-field"><label for="amount">Amount</label><input [disabled]="submission.pending" [(ngModel)]="transfer.amount" id="amount" name="amount" required type="text" inputmode="decimal" numberFormatter [appFieldError]="fieldErrors['amount']"></div>
+            <div class="form-field"><label for="source">Source account</label><select [disabled]="submission.pending" [(ngModel)]="transfer.source" id="source" name="source" required [appFieldError]="fieldErrors['source']"><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+            <div class="form-field"><label for="target">Target account</label><select [disabled]="submission.pending" [(ngModel)]="transfer.target" id="target" name="target" required [appFieldError]="fieldErrors['target']"><option *ngFor="let account of accounts" [ngValue]="account">{{ account.name }}</option></select></div>
+        </div><div class="form-actions"><button data-variant="primary" [disabled]="submission.pending" type="submit">Update transfer</button><button [disabled]="submission.pending" type="button" (click)="reset()">Cancel</button></div><div class="destructive-section"><button data-variant="danger" [disabled]="submission.pending" type="button" (click)="onDelete()">Delete transfer</button></div></form>
+        <app-ui-feedback *ngIf="statusMessage" class="status-message" kind="error" [message]="statusMessage" />
+    </app-ui-panel>
 </div>

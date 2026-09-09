@@ -1,3 +1,6 @@
+import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
+import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../../shared/forms/submission-state';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {GridReadyEvent} from 'ag-grid-community';
@@ -10,17 +13,24 @@ import {CommonModule} from '@angular/common';
 import {ColDef, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
 import {Account} from '../../../shared/datatype/Account';
-import {forkJoin} from 'rxjs';
+import {forkJoin, finalize} from 'rxjs';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
+import {ActivatedRoute, Router} from '@angular/router';
+import {formatLocalDate} from '../../../shared/date-range/period-range';
+import {accountingEditorRequest, clearAccountingEditorQuery} from '../accounting-editor-route';
+import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
+import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
+import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-transfer',
-    imports: [
+    providers: [EditorGridFocus],
+    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
         GridFitDirective,
         NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
-        CommonModule
+        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent
     ],
     templateUrl: './transfer.component.html',
     styleUrl: './transfer.component.css'
@@ -28,11 +38,18 @@ import {NumberFormatterDirective} from '../../../shared/formatter/number-formatt
 export class TransferComponent {
     readonly submission = new SubmissionState();
     private readonly destroyRef = inject(DestroyRef);
+    private readonly route = inject(ActivatedRoute, {optional: true});
+    private readonly router = inject(Router, {optional: true});
+    private handledRequest?: string;
     protected accounts: Account[] = [];
     protected transfers: Transfer[] = [];
     protected transfer?: Transfer;
     protected addingTransfer: boolean = false;
     protected statusMessage = '';
+    protected loading = true;
+    protected loadError = '';
+    protected fieldErrors: Record<string, string> = {};
+    protected successMessage = '';
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Date', field: 'date', sortable: true, filter: true},
@@ -65,13 +82,43 @@ export class TransferComponent {
     }
 
     ngOnInit(): void {
+        this.route?.queryParamMap?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            if (!this.loading && !this.loadError) this.applyRouteRequest();
+        });
+        this.load();
+    }
+
+    protected load(): void {
+        this.loading = true;
+        this.loadError = '';
         forkJoin([
             this.accountingService.get_transfers(),
             this.accountingService.get_accounts()
-        ]).subscribe(([transfers, accounts]) => {
+        ]).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({next: ([transfers, accounts]) => {
             this.transfers = transfers;
             this.accounts = accounts;
-        });
+            this.loading = false;
+            this.applyRouteRequest();
+        }, error: () => { this.loading = false; this.loadError = 'Unable to load transfers or editor options.'; } });
+    }
+
+    private applyRouteRequest(): void {
+        const request = accountingEditorRequest(this.route);
+        const key = JSON.stringify(request);
+        if (key === this.handledRequest || this.submission.pending) return;
+        const previous = this.handledRequest;
+        this.handledRequest = key;
+        if (!request.add && !request.recordId && previous === undefined) return;
+        this.transfer = undefined;
+        this.addingTransfer = false;
+        this.statusMessage = '';
+        this.fieldErrors = {};
+        if (request.add) this.onAdd();
+        else if (request.recordId) {
+            const transfer = this.transfers.find(item => item.id === request.recordId);
+            if (transfer) this.selectTransfer(transfer);
+            else this.statusMessage = 'The requested record was not found.';
+        }
     }
 
     trim(): void {
@@ -81,21 +128,31 @@ export class TransferComponent {
     }
 
     check(): boolean {
+        this.fieldErrors = {};
         if (this.transfer!.source == undefined) {
             this.statusMessage = 'The transfer must have a source';
+            this.fieldErrors['source'] = this.statusMessage;
             return false;
         }
         if (this.transfer!.target == undefined) {
             this.statusMessage = 'The transfer must have a target';
+            this.fieldErrors['target'] = this.statusMessage;
+            return false;
+        }
+        if (this.transfer!.source.id === this.transfer!.target.id) {
+            this.statusMessage = 'Source and target accounts must be different';
+            this.fieldErrors['source'] = this.statusMessage;
             return false;
         }
         if (this.transfer!.date === '') {
             this.statusMessage = 'The transfer must have a date';
+            this.fieldErrors['date'] = this.statusMessage;
             return false;
         }
 
         if (this.transfer!.amount <= 0) {
             this.statusMessage = 'The transfer must be greater than 0';
+            this.fieldErrors['amount'] = this.statusMessage;
             return false;
         }
 
@@ -103,30 +160,38 @@ export class TransferComponent {
     }
 
     reset(): void {
-        this.ngOnInit()
-
+        this.fieldErrors = {};
         this.transfer = undefined;
         this.addingTransfer = false;
         this.statusMessage = '';
+        clearAccountingEditorQuery(this.router, this.route);
+        this.load();
     }
 
-    onRowClicked(event: RowClickedEvent): void {
-        const source = this.accounts.find(account => account.id === event.data.source.id);
-        const target = this.accounts.find(account => account.id === event.data.target.id);
+    onRowClicked(event: {data: Transfer}): void {
+        this.selectTransfer(event.data);
+    }
+
+    private selectTransfer(value: Transfer): void {
+        const source = this.accounts.find(account => account.id === value.source?.id);
+        const target = this.accounts.find(account => account.id === value.target?.id);
         this.transfer = {
-            id: event.data.id,
-            date: event.data.date,
-            amount: event.data.amount,
+            id: value.id,
+            date: value.date,
+            amount: value.amount,
             source: source,
             target: target
         };
     }
 
     onAdd(): void {
+        this.fieldErrors = {};
+        this.successMessage = '';
+        this.statusMessage = '';
         this.addingTransfer = true;
 
         this.transfer = {
-            date: new Date().toISOString().split('T')[0],
+            date: formatLocalDate(new Date()),
             amount: 0,
             source: undefined,
             target: undefined
@@ -141,8 +206,10 @@ export class TransferComponent {
 
         this.statusMessage = '';
 
-        this.submission.run(() => this.accountingService.add_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
-            () => this.reset(),
+        this.submission.run(() => this.accountingService.add_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+            if (!this.destroyRef.destroyed && !this.loading && !this.loadError) this.applyRouteRequest();
+        })).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Adding failed: ${error.error.detail}`;
@@ -161,8 +228,10 @@ export class TransferComponent {
 
         this.statusMessage = '';
 
-        this.submission.run(() => this.accountingService.update_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
-            () => this.reset(),
+        this.submission.run(() => this.accountingService.update_transfer(this.transfer!)).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+            if (!this.destroyRef.destroyed && !this.loading && !this.loadError) this.applyRouteRequest();
+        })).subscribe(
+            () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
             (error) => {
                 if (error?.error?.detail) {
                     this.statusMessage = `Edit failed: ${error.error.detail}`;
@@ -177,8 +246,10 @@ export class TransferComponent {
         if (this.submission.pending) return;
         if (confirm('Are you sure you want to delete this transfer?')) {
             this.statusMessage = '';
-            this.submission.run(() => this.accountingService.delete_transfer(this.transfer!.id!)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
-                () => this.reset(),
+            this.submission.run(() => this.accountingService.delete_transfer(this.transfer!.id!)).pipe(takeUntilDestroyed(this.destroyRef), finalize(() => {
+            if (!this.destroyRef.destroyed && !this.loading && !this.loadError) this.applyRouteRequest();
+        })).subscribe(
+                () => { this.reset(); this.successMessage = 'Changes saved successfully.'; },
                 (error) => {
                     if (error?.error?.detail) {
                         this.statusMessage = `Delete failed: ${error.error.detail}`;

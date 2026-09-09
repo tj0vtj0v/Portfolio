@@ -1,0 +1,18 @@
+<div class="app-surface" appPointerGrid [attr.data-shell]="shell()">
+    <app-header
+        [shell]="shell()"
+        [workspaceTarget]="workspaceTarget()" />
+
+    <div class="route-shell" [class.workspace-shell]="shell() === 'workspace'" [class.portfolio-shell]="shell() === 'portfolio'">
+        @if (shell() === 'workspace') {
+            <app-project-switcher [project]="project()" />
+        }
+        <main [class.workspace-content]="shell() === 'workspace'" [class.portfolio-content]="shell() === 'portfolio'" id="main-content">
+            @if (navigation.pending(); as pending) {
+                <app-ui-skeleton [layout]="pending.layout" [pageHeader]="true" message="Loading page…" />
+            }
+            <div [hidden]="navigation.pending() !== null"><router-outlet /></div>
+        </main>
+    </div>
+    <app-footer />
+</div>

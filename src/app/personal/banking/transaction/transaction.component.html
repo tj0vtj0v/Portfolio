@@ -1,77 +1,31 @@
-<div *ngIf="!transaction">
-    <ag-grid-angular
-        appGridFit
-        (rowClicked)="onRowClicked($event)"
-        [columnDefs]="columnDefs"
-        [domLayout]="'autoHeight'"
-        [paginationPageSizeSelector]="[10, 20, 50]"
-        [paginationPageSize]="10"
-        [pagination]="true"
-        [rowData]="transactions"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 100%;"
-    />
-</div>
-
-<div *ngIf="transaction">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Date:</label>
-                <p>{{ transaction.date || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Bank Account:</label>
-                <p>{{ transaction.account.name || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Peer:</label>
-                <p>{{ transaction.peer || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Amount:</label>
-                <p>{{ transaction.amount + ' ' + transaction.currencycode || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Reason for Payment:</label>
-                <p>{{ transaction.reasonforpayment || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Posting Text:</label>
-                <p>{{ transaction.postingtext || '---' }}</p>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label>Validation date:</label>
-                <p>{{ transaction.vdate || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Booking date:</label>
-                <p>{{ transaction.bdate || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Customer Reference:</label>
-                <p>{{ transaction.customerreference || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Mandate Reference:</label>
-                <p>{{ transaction.mandatereference || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Peer Account:</label>
-                <p>{{ transaction.peeraccount || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Peer BIC:</label>
-                <p>{{ transaction.peerbic || '---' }}</p>
-            </div>
-            <div class="form-group">
-                <label>Peer ID:</label>
-                <p>{{ transaction.peerid || '---' }}</p>
-            </div>
-        </div>
-    </div>
-
-    <button (click)="reset()">Back</button>
+<div class="banking-page">
+    <app-ui-page-header eyebrow="Banking" heading="Transactions" description="Read-only imported transactions. Open a row with a click, Enter, or Space to see every available field." />
+    <app-ui-skeleton *ngIf="loading" layout="table" message="Loading transactions…" />
+    <app-ui-feedback *ngIf="detailLoading" kind="pending" message="Loading transaction details…" />
+    <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
+    <button *ngIf="errorMessage && selectedId === undefined" type="button" (click)="loadData()">Retry list</button>
+    <button *ngIf="errorMessage && selectedId !== undefined" type="button" (click)="retryDetail()">Retry details</button>
+    <button *ngIf="selectedId !== undefined && !transaction" type="button" (click)="reset()">Cancel details</button>
+    <app-ui-empty-state *ngIf="!loading && !errorMessage && !transaction && !transactions.length" heading="No transactions" message="No imported banking transactions are available." />
+    <app-ui-panel *ngIf="!loading && !transaction && transactions.length" heading="Imported transactions">
+        <div class="grid-wrap"><ag-grid-angular appGridFit (rowClicked)="onRowClicked($event)" (cellKeyDown)="onCellKeyDown($event)" [columnDefs]="columnDefs" [domLayout]="'autoHeight'" [paginationPageSizeSelector]="[10,20,50]" [paginationPageSize]="10" [pagination]="true" [rowData]="transactions" style="width:100%;height:100%" /></div>
+    </app-ui-panel>
+    <app-ui-panel *ngIf="transaction" heading="Transaction details">
+        <dl class="detail-grid">
+            <div><dt>Date</dt><dd>{{ transaction.date || '—' }}</dd></div>
+            <div><dt>Bank account</dt><dd>{{ transaction.account.name || '—' }}</dd></div>
+            <div><dt>Peer</dt><dd>{{ transaction.peer || '—' }}</dd></div>
+            <div><dt>Amount</dt><dd>{{ transaction.amount | number:'1.2-2' }} {{ transaction.currencycode || '—' }}</dd></div>
+            <div><dt>Reason for payment</dt><dd>{{ transaction.reasonforpayment || '—' }}</dd></div>
+            <div><dt>Posting text</dt><dd>{{ transaction.postingtext || '—' }}</dd></div>
+            <div><dt>Validation date</dt><dd>{{ transaction.vdate || '—' }}</dd></div>
+            <div><dt>Booking date</dt><dd>{{ transaction.bdate || '—' }}</dd></div>
+            <div><dt>Customer reference</dt><dd>{{ transaction.customerreference || '—' }}</dd></div>
+            <div><dt>Mandate reference</dt><dd>{{ transaction.mandatereference || '—' }}</dd></div>
+            <div><dt>Peer account</dt><dd>{{ transaction.peeraccount || '—' }}</dd></div>
+            <div><dt>Peer BIC</dt><dd>{{ transaction.peerbic || '—' }}</dd></div>
+            <div><dt>Peer ID</dt><dd>{{ transaction.peerid || '—' }}</dd></div>
+        </dl>
+        <div class="form-actions"><button type="button" (click)="reset()">Back to transactions</button></div>
+    </app-ui-panel>
 </div>

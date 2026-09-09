@@ -1,12 +1,13 @@
 import {TestBed} from '@angular/core/testing';
 
 import {ConnectorService} from './connector.service';
+import {provideHttpClient} from '@angular/common/http';
 
 describe('ConnectorService', () => {
     let service: ConnectorService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
+        TestBed.configureTestingModule({providers: [provideHttpClient()]});
         service = TestBed.inject(ConnectorService);
     });
 

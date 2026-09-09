@@ -1,1 +1,8 @@
-<p>page-not-found works!</p>
+<div class="not-found-page">
+    <p class="error-code" aria-hidden="true">404</p>
+    <app-ui-empty-state heading="Page not found" message="The page you requested does not exist or may have moved.">
+        <div class="recovery-actions">
+            <a class="button primary" data-variant="primary" routerLink="/accounting">Open workspace</a>
+        </div>
+    </app-ui-empty-state>
+</div>

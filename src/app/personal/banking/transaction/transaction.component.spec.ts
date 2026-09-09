@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TransactionComponent } from './transaction.component';
+import {BankingService} from '../../../shared/api/banking.service';
+import {of} from 'rxjs';
 
 describe('TransactionComponent', () => {
   let component: TransactionComponent;
@@ -8,7 +10,8 @@ describe('TransactionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TransactionComponent]
+      imports: [TransactionComponent],
+      providers: [{provide: BankingService, useValue: {get_transactions: () => of([]), get_transaction: () => of({})}}]
     })
     .compileComponents();
 

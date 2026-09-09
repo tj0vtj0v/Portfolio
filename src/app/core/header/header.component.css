@@ -1,0 +1,41 @@
+.topbar {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr);
+    align-items: center;
+    gap: var(--space-4);
+    min-height: var(--layout-topbar-min-height);
+    padding: 10px clamp(22px, 4vw, 64px);
+    border-bottom: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-background) 94%, transparent);
+    backdrop-filter: blur(12px);
+}
+
+.name { color: var(--color-text); font: var(--font-heading-weight) 18px/1.2 var(--font-heading); text-decoration: none; }
+.view-switch { display: flex; padding: 3px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface-soft); }
+.view-switch a { min-height: 38px; padding: 9px 18px; color: var(--color-text-muted); font-weight: 600; line-height: 20px; text-decoration: none; }
+.view-switch a.active { background: var(--color-surface); color: var(--color-text); box-shadow: 0 1px 3px color-mix(in srgb, var(--color-text) 12%, transparent); }
+.topbar-actions { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-2); }
+.theme-toggle, .account-menu summary, .login-link { min-height: 44px; padding: 10px 12px; }
+.theme-toggle { display: flex; align-items: center; gap: var(--space-2); }
+.login-link { display: inline-flex; align-items: center; color: var(--color-text); font-weight: 600; text-decoration: none; }
+.account-menu { position: relative; }
+.account-menu summary { display: flex; align-items: center; cursor: pointer; font-weight: 600; list-style: none; }
+.account-menu summary::-webkit-details-marker { display: none; }
+.account-menu summary::after { content: '▾'; margin-left: var(--space-2); color: var(--color-text-muted); }
+.account-menu[open] summary::after { content: '▴'; }
+.account-menu-panel { position: absolute; right: 0; top: calc(100% + 8px); display: grid; min-width: 160px; padding: var(--space-2); border: 1px solid var(--color-border); background: var(--color-surface); box-shadow: 0 12px 30px color-mix(in srgb, var(--color-text) 15%, transparent); }
+.account-menu-panel a, .account-menu-panel button { display: flex; align-items: center; min-height: 44px; width: 100%; border: 0; background: transparent; color: var(--color-text); padding: 10px 12px; text-align: left; text-decoration: none; }
+.account-menu-panel :is(a, button):hover { background: var(--color-surface-soft); }
+
+@media (max-width: 700px) {
+    .topbar { grid-template-columns: 1fr auto; padding-inline: 22px; }
+    .view-switch { grid-column: 1 / -1; grid-row: 2; justify-self: center; order: 3; }
+}
+
+@media (max-width: 420px) {
+    .theme-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .view-switch { width: 100%; }
+    .view-switch a { flex: 1; text-align: center; }
+}

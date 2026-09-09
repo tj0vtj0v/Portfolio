@@ -13,7 +13,7 @@ describe('SettingsComponent', () => {
 
     beforeEach(async () => {
         deletion = new Subject<void>();
-        userService = {get: jasmine.createSpy().and.returnValue(of({username: 'Test'})),
+        userService = {get: jasmine.createSpy().and.returnValue(of({username: 'Test', email: 'test@example.com', role: {name: 'User'}})),
             delete: jasmine.createSpy().and.returnValue(deletion), logout: jasmine.createSpy()};
         await TestBed.configureTestingModule({
             imports: [SettingsComponent],
