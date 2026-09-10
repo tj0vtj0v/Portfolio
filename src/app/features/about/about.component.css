@@ -1,0 +1,24 @@
+.about-intro { padding: 16px 0 56px; }
+.about-intro h1 { margin-bottom: 28px; }
+.about-intro .split p { max-width: 68ch; font-size: 16px; }
+.skills-section { padding: 32px 0; border-top: 1px solid var(--color-border); }
+.skills-window { overflow: hidden; padding: 10px 0 22px; }
+.skills-track { display: flex; width: max-content; animation: drift 45s linear infinite; }
+.skills-track ul { display: flex; list-style: none; padding: 0; margin: 0; }
+.skills-track li { padding: 12px 22px; margin-right: 12px; border: 1px solid var(--color-border); background: var(--color-surface); font: 16px var(--font-mono); border-radius: var(--radius-control); }
+.paused .skills-track, .skills-window:hover .skills-track { animation-play-state: paused; }
+.timeline-labels { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; margin: 48px 0 24px; font: 12px var(--font-mono); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.12em; }
+.timeline-labels span:first-child { text-align: right; }
+.timeline { position: relative; list-style: none; margin: 0 0 28px; padding: 0; }
+.timeline::before { position: absolute; content: ''; width: 1px; top: 0; bottom: 0; left: 50%; background: var(--color-border); }
+.timeline li { display: grid; grid-template-columns: minmax(0, 1fr) 100px minmax(0, 1fr); position: relative; padding: 12px 0; }
+.timeline article { padding: 24px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
+.timeline .education article { grid-column: 1; grid-row: 1; border-right: 3px solid var(--color-primary); }
+.timeline .work article { grid-column: 3; grid-row: 1; border-left: 3px solid var(--color-secondary-accent); }
+.year { grid-column: 2; grid-row: 1; align-self: start; justify-self: center; margin-top: 24px; z-index: 1; border: 1px solid var(--color-control-border); border-radius: var(--radius-control); background: var(--color-background); padding: 4px 8px; font: 12px var(--font-mono); }
+.institution { color: var(--color-primary); }
+.timeline h3 { font-size: 23px; }
+.timeline article p:last-child { margin-bottom: 0; color: var(--color-text-muted); }
+@keyframes drift { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .skills-track { animation: none; flex-wrap: wrap; width: auto; } .skills-track ul { flex-wrap: wrap; gap: 8px; } .skills-track ul[aria-hidden] { display: none; } .motion-control { display: none; } }
+@media (max-width: 580px) { .timeline-labels { display: none; } .timeline::before { left: 25px; } .timeline li { grid-template-columns: 62px minmax(0, 1fr); } .year { grid-column: 1; font-size: 11px; } .timeline .education article, .timeline .work article { grid-column: 2; border-right-width: 1px; border-left: 3px solid var(--color-primary); padding: 20px; } .timeline .work article { border-left-color: var(--color-secondary-accent); } }

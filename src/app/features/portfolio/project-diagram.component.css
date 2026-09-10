@@ -1,0 +1,10 @@
+:host { display: block; width: 100%; }
+svg { display: block; width: 100%; height: auto; background: var(--color-art-background); border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
+.grid { fill: none; stroke: var(--color-border); opacity: 0.35; }
+.observations { fill: none; stroke: var(--color-text-muted); stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0.65; }
+.trajectory { fill: none; stroke: var(--color-primary); stroke-width: 3; }
+.poses { fill: var(--color-surface); stroke: var(--color-primary); stroke-width: 3; }
+.landmarks { fill: var(--color-secondary-accent); stroke: var(--color-text-muted); }
+.boxes { fill: var(--color-surface); stroke: var(--color-control-border); }
+text { fill: var(--color-text-muted); font: 12px var(--font-mono); }
+.labels text { text-anchor: middle; font: 16px var(--font-body); fill: var(--color-text); }

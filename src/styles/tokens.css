@@ -115,9 +115,9 @@
     --color-warning: #dbcaa0;
     --font-heading: 'Segoe UI', Arial, sans-serif;
     --font-heading-weight: 600;
-    --font-size-hero: clamp(34px, 3.7vw, 53px);
-    --radius-control: 0px;
-    --radius-panel: 0px;
+    --font-size-hero: clamp(36px, 4.1vw, 57px);
+    --radius-control: 4px;
+    --radius-panel: 5px;
     --focus-ring: rgba(99, 149, 255, 0.3);
     color-scheme: dark;
     --color-chart-text: #b1b6bf;
@@ -148,6 +148,6 @@
     }
 
     :root[data-theme='dark'] {
-        --font-size-hero: 33px;
+        --font-size-hero: 36px;
     }
 }

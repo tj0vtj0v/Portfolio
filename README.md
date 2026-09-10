@@ -1,6 +1,6 @@
 # Personal Portfolio
 
-Angular workspace for Accounting and Fuel. Portfolio designs are archived for future implementation; Banking and Proximity are currently unavailable.
+Angular portfolio for Tjorven Burdorf, with public Home, About, Projects, and Contact pages and a protected Accounting and Fuel workspace. Banking and Proximity are currently unavailable.
 
 ## Approved design and implementation handoff
 
@@ -9,8 +9,10 @@ Angular workspace for Accounting and Fuel. Portfolio designs are archived for fu
 - [Ready-to-paste model prompt](docs/design/MODEL-PROMPT.md)
 - [Design tokens](docs/design/tokens.json)
 
-Run `npm start -- --host 127.0.0.1 --port 4200` to open the guarded workspace.
-The portfolio source and visual references are preserved in
+Run `npm start -- --host 127.0.0.1 --port 4200` to open the public portfolio.
+The Portfolio / Workspace switch connects the public pages and guarded tools.
+Current content sources are recorded in [portfolio content notes](docs/design/PORTFOLIO-CONTENT.md).
+Earlier visual experiments remain preserved in
 [future portfolio designs](docs/design/future-portfolio/README.md).
 Shared implementation patterns
 are documented in [the component guide](docs/design/COMPONENT-GUIDE.md), with

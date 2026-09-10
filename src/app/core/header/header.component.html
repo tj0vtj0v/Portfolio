@@ -1,7 +1,8 @@
 <header class="topbar">
-    <a class="name" routerLink="/accounting">Tjorven Burdorf</a>
+    <a class="name" routerLink="/home">Tjorven Burdorf</a>
 
     <nav class="view-switch" aria-label="Site area">
+        <a [routerLink]="portfolioLink" [attr.aria-current]="shell === 'portfolio' ? 'page' : null" [class.active]="shell === 'portfolio'">Portfolio</a>
         <a [routerLink]="workspaceLink" [attr.aria-current]="shell === 'workspace' ? 'page' : null" [class.active]="shell === 'workspace'">Workspace</a>
     </nav>
 

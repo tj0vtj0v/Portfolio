@@ -1,0 +1,10 @@
+.hero { padding: 16px 0 64px; grid-template-columns: 1.25fr 0.85fr; gap: 72px; }
+.hero h1 { margin-bottom: 24px; }
+.hero .lead { max-width: 49ch; }
+.portrait { position: relative; padding: 0 12px 0 0; }
+.portrait::before { content: ''; position: absolute; z-index: -1; inset: 24px 0 30px 24px; border: 1px solid var(--color-control-border); border-radius: var(--radius-panel); }
+.portrait img { height: 440px; object-position: 50% 45%; }
+.portrait figcaption { margin-top: 24px; }
+.race-photo { aspect-ratio: 1.45; object-position: 50% 50%; }
+@media (max-width: 800px) { .hero { gap: 32px; } .portrait img { height: 390px; } }
+@media (max-width: 580px) { .hero { grid-template-columns: minmax(0, 1fr); padding-bottom: 36px; } .portrait { max-width: 380px; width: 100%; margin-inline: auto; } .portrait img { height: 370px; } }

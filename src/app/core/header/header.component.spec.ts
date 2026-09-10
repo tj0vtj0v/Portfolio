@@ -28,9 +28,18 @@ describe('HeaderComponent', () => {
     it('keeps remembered period queries separate from the Workspace path', () => {
         fixture.componentRef.setInput('workspaceTarget', '/accounting?period=year#activity');
         fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/accounting?period=year#activity');
+        expect(fixture.nativeElement.querySelector('.view-switch a:last-child').getAttribute('href')).toBe('/accounting?period=year#activity');
         fixture.componentRef.setInput('workspaceTarget', '/banking');
         fixture.detectChanges();
-        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/accounting');
+        expect(fixture.nativeElement.querySelector('.view-switch a:last-child').getAttribute('href')).toBe('/accounting');
+    });
+
+    it('only accepts known public pages for the Portfolio destination', () => {
+        fixture.componentRef.setInput('portfolioTarget', '/projects#mapping');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/projects#mapping');
+        fixture.componentRef.setInput('portfolioTarget', '//untrusted.example/projects');
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('.view-switch a').getAttribute('href')).toBe('/home');
     });
 });

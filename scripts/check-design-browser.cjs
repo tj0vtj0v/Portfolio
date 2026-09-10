@@ -110,7 +110,7 @@ let emptyReads = false;
     if (process.argv.includes('--ui-repairs')) {
         await navigate('/accounting');
         assert.equal(await evaluate("document.querySelector('#dashboard-period').value"), '1: year');
-        await evaluate("document.querySelector('.view-switch a').click()");
+        await evaluate("document.querySelector('.view-switch a:last-child').click()");
         await delay(300);
         assert.equal(await evaluate('location.pathname'), '/accounting');
         assert.equal(await evaluate("new URLSearchParams(location.search).get('period')"), 'year');

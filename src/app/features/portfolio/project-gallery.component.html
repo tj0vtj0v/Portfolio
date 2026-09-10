@@ -1,0 +1,16 @@
+<div class="gallery-heading">
+    <div><p class="eyebrow">A few things I work on</p><h2>From code to the real world.</h2></div>
+    <div class="controls"><button type="button" aria-label="Previous project" [disabled]="selected() === 0" (click)="select(selected() - 1)">←</button><button type="button" aria-label="Next project" [disabled]="selected() === projects.length - 1" (click)="select(selected() + 1)">→</button></div>
+</div>
+<div class="gallery-track" #track aria-label="Project gallery">
+    @for (project of projects; track project.fragment; let i = $index) {
+        <article class="gallery-item" [class.selected]="selected() === i">
+            <button class="image-button" type="button" [attr.aria-label]="'Highlight ' + project.title" [attr.aria-pressed]="selected() === i" (click)="select(i)">
+                @if (project.image) { <img [src]="project.image" alt="" loading="lazy" width="600" height="400"> }
+                @else { <app-project-diagram [kind]="project.kind" /> }
+            </button>
+            <p>{{ project.label }}</p><a routerLink="/projects" [fragment]="project.fragment">{{ project.title }} <span aria-hidden="true">↗</span></a>
+        </article>
+    }
+</div>
+<p class="selection" aria-live="polite">{{ selected() + 1 }} / {{ projects.length }} · {{ projects[selected()].title }}</p>

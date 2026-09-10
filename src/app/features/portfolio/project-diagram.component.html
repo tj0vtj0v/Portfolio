@@ -1,0 +1,21 @@
+@if (kind === 'mapping') {
+    <svg viewBox="0 0 600 360" role="img" aria-label="Illustration of Graph SLAM: vehicle poses connected along a track and observations connecting them to cone landmarks. Not recorded telemetry.">
+        <path class="grid" d="M0 60H600M0 120H600M0 180H600M0 240H600M0 300H600M60 0V360M120 0V360M180 0V360M240 0V360M300 0V360M360 0V360M420 0V360M480 0V360M540 0V360" />
+        <path class="observations" d="M110 245L90 190L170 190L185 250L235 175L285 225L315 155L375 200L410 120L455 145L465 80M110 245L160 295L185 250L250 280L285 225L340 270L375 200L425 240L455 145L500 185" />
+        <path class="trajectory" d="M65 250C125 245 152 270 185 250S245 215 285 225S350 225 375 200S455 180 455 145S457 94 495 60" />
+        <g class="poses"><circle cx="110" cy="245" r="7"/><circle cx="185" cy="250" r="7"/><circle cx="285" cy="225" r="7"/><circle cx="375" cy="200" r="7"/><circle cx="455" cy="145" r="7"/></g>
+        <g class="landmarks"><path d="M90 181l-6 12h12zM170 181l-6 12h12zM235 166l-6 12h12zM315 146l-6 12h12zM410 111l-6 12h12zM465 71l-6 12h12zM160 286l-6 12h12zM250 271l-6 12h12zM340 261l-6 12h12zM425 231l-6 12h12zM500 176l-6 12h12z"/></g>
+        <text x="30" y="35">GRAPH SLAM / CONCEPT</text><text x="30" y="330">POSES · OBSERVATIONS · LANDMARKS</text>
+    </svg>
+} @else {
+    <svg viewBox="0 0 600 360" role="img" aria-label="Website architecture: Angular frontend connects to a FastAPI service, which connects to PostgreSQL. GitHub Actions builds and deploys the frontend.">
+        <path class="grid" d="M0 60H600M0 120H600M0 180H600M0 240H600M0 300H600M60 0V360M120 0V360M180 0V360M240 0V360M300 0V360M360 0V360M420 0V360M480 0V360M540 0V360" />
+        <text x="30" y="35">PERSONAL WORKSPACE / ARCHITECTURE</text>
+        <g class="boxes"><rect x="35" y="105" width="145" height="95" rx="4"/><rect x="228" y="105" width="145" height="95" rx="4"/><rect x="420" y="105" width="145" height="95" rx="4"/></g>
+        <path class="trajectory" d="M180 152H225m-8-6 8 6-8 6M373 152H417m-8-6 8 6-8 6" />
+        <g class="labels"><text x="107" y="148">Angular</text><text x="107" y="174">Frontend</text><text x="300" y="148">FastAPI</text><text x="300" y="174">Python API</text><text x="492" y="148">PostgreSQL</text><text x="492" y="174">Database</text></g>
+        <path class="observations" d="M107 202V263H490" />
+        <text x="130" y="255">GitHub Actions → build → deploy</text>
+        <text x="30" y="330">PERSONAL TOOLS · SEPARATE SERVICES</text>
+    </svg>
+}

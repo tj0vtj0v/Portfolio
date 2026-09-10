@@ -3,6 +3,10 @@ import {ActivatedRouteSnapshot} from '@angular/router';
 export type AppShell = 'portfolio' | 'workspace';
 export type WorkspaceProject = 'accounting' | 'fuel';
 
+export function isPortfolioDestination(url: string): boolean {
+    return ['/home', '/about', '/projects', '/contact'].includes(cleanPath(url));
+}
+
 export interface LayoutContext {
     shell: AppShell;
     project?: WorkspaceProject;
