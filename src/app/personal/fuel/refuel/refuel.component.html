@@ -1,5 +1,5 @@
 <div class="fuel-page">
-    <app-ui-page-header eyebrow="Fuel" heading="Refuels" description="Record your refuelling and key details.">
+    <app-ui-page-header eyebrow="Fuel Tracker" heading="Refuels" description="Record your refuelling and key details.">
         <button *ngIf="!(refuel || addingRefuel) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add refuel</button>
     </app-ui-page-header>
     <app-ui-feedback *ngIf="successMessage" kind="success" [message]="successMessage" />

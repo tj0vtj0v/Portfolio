@@ -1,0 +1,38 @@
+@if (compact) {
+    <div class="compact"><app-portfolio-photo name="camera-model" alt="Real camera frame prepared as a stacked overview and detail crop for inference" sizes="200px" ratio="1" /></div>
+} @else {
+    <div class="pipeline" role="region" aria-label="Camera perception pipeline">
+        <button class="step-arrow previous" type="button" aria-label="Previous perception step" (click)="move(-1)" [disabled]="step() === 0">←</button>
+        <button class="step-arrow next" type="button" aria-label="Next perception step" (click)="move(1)" [disabled]="step() === steps.length - 1">→</button>
+        <span class="visually-hidden" aria-live="polite">{{ steps[step()] }}</span>
+        <section class="source" [class.inactive]="step() !== 0" [attr.aria-hidden]="step() !== 0">
+            <h3>Camera frame</h3><p class="dimensions">{{ layout.source.width }} &times; {{ layout.source.height }}</p>
+            <div class="source-image">
+                <app-portfolio-photo name="camera-source" alt="Actual nighttime camera frame from Jenny showing the cone course" sizes="(max-width: 700px) calc(100vw - 88px), 480px" [ratio]="layout.source.width + ' / ' + layout.source.height" />
+                <svg [attr.viewBox]="'0 0 ' + layout.source.width + ' ' + layout.source.height" aria-hidden="true">
+                    <rect class="overview-region" [attr.x]="layout.overview.x" [attr.y]="layout.overview.y" [attr.width]="layout.overview.width" [attr.height]="layout.overview.height" />
+                    <rect class="crop-region" [attr.x]="layout.crop.x" [attr.y]="layout.crop.y" [attr.width]="layout.crop.width" [attr.height]="layout.crop.height" />
+                </svg>
+            </div>
+            <p class="key"><span class="overview-key">Overview strip</span><span class="crop-key">Detail crop</span></p>
+        </section>
+        <section class="conversions" [class.inactive]="step() !== 1" [attr.aria-hidden]="step() !== 1">
+            <div><h3>Overview &rarr; resize</h3><p class="dimensions">{{ layout.overview.width }} &times; {{ layout.overview.height }} &rarr; {{ layout.model.width }} &times; {{ layout.model.split }}</p>
+                <app-portfolio-photo name="camera-overview" alt="Overview strip resized to half its original width and height" sizes="(max-width: 700px) calc(100vw - 88px), 480px" ratio="2 / 1" />
+                <p>From ({{ layout.overview.x }}, {{ layout.overview.y }}). Bilinear resize.</p></div>
+            <div><h3>Detail &rarr; direct copy</h3><p class="dimensions">{{ layout.crop.width }} &times; {{ layout.crop.height }} &rarr; unchanged</p>
+                <app-portfolio-photo name="camera-crop" alt="Unscaled detail crop from the actual camera frame" sizes="(max-width: 700px) calc(100vw - 88px), 480px" ratio="2 / 1" />
+                <p>From ({{ layout.crop.x }}, {{ layout.crop.y }}). No rescaling.</p></div>
+        </section>
+        <section class="model" [class.inactive]="step() !== 2" [attr.aria-hidden]="step() !== 2"><h3>Stacked model image</h3><p class="dimensions">{{ layout.model.width }} &times; {{ layout.model.height }}</p>
+            <div class="model-image"><app-portfolio-photo name="camera-model" alt="The actual model layout: resized overview in the top half and unscaled detail crop in the bottom half" sizes="(max-width: 700px) calc(100vw - 88px), 480px" ratio="1" /></div>
+            <p>Overview above, detail below.</p><p class="tensor">RGB / 255 &rarr; float32 CHW<br>3 &times; {{ layout.model.height }} &times; {{ layout.model.width }}</p>
+        </section>
+        <section class="inference" [class.inactive]="step() !== 3" [attr.aria-hidden]="step() !== 3"><h3>Inference</h3><p class="dimensions">960 &times; 960</p>
+            <img src="/images/portfolio/perception-inference.png" alt="Cone detections from fast-detection_26s_960-2 on the stacked overview and detail image" width="960" height="960" loading="lazy">
+        </section>
+        <section class="inference" [class.inactive]="step() !== 4" [attr.aria-hidden]="step() !== 4"><h3>Back to the camera frame</h3><p class="dimensions">1920 &times; 1080</p>
+            <img src="/images/portfolio/perception-projected.png" alt="Original camera frame with detections transformed back from the overview and detail crop" width="1920" height="1080" loading="lazy">
+        </section>
+    </div>
+}

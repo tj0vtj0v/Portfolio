@@ -1,5 +1,5 @@
 <div class="accounting-page">
-    <app-ui-page-header eyebrow="Accounting" heading="Expenses" description="Manage your spending.">
+    <app-ui-page-header eyebrow="Expense Tracker" heading="Expenses" description="Manage your spending.">
         <button *ngIf="!(expense || addingExpense) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add expense</button>
     </app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading expenses..." />

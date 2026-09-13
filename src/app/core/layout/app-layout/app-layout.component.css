@@ -2,38 +2,27 @@
 .app-surface { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
 .route-shell { flex: 1; }
 
-.portfolio-shell {
-    position: relative;
-    z-index: 1;
-    width: min(100%, var(--layout-portfolio-max));
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    padding: 0 64px;
-}
-
-.portfolio-shell > .portfolio-content, .portfolio-shell > app-footer { display: block; }
+.portfolio-sidebar { min-width: 0; padding: 36px var(--space-5); border-right: 1px solid var(--color-border); background: var(--color-sidebar-background); }
+.sidebar-label { margin: 0 0 var(--space-6); color: var(--color-text-muted); font: 600 var(--font-size-metadata)/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
 
 .portfolio-nav {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-6);
-    min-height: 56px;
-    align-items: center;
-    border-bottom: 1px solid var(--color-border);
+    display: grid;
+    gap: var(--space-1);
 }
 
 .portfolio-nav a {
+    min-height: 44px;
+    padding: 11px 12px;
     color: var(--color-text-muted);
     font-weight: 600;
     text-decoration: none;
 }
 
-.portfolio-nav a:hover, .portfolio-nav a.active { color: var(--color-text); }
-.portfolio-nav a.active { text-decoration: underline; text-decoration-color: var(--color-primary); text-decoration-thickness: 2px; text-underline-offset: 8px; }
-.portfolio-content { flex: 1; min-width: 0; padding: var(--space-10) 0 var(--space-16); }
+.portfolio-nav a:hover { color: var(--color-text); background: var(--color-surface-soft); }
+.portfolio-nav a.active { color: var(--color-text); background: var(--color-surface); box-shadow: inset 3px 0 var(--color-primary); }
+.portfolio-content { width: 100%; max-width: var(--layout-portfolio-max); min-width: 0; margin-inline: auto; padding: 36px 36px var(--space-16); }
 
-.workspace-shell {
+.workspace-shell, .portfolio-shell {
     position: relative;
     z-index: 1;
     display: grid;
@@ -49,23 +38,47 @@
     margin-inline: auto;
     padding: 36px;
 }
-.workspace-shell > .workspace-content { grid-column: 2; }
+.workspace-shell > .workspace-content, .portfolio-shell > .portfolio-content { grid-column: 2; }
 
 @media (max-width: 1100px) {
-    .portfolio-shell { padding-inline: 40px; }
-    .workspace-shell { grid-template-columns: var(--layout-sidebar-compact) minmax(0, 1fr); }
-    .workspace-content { padding-inline: 28px; }
+    .workspace-shell, .portfolio-shell { grid-template-columns: var(--layout-sidebar-compact) minmax(0, 1fr); }
+    .workspace-content, .portfolio-content { padding-inline: 28px; }
 }
 
 @media (max-width: 800px) {
-    .portfolio-shell { padding-inline: 28px; }
-    .workspace-shell { display: flex; flex-direction: column; }
+    .workspace-shell, .portfolio-shell { display: flex; flex-direction: column; }
+    .portfolio-sidebar { padding: var(--space-4) 28px 0; border-right: 0; border-bottom: 1px solid var(--color-border); }
+    .sidebar-label { margin-bottom: var(--space-4); }
+    .portfolio-nav { display: flex; gap: var(--space-2); margin-inline: -28px; padding: 0 28px var(--space-3); overflow-x: auto; scrollbar-width: thin; }
+    .portfolio-nav a { flex: 0 0 auto; }
+    .portfolio-nav a.active { box-shadow: inset 0 -3px var(--color-primary); }
     .workspace-content { flex: 1; padding: 28px; }
 }
 
 @media (max-width: 580px) {
-    .portfolio-shell { padding-inline: 22px; }
-    .portfolio-nav { justify-content: flex-start; gap: var(--space-5); overflow-x: auto; }
-    .portfolio-content { padding-top: var(--space-8); }
+    .portfolio-sidebar { padding-inline: 22px; }
+    .portfolio-nav { margin-inline: -22px; padding-inline: 22px; }
+    .portfolio-content { padding: var(--space-8) 22px var(--space-16); }
     .workspace-content { padding: 22px; }
+}
+
+app-header { position: sticky; top: 0; z-index: 30; display: block; }
+/* Pin the complete navigation panel; the footer cannot displace it. */
+.portfolio-sidebar, app-project-switcher {
+    position: fixed;
+    top: var(--layout-topbar-min-height);
+    left: 0;
+    bottom: 0;
+    width: var(--layout-sidebar);
+    overflow-y: auto;
+    background: var(--color-sidebar-background);
+    z-index: 10;
+}
+app-footer { position: relative; z-index: 20; background: var(--color-background); }
+@media (max-width: 1100px) {
+    .portfolio-sidebar, app-project-switcher { width: var(--layout-sidebar-compact); }
+}
+@media (max-width: 800px) {
+    .portfolio-sidebar, app-project-switcher { bottom: auto; width: 100%; max-height: calc(100dvh - var(--layout-topbar-min-height)); }
+    .route-shell { padding-top: var(--mobile-navigation-height, 110px); }
 }

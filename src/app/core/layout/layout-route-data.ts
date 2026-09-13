@@ -45,12 +45,12 @@ export interface ProjectNavigation {
 }
 
 export const PROJECTS: readonly ProjectNavigation[] = [
-    {id: 'accounting', name: 'Accounting', root: '/accounting', children: [
+    {id: 'accounting', name: 'Expense Tracker', root: '/accounting', children: [
         {label: 'Overview', path: '/accounting'}, {label: 'Expenses', path: '/accounting/expenses'},
         {label: 'Income', path: '/accounting/incomes'}, {label: 'Transfers', path: '/accounting/transfers'},
         {label: 'Accounts', path: '/accounting/accounts'}, {label: 'Categories', path: '/accounting/categories'}
     ]},
-    {id: 'fuel', name: 'Fuel', root: '/fuel', children: [
+    {id: 'fuel', name: 'Fuel Tracker', root: '/fuel', children: [
         {label: 'Overview', path: '/fuel'}, {label: 'Refuels', path: '/fuel/refuels'}, {label: 'Cars', path: '/fuel/cars'}
     ]}
 ];

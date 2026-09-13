@@ -1,21 +1,36 @@
-@if (kind === 'mapping') {
-    <svg viewBox="0 0 600 360" role="img" aria-label="Illustration of Graph SLAM: vehicle poses connected along a track and observations connecting them to cone landmarks. Not recorded telemetry.">
-        <path class="grid" d="M0 60H600M0 120H600M0 180H600M0 240H600M0 300H600M60 0V360M120 0V360M180 0V360M240 0V360M300 0V360M360 0V360M420 0V360M480 0V360M540 0V360" />
-        <path class="observations" d="M110 245L90 190L170 190L185 250L235 175L285 225L315 155L375 200L410 120L455 145L465 80M110 245L160 295L185 250L250 280L285 225L340 270L375 200L425 240L455 145L500 185" />
-        <path class="trajectory" d="M65 250C125 245 152 270 185 250S245 215 285 225S350 225 375 200S455 180 455 145S457 94 495 60" />
-        <g class="poses"><circle cx="110" cy="245" r="7"/><circle cx="185" cy="250" r="7"/><circle cx="285" cy="225" r="7"/><circle cx="375" cy="200" r="7"/><circle cx="455" cy="145" r="7"/></g>
-        <g class="landmarks"><path d="M90 181l-6 12h12zM170 181l-6 12h12zM235 166l-6 12h12zM315 146l-6 12h12zM410 111l-6 12h12zM465 71l-6 12h12zM160 286l-6 12h12zM250 271l-6 12h12zM340 261l-6 12h12zM425 231l-6 12h12zM500 176l-6 12h12z"/></g>
-        <text x="30" y="35">GRAPH SLAM / CONCEPT</text><text x="30" y="330">POSES · OBSERVATIONS · LANDMARKS</text>
-    </svg>
+@if (kind === 'vtol') {
+    <img class="vtol-cutout" src="/images/portfolio/vtol-cutout.png" alt="VTOL aircraft concept shown from the side, above and in perspective" width="1536" height="1024" loading="lazy">
+} @else if (kind === 'perception') {
+    <app-perception-diagram [compact]="compact" />
+} @else if (kind === 'mapping' || kind === 'localization') {
+    <app-slam-diagram [compact]="compact" [localization]="kind === 'localization'" [stage]="stage" />
 } @else {
-    <svg viewBox="0 0 600 360" role="img" aria-label="Website architecture: Angular frontend connects to a FastAPI service, which connects to PostgreSQL. GitHub Actions builds and deploys the frontend.">
-        <path class="grid" d="M0 60H600M0 120H600M0 180H600M0 240H600M0 300H600M60 0V360M120 0V360M180 0V360M240 0V360M300 0V360M360 0V360M420 0V360M480 0V360M540 0V360" />
-        <text x="30" y="35">PERSONAL WORKSPACE / ARCHITECTURE</text>
-        <g class="boxes"><rect x="35" y="105" width="145" height="95" rx="4"/><rect x="228" y="105" width="145" height="95" rx="4"/><rect x="420" y="105" width="145" height="95" rx="4"/></g>
-        <path class="trajectory" d="M180 152H225m-8-6 8 6-8 6M373 152H417m-8-6 8 6-8 6" />
-        <g class="labels"><text x="107" y="148">Angular</text><text x="107" y="174">Frontend</text><text x="300" y="148">FastAPI</text><text x="300" y="174">Python API</text><text x="492" y="148">PostgreSQL</text><text x="492" y="174">Database</text></g>
-        <path class="observations" d="M107 202V263H490" />
-        <text x="130" y="255">GitHub Actions → build → deploy</text>
-        <text x="30" y="330">PERSONAL TOOLS · SEPARATE SERVICES</text>
-    </svg>
+<svg viewBox="0 0 720 440" role="img" [attr.aria-label]="kind === 'web' ? 'Three-layer architecture: Angular presentation, FastAPI application logic, PostgreSQL persistence.' : kind === 'delivery' ? 'Code update on GitHub, automatic website build, then publication to the server.' : kind === 'pipeline' ? 'Drone mapping pipeline: DJI mission data is structured and sent to a WebODM container, then the mapping outputs are saved to Nextcloud over WebDAV.' : 'Web application diagram.'">
+    <rect class="surface" width="720" height="440" />
+    @switch (kind) {
+        @case ('web') {
+            <g class="boxes"><rect x="170" y="48" width="380" height="90" rx="8"/><rect x="170" y="176" width="380" height="90" rx="8"/><rect x="170" y="304" width="380" height="90" rx="8"/></g>
+            <g text-anchor="middle"><text class="simple-heading" x="360" y="86">Frontend</text><text class="simple-caption" x="360" y="116">Angular</text><text class="simple-heading" x="360" y="214">Backend</text><text class="simple-caption" x="360" y="244">FastAPI</text><text class="simple-heading" x="360" y="342">Database</text><text class="simple-caption" x="360" y="372">PostgreSQL</text></g>
+            <path class="arrow" d="M360 143v26m-6-8 6 8 6-8M360 271v26m-6-8 6 8 6-8"/>
+        }
+        @case ('delivery') {
+            <g class="boxes"><rect x="40" y="140" width="180" height="160" rx="8"/><rect x="270" y="140" width="180" height="160" rx="8"/><rect x="500" y="140" width="180" height="160" rx="8"/></g>
+            <g text-anchor="middle">
+                <text class="simple-heading" x="130" y="211">Code update</text><text class="simple-caption" x="130" y="245">GitHub</text>
+                <text class="simple-heading" x="360" y="211">Build website</text><text class="simple-caption" x="360" y="245">Automatic</text>
+                <text class="simple-heading" x="590" y="211">Publish website</text><text class="simple-caption" x="590" y="245">Server</text>
+            </g>
+            <path class="arrow" d="M226 220h37m-8-6 8 6-8 6M456 220h37m-8-6 8 6-8 6"/>
+        }
+        @case ('pipeline') {
+            <text class="diagram-title" x="36" y="42">DRONE MAPPING / PIPELINE</text>
+            <g class="boxes"><rect x="28" y="112" width="154" height="180" rx="8"/><rect x="202" y="112" width="154" height="180" rx="8"/><rect x="376" y="112" width="154" height="180" rx="8"/><rect x="550" y="112" width="142" height="180" rx="8"/></g>
+            <g class="pipeline-icons" aria-hidden="true"><path d="M74 168l31-16 31 16v35l-31 16-31-16zM105 152v35m-31-19 31 19 31-19"/><path d="M243 183h68M243 205h52M243 227h61"/><path d="M414 177h78v58h-78zM427 164h52v13M431 193h44M431 211h44M431 229h30"/><path d="M592 169h58v72h-58zM603 158h36v11M606 187h30M606 207h30M606 227h19"/></g>
+            <g text-anchor="middle"><text class="simple-heading" x="105" y="265">DJI mission</text><text class="simple-caption" x="105" y="284">RGB · multispectral</text><text class="simple-heading" x="279" y="265">Structure</text><text class="simple-caption" x="279" y="284">sort · compress</text><text class="simple-heading" x="453" y="265">WebODM</text><text class="simple-caption" x="453" y="284">container mapping</text><text class="simple-heading" x="621" y="265">Nextcloud</text><text class="simple-caption" x="621" y="284">WebDAV archive</text></g>
+            <path class="arrow" d="M186 202h12m-7-6 7 6-7 6M360 202h12m-7-6 7 6-7 6M534 202h12m-7-6 7 6-7 6"/>
+            <text class="pipeline-note" x="360" y="355" text-anchor="middle">structured inputs → mapped products → automatic cloud storage</text>
+        }
+
+    }
+</svg>
 }

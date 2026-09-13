@@ -35,7 +35,6 @@ This avoids retaining chart/grid component state across template replacements.
 Restart `npm start` after changing this setting and reload any already-open tabs.
 Live reload resets unsaved input, so finish or save edits before changing source files.
 
-To check populated chart and grid rendering with intercepted fixture data, run
-`node scripts/check-design-browser.cjs --widgets-only --url=http://127.0.0.1:4200`
-against a running development server. This checks actual canvases/grid rows and
-captures Angular console errors as well as uncaught exceptions.
+Public portfolio images and diagram data are included in `public/` and `src/`.
+Running or building the website does not require local image-generation or
+browser-review scripts.

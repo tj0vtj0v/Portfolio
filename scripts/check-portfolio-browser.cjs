@@ -77,6 +77,26 @@ let socket;
                 assert.equal(geometry.headings, 1);
                 assert.deepEqual(geometry.broken, []);
                 assert.equal(geometry.active, route);
+                if (route === '/projects') {
+                    await evaluate('window.scrollTo(0, 700)');
+                    await delay(100);
+                    const sticky = await evaluate(`({header:document.querySelector('app-header').getBoundingClientRect().top, bottom:document.querySelector('app-header').getBoundingClientRect().bottom, sidebar:document.querySelector('.portfolio-sidebar').getBoundingClientRect().top})`);
+                    assert.ok(Math.abs(sticky.header) < 1, 'Header stays at viewport top');
+                    assert.ok(Math.abs(sticky.sidebar - sticky.bottom) < 1, 'Navigation stays below header');
+                    await evaluate('window.scrollTo(0, document.documentElement.scrollHeight)');
+                    await delay(100);
+                    assert.ok(await evaluate("Math.abs(document.querySelector('.portfolio-sidebar').getBoundingClientRect().top - document.querySelector('app-header').getBoundingClientRect().bottom) < 1"), 'Entire sidebar stays pinned at page bottom');
+                    await evaluate('window.scrollTo(0, 0)');
+                }
+
+                if (route === '/projects' && width === 1280) {
+                    assert.equal(await evaluate("getComputedStyle(document.querySelector('#vtol img')).mixBlendMode"), theme === 'dark' ? 'screen' : 'multiply');
+                    for (const section of ['mapping', 'localization', 'vtol', 'perception']) {
+                        const clip = await evaluate(`(() => {const r=document.querySelector('#${section} app-slam-diagram svg, #${section} app-portfolio-photo, #${section} app-perception-diagram').getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,width:r.width,height:r.height,scale:1}})()`);
+                        const shot = await call('Page.captureScreenshot', {format:'png',captureBeyondViewport:true,clip});
+                        fs.writeFileSync(path.join(out, `${section}-${theme}.png`), Buffer.from(shot.data,'base64'));
+                    }
+                }
                 if (width !== 768) {
                     const metrics = await call('Page.getLayoutMetrics');
                     const shot = await call('Page.captureScreenshot', {format: 'png', captureBeyondViewport: true, clip: {x: 0, y: 0, width, height: metrics.cssContentSize.height, scale: 1}});
@@ -88,7 +108,7 @@ let socket;
     }
     assert.deepEqual(apiCalls, [], 'Public pages must not load private API records');
     await navigate('/home');
-    await evaluate("document.querySelector('[aria-label=\"Next project\"]').click()");
+    await evaluate("document.querySelector('.gallery-window').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}));document.querySelector('.gallery-window').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowLeft',bubbles:true}))");
     await waitFor("document.querySelector('.selection').textContent.includes('Graph SLAM')");
     await evaluate("document.querySelector('.gallery-item.selected a').click()");
     await waitFor("location.hash === '#mapping' && document.querySelector('#mapping')");
@@ -102,8 +122,39 @@ let socket;
     await navigate('/about');
     assert.equal(await evaluate("getComputedStyle(document.querySelector('.skills-track')).animationName"), 'none');
     await call('Emulation.setEmulatedMedia', {features: [{name: 'prefers-reduced-motion', value: 'no-preference'}]});
+    await evaluate("document.querySelector('.skills-window').scrollIntoView({block:'center'})");
+    await delay(250);
+    await evaluate("document.querySelector('.skills-window').dispatchEvent(new MouseEvent('mouseenter'))");
+    await delay(400);
+    assert.equal(await evaluate("document.querySelector('.skills-track').getAnimations()[0].playbackRate"), 0.5);
+    await evaluate("document.querySelector('.skills-window').dispatchEvent(new MouseEvent('mouseleave'))");
+    await delay(100);
+    assert.equal(await evaluate("document.querySelector('.skills-track').getAnimations()[0].playbackRate"), 1);
     await evaluate("document.querySelector('.motion-control').click()");
     assert.equal(await evaluate("getComputedStyle(document.querySelector('.skills-track')).animationPlayState"), 'paused');
+    assert.equal(await evaluate("document.querySelectorAll('.skills-track').length"), 3);
+    assert.ok(await evaluate("[...document.querySelectorAll('.skills-track')].every(el=>getComputedStyle(el).animationPlayState==='paused')"));
+    await navigate('/projects');
+    assert.ok(await evaluate("[...document.images].every(img=>img.srcset && img.currentSrc.includes('/responsive/'))"), 'Photos use bounded responsive derivatives');
+    await evaluate("document.querySelector('.stage-controls button').click()");
+    assert.equal(await evaluate("document.querySelector('.stage-controls button').getAttribute('aria-pressed')"), 'true');
+    await navigate('/home');
+    await evaluate("document.querySelector('.gallery-window').scrollIntoView({block:'center'})");
+    await delay(200);
+    const beforeMotion = await evaluate("document.querySelector('.gallery-track').style.transform");
+    await delay(400);
+    assert.notEqual(await evaluate("document.querySelector('.gallery-track').style.transform"), beforeMotion, 'Gallery advances automatically');
+    assert.equal(await evaluate("document.querySelectorAll('app-project-gallery button').length"), 0);
+    await evaluate("document.querySelector('.gallery-window').dispatchEvent(new MouseEvent('mouseenter'))");
+    const hoverStart = await evaluate("document.querySelector('.gallery-track').style.transform");
+    await delay(400);
+    assert.notEqual(await evaluate("document.querySelector('.gallery-track').style.transform"), hoverStart, 'Gallery continues moving on hover');
+    await evaluate("document.querySelector('.gallery-window').dispatchEvent(new MouseEvent('mouseleave'))");
+    await call('Emulation.setEmulatedMedia', {features: [{name: 'prefers-reduced-motion', value: 'reduce'}]});
+    await delay(100);
+    const stopped = await evaluate("document.querySelector('.gallery-track').style.transform");
+    await delay(250);
+    assert.equal(await evaluate("document.querySelector('.gallery-track').style.transform"), stopped, 'Reduced motion stops gallery');
     assert.deepEqual(errors, []);
     console.log('PASS gallery, anchors, anonymous Workspace guard, remembered Portfolio target, reduced motion, pause, no runtime errors');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => { socket?.close(); chrome.kill(); });

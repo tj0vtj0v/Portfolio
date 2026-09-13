@@ -1,16 +1,18 @@
-<div class="gallery-heading">
-    <div><p class="eyebrow">A few things I work on</p><h2>From code to the real world.</h2></div>
-    <div class="controls"><button type="button" aria-label="Previous project" [disabled]="selected() === 0" (click)="select(selected() - 1)">←</button><button type="button" aria-label="Next project" [disabled]="selected() === projects.length - 1" (click)="select(selected() + 1)">→</button></div>
+<div class="gallery-heading"><h2>From code to the real world.</h2></div>
+<div class="gallery-window" #viewport role="region" aria-label="Rotating project gallery" (mouseenter)="hover(true)" (mouseleave)="hover(false)" (focusout)="focusChanged($event)" (keydown)="keydown($event)">
+    <div class="gallery-track" #track>
+        @for (item of items; track $index; let physical = $index) {
+            <article class="gallery-item" [class.selected]="focusedItem() === physical" [attr.aria-hidden]="item.copy !== 1 ? 'true' : null">
+                <a routerLink="/projects" [fragment]="item.project.fragment" [attr.tabindex]="item.copy === 1 ? 0 : -1" (focus)="focus(item.index)">
+                    <div class="gallery-art" [class.gallery-art--mapping]="item.project.image">
+                        @if (item.project.image; as image) { <img class="gallery-image" [src]="image" [attr.srcset]="item.project.imageSrcset ?? null" sizes="300px" alt="" width="1193" height="1200" loading="lazy"> }
+                        @else if (item.project.photo; as photo) { <app-portfolio-photo [name]="photo" alt="" sizes="300px" ratio="720 / 440" [crop]="photo === 'jenny'" [position]="photo === 'jenny-detail' ? '50% 72%' : '50% 50%'" /> }
+                        @else { <app-project-diagram [compact]="true" photoSizes="300px" [kind]="item.project.kind!" [stage]="item.project.stage ?? 2" /> }
+                    </div><span>{{ item.project.title }}</span>
+                </a>
+            </article>
+        }
+    </div>
 </div>
-<div class="gallery-track" #track aria-label="Project gallery">
-    @for (project of projects; track project.fragment; let i = $index) {
-        <article class="gallery-item" [class.selected]="selected() === i">
-            <button class="image-button" type="button" [attr.aria-label]="'Highlight ' + project.title" [attr.aria-pressed]="selected() === i" (click)="select(i)">
-                @if (project.image) { <img [src]="project.image" alt="" loading="lazy" width="600" height="400"> }
-                @else { <app-project-diagram [kind]="project.kind" /> }
-            </button>
-            <p>{{ project.label }}</p><a routerLink="/projects" [fragment]="project.fragment">{{ project.title }} <span aria-hidden="true">↗</span></a>
-        </article>
-    }
-</div>
-<p class="selection" aria-live="polite">{{ selected() + 1 }} / {{ projects.length }} · {{ projects[selected()].title }}</p>
+<p class="selection">{{ selected() + 1 }} / {{ projects.length }} · {{ projects[selected()].title }}</p>
+<span class="visually-hidden" aria-live="polite">{{ announcement() }}</span>

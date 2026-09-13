@@ -1,5 +1,5 @@
 <div class="accounting-page">
-    <app-ui-page-header eyebrow="Accounting" heading="Categories" description="Group expenses into categories based on what they were for."><button *ngIf="!(category || addingCategory) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add category</button></app-ui-page-header>
+    <app-ui-page-header eyebrow="Expense Tracker" heading="Categories" description="Group expenses into categories based on what they were for."><button *ngIf="!(category || addingCategory) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add category</button></app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading categories..." />
     <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
     <button *ngIf="loadError" type="button" (click)="load()">Retry</button>

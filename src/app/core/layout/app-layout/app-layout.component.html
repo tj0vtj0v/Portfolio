@@ -6,12 +6,15 @@
 
     <div class="route-shell" [class.workspace-shell]="shell() === 'workspace'" [class.portfolio-shell]="shell() === 'portfolio'">
         @if (shell() === 'portfolio') {
+            <aside class="portfolio-sidebar">
+                <p class="sidebar-label">Portfolio</p>
             <nav class="portfolio-nav" aria-label="Portfolio pages">
                 <a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
                 <a routerLink="/projects" routerLinkActive="active" ariaCurrentWhenActive="page">Projects</a>
                 <a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About</a>
                 <a routerLink="/contact" routerLinkActive="active" ariaCurrentWhenActive="page">Contact</a>
             </nav>
+            </aside>
         }
         @if (shell() === 'workspace') {
             <app-project-switcher [project]="project()" />

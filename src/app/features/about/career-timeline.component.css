@@ -1,0 +1,35 @@
+:host { display: block; }
+.timeline-labels { display: grid; grid-template-columns: 1fr 1fr; gap: 160px; padding-top: 24px; margin-bottom: 32px; font: 12px var(--font-mono); color: var(--color-text-muted); }
+.timeline-labels span:first-child { text-align: right; }
+.timeline { position: relative; height: 1200px; }
+.axis { position: absolute; top: 0; height: 1164px; left: 50%; border-left: 1px solid var(--color-border); }
+.axis::before { content: ''; position: absolute; top: 0; left: -1px; width: 9px; height: 9px; border-top: 2px solid var(--color-text-muted); border-left: 2px solid var(--color-text-muted); transform: translateX(-50%) rotate(45deg); }
+.axis span { position: absolute; transform: translate(-50%, -50%); background: var(--color-background); border: 1px solid var(--color-border); padding: 3px 6px; white-space: nowrap; font: 11px var(--font-mono); color: var(--color-text-muted); }
+.duration { position: absolute; left: calc(50% + 42px + var(--lane) * 10px); width: 8px; background: var(--entry-color); border-radius: 4px; }
+.duration.education { left: calc(50% - 50px - var(--lane) * 10px); }
+ol { list-style: none; padding: 0; margin: 0; }
+li { position: absolute; left: calc(50% + 96px); width: calc(50% - 96px); padding-left: 16px; border-left: 3px solid var(--entry-color); }
+li.education { left: 0; padding-left: 0; padding-right: 16px; border-left: 0; border-right: 3px solid var(--entry-color); text-align: right; }
+li::before { content: ''; position: absolute; top: 16px; right: 100%; width: calc(49px - var(--lane) * 10px); border-top: 2px solid var(--entry-color); }
+li.education::before { right: auto; left: 100%; }
+h3 { margin: 6px 0; font: var(--font-heading-weight) 21px/1.25 var(--font-heading); }
+p { margin: 0; }
+.dates { color: var(--color-text-muted); font: 12px var(--font-mono); }
+.institution { font-size: 14px; line-height: 1.5; }
+.description { margin-top: 8px; font-size: 13px; color: var(--color-text-muted); line-height: 1.65; max-width: 40ch; }
+li.education .description { margin-left: auto; }
+.timeline-note { color: var(--color-text-muted); font-size: 12px; margin-top: 20px; }
+@media (max-width: 650px) {
+    .timeline { height: 1260px; }
+    .timeline-labels { display: none; }
+    .axis { left: 34px; }
+    .duration, .duration.education { left: calc(59px + var(--lane) * 7px); width: 6px; }
+    .duration.education { left: calc(9px + var(--lane) * 6px); }
+    li, li.education { left: 98px; width: calc(100% - 98px); padding: 0 0 0 12px; border-left: 2px solid var(--entry-color); border-right: 0; text-align: left; }
+    li::before, li.education::before { left: auto; right: 100%; width: calc(35px - var(--lane) * 7px); }
+    li.education::before { width: calc(85px - var(--lane) * 6px); }
+    h3 { font-size: 18px; }
+    .description { display: none; }
+    .dates { font-size: 11px; line-height: 1.5; }
+    .institution { font-size: 12px; }
+}

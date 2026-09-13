@@ -1,0 +1,15 @@
+<div class="timeline-labels" aria-hidden="true"><span>Education</span><span>Experience</span></div>
+<div class="timeline">
+    <div class="axis" aria-hidden="true">@for (year of years; track year.label) { <span [style.top.px]="year.top">{{ year.label }}</span> }</div>
+    <div class="durations" aria-hidden="true">
+        @for (item of history; track item.title) { <span class="duration" [class.education]="item.side === 'education'" [style.--entry-color]="item.color" [style.--lane]="item.lane" [style.top.px]="item.from" [style.height.px]="item.duration"></span> }
+    </div>
+    <ol>
+        @for (item of history; track item.title) {
+            <li [class.education]="item.side === 'education'" [style.--entry-color]="item.color" [style.top.px]="item.top" [style.--lane]="item.lane">
+                <article><p class="dates">{{ item.dates }}</p><h3>{{ item.title }}</h3><p class="institution">{{ item.place }}</p><p class="description">{{ item.detail }}</p></article>
+            </li>
+        }
+    </ol>
+</div>
+<p class="timeline-note">Coloured lines show each period; school years before 2022 use a compressed scale.</p>

@@ -10,7 +10,7 @@ export const routes: Routes = [
             {path: 'home', title: 'Tjorven Burdorf · Portfolio', data: {shell: 'portfolio'}, loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)},
             {path: 'about', title: 'About · Tjorven Burdorf', data: {shell: 'portfolio'}, loadComponent: () => import('./features/about/about.component').then(m => m.AboutComponent)},
             {path: 'contact', title: 'Contact · Tjorven Burdorf', data: {shell: 'portfolio'}, loadComponent: () => import('./features/contact/contact.component').then(m => m.ContactComponent)},
-            {path: 'imprint', data: {shell: 'portfolio'}, loadComponent: () => import('./features/imprint/imprint.component').then(m => m.ImprintComponent)},
+            {path: 'imprint', title: 'Imprint · Tjorven Burdorf', data: {shell: 'portfolio'}, loadComponent: () => import('./features/imprint/imprint.component').then(m => m.ImprintComponent)},
             {path: 'projects', title: 'Projects · Tjorven Burdorf', data: {shell: 'portfolio'}, loadComponent: () => import('./features/projects/projects.component').then(m => m.ProjectsComponent)},
             {path: 'login', data: {shell: 'portfolio'}, loadComponent: () => import('./features/authentication/authentication.component').then(m => m.AuthenticationComponent)},
             {path: 'register', data: {shell: 'portfolio'}, loadComponent: () => import('./features/register/register.component').then(m => m.RegisterComponent)},

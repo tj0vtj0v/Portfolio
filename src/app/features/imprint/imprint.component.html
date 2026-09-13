@@ -1,21 +1,62 @@
-<article class="legal-page">
-    <app-ui-page-header eyebrow="Legal" heading="Imprint" description="Provider and contact information for this website." />
-    <section>
-        <h2>Information according to § 5 TMG</h2>
-        <p>Tjorven Burdorf<br>Elisabeth-Rothweiler-Straße 7<br>78166 Donaueschingen<br>Germany</p>
-        <h2>Contact Information</h2>
-        <p>Phone: +49 175 726 2786<br>Email: <a href="mailto:tjorven@burdorf.dev">tjorven&#64;burdorf.dev</a></p>
-    </section>
-    <section>
-        <h2>Accountability for content</h2>
-        <p>The contents of these pages have been created with the utmost care. However, I cannot guarantee the accuracy, completeness, or topicality of the (external) contents.</p>
-        <h2>Accountability for links</h2>
-        <p>Responsibility for the content of external links (to web pages of third parties) lies solely with the operators of the linked pages. No violations were evident at the time of linking. Should any legal infringement become known, I will remove the respective link immediately.</p>
-        <h2>Copyright</h2>
-        <p>All web pages and their contents are subject to international copyright law. Unless expressly permitted by law, any form of utilization, reproduction, or processing of works subject to copyright protection on these web pages requires explicit prior consent. Individual reproductions of a work are allowed only for private use and must not directly or indirectly serve earnings purposes. Unauthorized use of copyrighted works is punishable.</p>
-        <h2>Data Protection</h2>
-        <p>A visit to this website without authentication does not result in the storage of access information on our server. However, other service providers may store such information. All data stored by myself is guaranteed to be kept as secure as possible, following industry best practices as of the day the service was created. This does not imply any analysis of the collected personal data.</p>
-        <p>I expressly point out that the transmission of data via the Internet can have security vulnerabilities. It is therefore impossible to fully safeguard data against third-party access. I cannot assume liability for damages resulting from such security vulnerabilities.</p>
-        <p><strong>Source:</strong> This imprint was created with the help of the Imprint Generator by eRecht24 and ChatGPT.</p>
-    </section>
+<article class="imprint-page">
+    <app-ui-page-header
+        eyebrow="Legal"
+        heading="Imprint"
+        description="Information about the person responsible for this personal website." />
+
+    <div class="imprint-content">
+        <section class="legal-section legal-section--provider" aria-labelledby="provider-heading">
+            <h2 id="provider-heading">Provider</h2>
+            <div class="legal-copy">
+                <p class="legal-reference">Information according to <abbr title="Digitale-Dienste-Gesetz">&sect; 5 DDG</abbr></p>
+                <address>
+                    <strong>Tjorven Burdorf</strong><br>
+                    Robert-Koch-Weg 7<br>
+                    35745 Herborn<br>
+                    Germany
+                </address>
+            </div>
+        </section>
+
+        <section class="legal-section" aria-labelledby="contact-heading">
+            <h2 id="contact-heading">Contact</h2>
+            <div class="legal-copy">
+                <p>If you have a question about this website, you can reach me directly:</p>
+                <div class="contact-details">
+                    <div class="contact-row">
+                        <span class="contact-label">Email:</span>
+                        <a href="mailto:tjorven&#64;burdorf.dev">tjorven&#64;burdorf.dev</a>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-label">Phone:</span>
+                        <a href="tel:+491757262786">+49 175 726 2786</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="legal-section" aria-labelledby="content-heading">
+            <h2 id="content-heading">Content and links</h2>
+            <div class="legal-copy">
+                <p>I create and maintain the content on this website with care. I cannot guarantee that all information is complete, accurate, or up to date.</p>
+                <p>External links lead to websites operated by third parties. Their operators are responsible for their own content. If I become aware of a legal issue, I will review and remove the affected link.</p>
+            </div>
+        </section>
+
+        <section class="legal-section" aria-labelledby="copyright-heading">
+            <h2 id="copyright-heading">Copyright</h2>
+            <div class="legal-copy">
+                <p>Unless otherwise stated, the texts, images, graphics, and code on this website were created by me and are protected by copyright. Any use beyond the limits of copyright law requires prior permission.</p>
+                <p>Content created by third parties remains subject to the rights of its respective owners.</p>
+            </div>
+        </section>
+
+        <section class="legal-section" aria-labelledby="privacy-heading">
+            <h2 id="privacy-heading">Data protection</h2>
+            <div class="legal-copy">
+                <p>This personal website stores the selected light or dark theme locally in your browser. If you contact me, I use the information you provide to respond to you.</p>
+                <p>The protected Workspace processes the account information needed to provide its features. For questions about your personal data, please use the contact details above.</p>
+            </div>
+        </section>
+    </div>
 </article>

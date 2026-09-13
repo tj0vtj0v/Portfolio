@@ -7,7 +7,8 @@
     align-items: center;
     gap: var(--space-4);
     min-height: var(--layout-topbar-min-height);
-    padding: 10px clamp(22px, 4vw, 64px);
+    height: var(--layout-topbar-min-height);
+    padding: 8px clamp(22px, 4vw, 64px);
     border-bottom: 1px solid var(--color-border);
     background: color-mix(in srgb, var(--color-background) 94%, transparent);
     backdrop-filter: blur(12px);

@@ -1,0 +1,17 @@
+<svg [attr.viewBox]="compact ? '144 26 432 264' : '0 0 720 440'" role="img" [attr.aria-label]="(localization ? 'Skidpad localisation' : stage === 0 ? 'SLAM building' : 'SLAM finished') + ': recorded global cone map, current pose, graph edges, fixed and active poses. Field of view uses simulator defaults.'">
+    <rect class="surface" width="720" height="440" />
+    <path class="edges" [attr.d]="snapshot.edges" />
+    <path class="field" [attr.d]="snapshot.fov" />
+    <path class="trajectory" [attr.d]="snapshot.activeCurve" />
+    <path class="trajectory fixed-curve" [attr.d]="snapshot.fixedCurve" />
+    <path class="fixed" [attr.d]="snapshot.fixed" />
+    <path class="active" [attr.d]="snapshot.active" />
+    <path class="recent-trajectory" [attr.d]="snapshot.recentCurve" />
+    <path class="recent-poses" [attr.d]="snapshot.recentPoses" />
+    <path class="orange-cone" [attr.d]="snapshot.other" />
+    <path class="blue-cone" [attr.d]="snapshot.blue" />
+    <path class="yellow-cone" [attr.d]="snapshot.yellow" />
+    <g [attr.transform]="'translate(' + snapshot.car + ') rotate(' + snapshot.heading + ')'">
+        <path class="pose" d="M-5 -4L8 0L-5 4Z" />
+    </g>
+</svg>

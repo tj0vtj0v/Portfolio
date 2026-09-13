@@ -6,7 +6,7 @@ h3 { font-size: 24px; }
 p { line-height: 1.85; }
 .eyebrow { margin: 0 0 16px; color: var(--color-text-muted); font: 12px/1.5 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .lead { max-width: 65ch; font-size: 18px; color: var(--color-text-muted); }
-.section { padding-block: 56px; border-top: 1px solid var(--color-border); scroll-margin-top: 24px; }
+.section { padding-block: 56px; border-top: 1px solid var(--color-border); scroll-margin-top: calc(var(--layout-topbar-min-height) + 24px); }
 .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 56px; align-items: center; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
 .section-heading h2 { margin: 0; }
@@ -17,6 +17,8 @@ p { line-height: 1.85; }
 .tags li, .status { padding: 5px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-control); color: var(--color-text-muted); font: 12px/1.5 var(--font-mono); }
 figure { margin: 0; min-width: 0; }
 .photo { display: block; width: 100%; height: auto; object-fit: cover; border-radius: var(--radius-panel); }
+.jenny-frame { overflow: hidden; border-radius: var(--radius-panel); }
+.jenny-frame .photo { height: 100%; transform: scale(1.12); transform-origin: top left; }
 figcaption, .note { color: var(--color-text-muted); font-size: 12px; line-height: 1.65; }
 figcaption { margin-top: 12px; }
 .card { display: block; padding: 28px; border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); color: var(--color-text); }
@@ -29,3 +31,5 @@ figcaption { margin-top: 12px; }
     .lead { font-size: 16px; }
     .card { padding: 22px; }
 }
+
+@media (max-width: 800px) { .section { scroll-margin-top: calc(var(--layout-topbar-min-height) + 144px); } }

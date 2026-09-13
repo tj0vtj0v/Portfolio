@@ -1,7 +1,7 @@
 .projects-intro { padding: 16px 0 40px; }
 .projects-intro h1 { margin-bottom: 24px; }
 .current { padding: 24px 0 56px; }
-.project-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.project-index { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 .project-index > a { overflow: hidden; color: var(--color-text); border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); text-decoration: none; }
 .project-index > a:hover { border-color: var(--color-primary); }
 .project-index img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; object-fit: cover; }
@@ -13,16 +13,28 @@
 .tool-links a { text-decoration: none; }
 .tool-links a:hover { border-color: var(--color-primary); }
 .tool-links h3 { display: flex; justify-content: space-between; }
-.engineering-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 36px; }
+#web-tools > .split { column-gap: 24px; }
+.section > .tags { grid-column: 1 / -1; justify-content: flex-start; margin: 32px 0 0; }
+.section.split > .tags { margin-top: 0; }
+.engineering-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 36px; }
+.tool-links + .engineering-notes { margin-top: 56px; }
 .engineering-notes h3 { font-size: 22px; }
-.engineering-notes p { color: var(--color-text-muted); }
+#web-tools > .split p:not(.lead), .engineering-notes p { color: var(--color-text-muted); }
 .formula-images { display: grid; grid-template-columns: 2fr 0.8fr; gap: 20px; }
-.formula-images img { height: 390px; }
+.formula-images > img, .formula-images > .jenny-frame { height: 390px; }
 .formula-images .detail { object-position: center 70%; }
 .formula-copy { margin-top: 32px; align-items: start; }
 .slide { border: 1px solid var(--color-border); object-fit: contain; }
 .pipeline { display: grid; justify-items: center; gap: 8px; padding: 24px; margin-top: 24px; background: var(--color-art-background); border: 1px solid var(--color-border); font: 13px var(--font-mono); color: var(--color-text-muted); }
 .vtol-art img { max-height: 540px; object-fit: contain; background: var(--color-art-background); }
 .vtol-copy { align-items: start; margin-top: 32px; }
-@media (max-width: 800px) { .project-index { gap: 12px; } .index-copy { padding: 16px; } .engineering-notes { grid-template-columns: minmax(0, 1fr); gap: 12px; } .formula-images img { height: 300px; } }
-@media (max-width: 580px) { .project-index, .tool-links { grid-template-columns: minmax(0, 1fr); } .formula-images { gap: 10px; grid-template-columns: 1.5fr 0.7fr; } .formula-images img { height: 240px; } #mapping > figure { order: 2; } }
+.drone-result { align-items: start; margin-top: 32px; }
+.drone-result app-image-comparison { max-height: 640px; }
+@media (max-width: 1100px) { .project-index { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .project-index { gap: 12px; } .index-copy { padding: 16px; } .engineering-notes { grid-template-columns: minmax(0, 1fr); gap: 12px; } .formula-images > img, .formula-images > .jenny-frame { height: 300px; } }
+@media (max-width: 580px) { .project-index, .tool-links { grid-template-columns: minmax(0, 1fr); } .formula-images { gap: 10px; grid-template-columns: 1.5fr 0.7fr; } .formula-images > img, .formula-images > .jenny-frame { height: 240px; } #mapping > figure { order: 2; } }
+
+.wide-diagram { max-width: 960px; margin: 32px auto 0; }
+.stage-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.stage-controls button[aria-pressed='true'] { color: var(--color-on-primary); background: var(--color-primary); border-color: var(--color-primary); }
+@media (max-width: 580px) { .stage-controls { flex-direction: column; } }

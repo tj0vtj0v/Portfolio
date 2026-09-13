@@ -1,4 +1,4 @@
-import {Component, DestroyRef, ViewChild, inject, signal} from '@angular/core';
+import {afterRenderEffect, Component, DestroyRef, ElementRef, ViewChild, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {filter, startWith} from 'rxjs';
@@ -29,7 +29,19 @@ export class AppLayoutComponent {
     protected readonly workspaceTarget = signal('/accounting');
     protected readonly portfolioTarget = signal('/home');
 
+    private readonly element = inject(ElementRef<HTMLElement>);
     constructor() {
+        afterRenderEffect(onCleanup => {
+            this.shell();
+            const host: HTMLElement = this.element.nativeElement;
+            const sidebar = host.querySelector<HTMLElement>('.portfolio-sidebar, app-project-switcher');
+            if (!sidebar) return;
+            const measure = () => host.style.setProperty('--mobile-navigation-height', `${sidebar.getBoundingClientRect().height}px`);
+            const observer = new ResizeObserver(measure);
+            observer.observe(sidebar);
+            measure();
+            onCleanup(() => observer.disconnect());
+        });
         this.router.events.pipe(
             filter((event): event is NavigationEnd => event instanceof NavigationEnd),
             startWith(null),

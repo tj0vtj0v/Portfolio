@@ -39,6 +39,8 @@
 }
 
 :root[data-theme='light'] {
+    --art-concept-filter: invert(0);
+    --art-concept-blend: multiply;
     --color-chart-expense: #bf6d7a;
     --color-chart-income: #65947a;
     --color-chart-1: #528073;
@@ -82,6 +84,8 @@
 }
 
 :root[data-theme='dark'] {
+    --art-concept-filter: brightness(.65);
+    --art-concept-blend: normal;
     --color-chart-expense: #a76172;
     --color-chart-income: #4f8970;
     --color-chart-1: #4f78cd;

@@ -1,16 +1,60 @@
-import {Component, signal} from '@angular/core';
+import {afterNextRender, Component, DestroyRef, ElementRef, inject, NgZone, signal, ViewChild} from '@angular/core';
 import {RouterLink} from '@angular/router';
+import {CareerTimelineComponent} from './career-timeline.component';
+import {PortfolioPhotoComponent} from '../portfolio/portfolio-photo.component';
 
-@Component({selector: 'app-about', imports: [RouterLink], templateUrl: './about.component.html', styleUrls: ['../portfolio/portfolio.css', './about.component.css']})
+@Component({selector: 'app-about', imports: [RouterLink, CareerTimelineComponent, PortfolioPhotoComponent], templateUrl: './about.component.html', styleUrls: ['../portfolio/portfolio.css', './about.component.css']})
 export class AboutComponent {
+    @ViewChild('skillsBands') private skillsBands?: ElementRef<HTMLElement>;
+    private readonly destroyRef = inject(DestroyRef);
+    private readonly zone = inject(NgZone);
+
+    private readonly hoverTimers = new Map<HTMLElement, ReturnType<typeof setTimeout>>();
+
+    constructor() {
+        this.destroyRef.onDestroy(() => {
+            this.hoverTimers.forEach(timer => clearTimeout(timer));
+            this.hoverTimers.clear();
+        });
+        afterNextRender(() => this.zone.runOutsideAngular(() => {
+            const bands = this.skillsBands!.nativeElement;
+            let visible = false;
+            const update = () => bands.classList.toggle('offscreen', !visible || document.hidden);
+            const observer = new IntersectionObserver(entries => {
+                visible = entries[0].isIntersecting;
+                update();
+            });
+            update();
+            observer.observe(bands);
+            document.addEventListener('visibilitychange', update);
+            this.destroyRef.onDestroy(() => {
+                observer.disconnect();
+                document.removeEventListener('visibilitychange', update);
+            });
+        }));
+    }
+
+    protected setHoverSpeed(event: MouseEvent, speed: number): void {
+        const window = event.currentTarget as HTMLElement;
+        clearTimeout(this.hoverTimers.get(window));
+        this.hoverTimers.delete(window);
+        const apply = () => window.querySelector('.skills-track')?.getAnimations().forEach(animation => animation.updatePlaybackRate(speed));
+        if (speed === 1) {
+            apply();
+        } else {
+            this.zone.runOutsideAngular(() => {
+                this.hoverTimers.set(window, setTimeout(() => {
+                    this.hoverTimers.delete(window);
+                    apply();
+                }, 200));
+            });
+        }
+    }
+
     protected readonly paused = signal(false);
-    protected readonly skills = ['C++', 'Python', 'TypeScript', 'Angular', 'FastAPI', 'PostgreSQL', 'Docker', 'Git', 'Computer vision', 'Graph SLAM', 'EKF', 'Photogrammetry'];
-    protected readonly history = [
-        {date: 'May 2025 – present', side: 'work', title: 'Student research assistant', place: 'Deggendorf Institute of Technology', detail: 'Developing a pipeline for multispectral aerial mapping.', year: '2025'},
-        {date: 'April 2024 – present', side: 'work', title: 'Driverless development', place: 'Fast Forest · Formula Student', detail: 'Development, validation, and deployment of camera perception; Graph SLAM development and technical guidance for LiDAR perception.', year: '2024'},
-        {date: 'October 2023 – present', side: 'education', title: 'B.Sc. Artificial Intelligence', place: 'Deggendorf Institute of Technology', detail: 'Combined degree and vocational training programme (Verbundstudium).', year: '2023'},
-        {date: 'September 2022 – February 2026', side: 'education', title: 'Application development', place: 'IHK Niederbayern', detail: 'Fachinformatiker für Anwendungsentwicklung, completed as part of the combined study programme.', year: '2022'},
-        {date: 'September 2022 – present', side: 'work', title: 'Dual study programme', place: 'BMW Group · Dingolfing', detail: 'Digitalising demand planning for apprenticeships and designing a retrieval-augmented generation system to derive lessons learned from 8D reports.', year: '2022'},
-        {date: 'September 2014 – July 2022', side: 'education', title: 'Secondary education · Abitur', place: 'Fürstenberg Gymnasium · Donaueschingen', detail: 'General university entrance qualification.', year: '2014'}
+    protected readonly skillRows = [
+        {label: 'Topics & algorithms', items: ['Computer vision', 'Graph SLAM', 'EKF', 'Path planning', 'Photogrammetry', 'Aerial mapping', 'Retrieval-augmented generation']},
+        {label: 'Languages & technologies', items: ['C++', 'Python', 'TypeScript', 'Angular', 'FastAPI', 'PostgreSQL', 'TensorRT', 'OpenCV']},
+        {label: 'Methods & organisation', items: ['Git', 'Docker', 'CI/CD', 'Agile development', 'Project management', 'Validation', 'Flight mission planning']}
     ];
 }

@@ -1,10 +1,27 @@
 :host { display: block; width: 100%; }
-svg { display: block; width: 100%; height: auto; background: var(--color-art-background); border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
-.grid { fill: none; stroke: var(--color-border); opacity: 0.35; }
-.observations { fill: none; stroke: var(--color-text-muted); stroke-width: 1.5; stroke-dasharray: 4 5; opacity: 0.65; }
-.trajectory { fill: none; stroke: var(--color-primary); stroke-width: 3; }
-.poses { fill: var(--color-surface); stroke: var(--color-primary); stroke-width: 3; }
-.landmarks { fill: var(--color-secondary-accent); stroke: var(--color-text-muted); }
-.boxes { fill: var(--color-surface); stroke: var(--color-control-border); }
-text { fill: var(--color-text-muted); font: 12px var(--font-mono); }
-.labels text { text-anchor: middle; font: 16px var(--font-body); fill: var(--color-text); }
+.vtol-cutout { display: block; width: 100%; height: auto; filter: var(--art-concept-filter); }
+svg { display: block; width: 100%; height: auto; border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
+.surface { fill: var(--color-art-background); }
+text { fill: var(--color-text-muted); font: 14px var(--font-body); }
+.eyebrow { font: 12px var(--font-mono); letter-spacing: 1px; }
+.heading { fill: var(--color-text); font: 600 18px var(--font-body); }
+.small, .layer-labels text { font: 12px var(--font-mono); }
+.boxes { fill: var(--color-surface); stroke: var(--color-control-border); stroke-width: 1; }
+.line, .arrow { stroke: var(--color-primary); fill: none; stroke-width: 1.5; }
+.muted { opacity: .6; }
+.scene { fill: var(--color-surface); stroke: var(--color-control-border); }
+.road { fill: var(--color-surface-soft); stroke: var(--color-border); }
+.cone { fill: var(--color-chart-5); stroke: var(--color-text-muted); stroke-width: .5; }
+.crop-box { fill: color-mix(in srgb, var(--color-primary) 9%, transparent); stroke: var(--color-primary); stroke-dasharray: 5 3; }
+.sketch { stroke: var(--color-text); fill: none; stroke-width: 1.35; stroke-linecap: round; stroke-linejoin: round; }
+.wing { fill: color-mix(in srgb, var(--color-primary) 10%, var(--color-art-background)); }
+.boom { fill: var(--color-surface-soft); }
+.draft { fill: none; stroke: var(--color-text-muted); opacity: .4; stroke-width: .7; stroke-dasharray: 6 6; }
+.annotation { fill: none; stroke: var(--color-text-muted); stroke-width: .8; }
+.annotation text { stroke: none; font: italic 12px var(--font-heading); }
+
+.simple-heading { fill: var(--color-text); font: 600 28px var(--font-body); }
+.simple-caption { font: 20px var(--font-body); }
+.diagram-title { fill: var(--color-text-muted); font: 12px var(--font-mono); letter-spacing: 1px; }
+.pipeline-icons { fill: none; stroke: var(--color-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.pipeline-note { fill: var(--color-text-muted); font: 13px var(--font-mono); }
