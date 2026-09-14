@@ -1,13 +1,12 @@
 import {Component, Input} from '@angular/core';
 import {PerceptionDiagramComponent} from './perception-diagram.component';
-import {PortfolioPhotoComponent} from './portfolio-photo.component';
 import {SlamDiagramComponent} from './slam-diagram.component';
 
 export type DiagramKind = 'mapping' | 'localization' | 'web' | 'delivery' | 'perception' | 'pipeline' | 'vtol';
 
 @Component({
     selector: 'app-project-diagram',
-    imports: [SlamDiagramComponent, PortfolioPhotoComponent, PerceptionDiagramComponent],
+    imports: [SlamDiagramComponent, PerceptionDiagramComponent],
     templateUrl: './project-diagram.component.html',
     styleUrl: './project-diagram.component.css'
 })
