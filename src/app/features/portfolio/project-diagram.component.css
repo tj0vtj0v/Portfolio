@@ -25,3 +25,4 @@ text { fill: var(--color-text-muted); font: 14px var(--font-body); }
 .diagram-title { fill: var(--color-text-muted); font: 12px var(--font-mono); letter-spacing: 1px; }
 .pipeline-icons { fill: none; stroke: var(--color-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pipeline-note { fill: var(--color-text-muted); font: 13px var(--font-mono); }
+

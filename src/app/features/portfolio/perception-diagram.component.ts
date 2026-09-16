@@ -6,7 +6,7 @@ export class PerceptionDiagramComponent {
     @Input() compact = false;
     protected readonly layout = PERCEPTION_LAYOUT;
     protected readonly step = signal(0);
-    protected readonly steps = ['Camera frame', 'Overview and detail', 'Stacked model image', 'Inference', 'Back to the camera frame'];
+    protected readonly steps = ['Original camera image', 'Image preparation', 'Model input', 'Inference', 'Transform back onto the original image'];
     protected move(delta: number): void {
         this.step.update(value => Math.max(0, Math.min(this.steps.length - 1, value + delta)));
     }

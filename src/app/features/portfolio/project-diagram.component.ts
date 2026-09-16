@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {PerceptionDiagramComponent} from './perception-diagram.component';
 import {SlamDiagramComponent} from './slam-diagram.component';
 
-export type DiagramKind = 'mapping' | 'localization' | 'web' | 'delivery' | 'perception' | 'pipeline' | 'vtol';
+export type DiagramKind = 'mapping' | 'localization' | 'web' | 'perception' | 'pipeline' | 'vtol';
 
 @Component({
     selector: 'app-project-diagram',

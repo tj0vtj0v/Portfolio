@@ -19,11 +19,17 @@
 .engineering-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 36px; }
 .tool-links + .engineering-notes { margin-top: 56px; }
 .engineering-notes h3 { font-size: 22px; }
-#web-tools > .split p:not(.lead), .engineering-notes p { color: var(--color-text-muted); }
+#web-tools > .split p:not(.lead), .engineering-notes p, #perception > .split p { color: var(--color-text-muted); }
+#perception h2, #perception h3 { color: var(--color-text); }
+#perception > .split { align-items: start; }
+.camera-setup { margin-top: 24px; }
+#projection { grid-template-columns: minmax(0, 1fr); align-items: start; }
+#perception > .split p:last-child { margin-bottom: 0; }
 .formula-images { display: grid; grid-template-columns: 2fr 0.8fr; gap: 20px; }
 .formula-images > img, .formula-images > .jenny-frame { height: 390px; }
 .formula-images .detail { object-position: center 70%; }
 .formula-copy { margin-top: 32px; align-items: start; }
+.formula-copy > .engineering-notes { grid-template-columns: minmax(0, 1fr); margin-top: 0; }
 .slide { border: 1px solid var(--color-border); object-fit: contain; }
 .pipeline { display: grid; justify-items: center; gap: 8px; padding: 24px; margin-top: 24px; background: var(--color-art-background); border: 1px solid var(--color-border); font: 13px var(--font-mono); color: var(--color-text-muted); }
 .vtol-art img { max-height: 540px; object-fit: contain; background: var(--color-art-background); }
