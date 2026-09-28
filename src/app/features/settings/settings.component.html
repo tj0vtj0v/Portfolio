@@ -1,5 +1,5 @@
 <div class="settings-page">
-    <app-ui-page-header eyebrow="Workspace" heading="Account settings" description="Review your account details and manage your session." />
+    <app-ui-page-header eyebrow="Account" heading="Account settings" description="Review your account details and manage your session." />
     <app-ui-panel heading="Account details">
         <app-ui-skeleton *ngIf="loading" layout="form" message="Loading account details…" />
         <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />

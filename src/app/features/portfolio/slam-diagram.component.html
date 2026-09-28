@@ -2,12 +2,10 @@
     <rect class="surface" width="720" height="440" />
     <path class="edges" [attr.d]="snapshot.edges" />
     <path class="field" [attr.d]="snapshot.fov" />
-    <path class="trajectory" [attr.d]="snapshot.activeCurve" />
     <path class="trajectory fixed-curve" [attr.d]="snapshot.fixedCurve" />
     <path class="fixed" [attr.d]="snapshot.fixed" />
+    <path class="trajectory active-curve" [attr.d]="snapshot.activeCurve" />
     <path class="active" [attr.d]="snapshot.active" />
-    <path class="recent-trajectory" [attr.d]="snapshot.recentCurve" />
-    <path class="recent-poses" [attr.d]="snapshot.recentPoses" />
     <path class="orange-cone" [attr.d]="snapshot.other" />
     <path class="blue-cone" [attr.d]="snapshot.blue" />
     <path class="yellow-cone" [attr.d]="snapshot.yellow" />

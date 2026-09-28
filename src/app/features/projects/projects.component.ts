@@ -7,6 +7,6 @@ import {ProjectionDiagramComponent} from '../portfolio/projection-diagram.compon
 
 @Component({selector: 'app-projects', imports: [RouterLink, ProjectDiagramComponent, PortfolioPhotoComponent, ImageComparisonComponent, ProjectionDiagramComponent], templateUrl: './projects.component.html', styleUrls: ['../portfolio/portfolio.css', './projects.component.css']})
 export class ProjectsComponent {
-    protected readonly mappingStage = signal(1);
+    protected readonly mappingStage = signal(0);
     protected readonly stages = ['Building the map', 'Finished map'];
 }

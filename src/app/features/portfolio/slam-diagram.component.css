@@ -1,17 +1,16 @@
 :host { display: block; }
 svg { display: block; width: 100%; border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
 .surface { fill: var(--color-art-background); }
-.edges { fill: none; stroke: #7b7f84; stroke-width: .65; opacity: .65; }
+.edges { fill: none; stroke: #7b7f84; stroke-width: .65; opacity: .5; }
 .field { fill: #7b7f8414; stroke: #7b7f84; stroke-width: 1; }
 .fixed { fill: none; stroke: #7b7f84; stroke-width: 1.8; }
-.active { fill: var(--color-art-background); stroke: #7b7f84; stroke-width: 1; }
+.active { fill: #78afe3; stroke: #78afe3; stroke-width: 1.5; }
 .pose { fill: #2f9e5b; stroke: var(--color-art-background); stroke-width: 1; }
-.blue-cone { fill: none; stroke: #2684ff; stroke-width: 2; }
-.yellow-cone { fill: none; stroke: #f2d600; stroke-width: 2; }
-.orange-cone { fill: none; stroke: #f05a24; stroke-width: 2; }
+:host-context([data-theme="light"]) .pose { stroke: var(--color-text); }
+.blue-cone { fill: #2684ff; stroke: var(--color-text-muted); stroke-width: .75; }
+.yellow-cone { fill: #f2d600; stroke: var(--color-text-muted); stroke-width: .75; }
+.orange-cone { fill: #f05a24; stroke: var(--color-text-muted); stroke-width: .75; }
+:host-context([data-theme="light"]) .yellow-cone { fill: var(--color-chart-5); }
 
 .trajectory { fill: none; stroke: #7b7f84; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.fixed-curve { stroke-dasharray: 4 3; }
-
-.recent-trajectory { fill: none; stroke: #78afe3; stroke-width: 2.5; stroke-linecap: round; }
-.recent-poses { fill: var(--color-art-background); stroke: #78afe3; stroke-width: 1.5; }
+.active-curve { stroke: #78afe3; stroke-width: 2.5; }

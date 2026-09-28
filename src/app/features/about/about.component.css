@@ -1,9 +1,10 @@
 .about-intro { padding: 16px 0 56px; }
 .about-intro h1 { margin-bottom: 28px; }
 .about-intro .split p { max-width: 68ch; font-size: 16px; }
+@media (max-width: 1160px) { .about-intro .split { grid-template-columns: minmax(0, 1fr); } }
 .skills-section { padding: 32px 0; border-top: 1px solid var(--color-border); }
+.skills-section .section-heading .lead { margin-top: 16px; }
 .skill-row { margin: 18px 0; }
-.skill-row h3 { font: 12px var(--font-mono); color: var(--color-text-muted); margin-bottom: 12px; }
 .skills-window { overflow: hidden; padding: 5px 0 10px; }
 .skills-track { display: flex; width: max-content; will-change: transform; animation: drift 60s linear infinite; }
 .skills-track.reverse { animation-direction: reverse; animation-duration: 70s; }

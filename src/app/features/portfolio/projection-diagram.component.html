@@ -1,0 +1,74 @@
+<div class="projection-visual">
+    <div class="visual-heading"><h3>From cone size to distance</h3><p>With the known cone size, we can estimate its distance by reprojection.</p></div>
+    <div class="geometry-scroll" tabindex="0" role="region" aria-label="Camera projection geometry; scroll horizontally on small screens">
+    <svg class="geometry" viewBox="0 0 1000 400" role="img" aria-labelledby="projection-geometry-title projection-geometry-desc">
+        <title id="projection-geometry-title">Pinhole projection in a perspective view</title>
+        <defs>
+            <!-- FSG small-cone outer dimensions: 228 mm base width / 325 mm total height.
+                 Taper, stripe placement and base thickness are illustrative. -->
+            <g id="projection-fsg-cone" class="cone">
+                <path d="M-12 0Q0 -1 12 0L88 297Q0 309 -88 297Z"/>
+                <path class="stripe" d="M-39 105H39L62 195Q0 209 -62 195Z"/>
+                <path d="M-88 292H88L114 307V325H-114V307Z"/>
+                <path class="base-edge" d="M-114 307H114"/>
+            </g>
+        </defs>
+        <desc id="projection-geometry-desc">Rays from a real cone pass through the camera's optical centre and form an inverted image on the sensor. A cone of the same physical height farther away forms a smaller image. Geometry is schematic.</desc>
+        <path class="ground" d="M360 310 895 310 975 258 440 258Z"/>
+        <path class="plane" d="M68 108 198 143 198 332 68 297Z"/>
+        <path class="axis" d="M88 232H834"/>
+        <text x="56" y="62" class="label">Image plane</text>
+        <text x="56" y="83">Inverted projection</text>
+        <path class="leader" d="M125 90V120"/>
+        <!-- Equal-height objects at different depths. Rays meet at the optical centre. -->
+        <path class="far-ray" d="M790 123 300 232 130 270 M790 283 300 232 130 214"/>
+        <path class="near-ray" d="M545 123 300 232 130 308 M545 283 300 232 130 197"/>
+        <use href="#projection-fsg-cone" transform="translate(545 123) scale(.4923077)"/>
+        <use href="#projection-fsg-cone" transform="translate(790 123) scale(.4923077)"/>
+        <use href="#projection-fsg-cone" transform="translate(130 308) scale(.3415385 -.3415385)" opacity=".45"/>
+        <use href="#projection-fsg-cone" transform="translate(130 270) scale(.1707692 -.1707692)"/>
+        <circle class="focus" cx="300" cy="232" r="6"/>
+        <path class="leader" d="M300 222V155"/>
+        <text x="300" y="116" text-anchor="middle" class="label">Focal point</text>
+        <text x="300" y="137" text-anchor="middle">Optical centre</text>
+        <text x="545" y="62" text-anchor="middle" class="label">Real-world cone</text>
+        <text x="545" y="86" text-anchor="middle">Height 32.5 cm</text>
+        <text x="790" y="62" text-anchor="middle" class="label">Detected cone</text>
+        <text x="790" y="86" text-anchor="middle">Distance d</text>
+        <path class="measure" d="M130 363H300 M130 357V369 M300 357V369"/>
+        <text x="215" y="387" text-anchor="middle">Focal length f</text>
+        <text x="628" y="345" text-anchor="middle">Greater distance → smaller projected cone</text>
+    </svg>
+    </div>
+    <div class="comparison">
+        <div>
+            <svg viewBox="0 0 360 240" role="img" aria-label="Real-world cone with physical height h of 32.5 centimetres and a base-to-height ratio of 228 to 325">
+                <text x="180" y="20" text-anchor="middle" class="label">Real-world cone</text>
+                <text x="180" y="44" text-anchor="middle">Height 32.5 cm</text>
+                <path class="axis" d="M20 190H340"/>
+                <use href="#projection-fsg-cone" transform="translate(180 70) scale(.3692308)"/>
+                <rect class="box near-box" x="137.908" y="70" width="84.184" height="120"/>
+                <path class="measure" d="M245 70V190 M240 70H250 M240 190H250"/>
+                <text x="260" y="134" class="label">h</text>
+            </svg>
+        </div>
+        <div>
+            <svg viewBox="0 0 360 240" role="img" aria-label="Detected cone with image height h prime, illustrated at half the reference image height">
+                <text x="180" y="80" text-anchor="middle" class="label">Detected cone</text>
+                <text x="180" y="104" text-anchor="middle">Distance d</text>
+                <path class="axis" d="M20 190H340"/>
+                <use href="#projection-fsg-cone" transform="translate(180 130) scale(.1846154)"/>
+                <rect class="box far-box" x="158.954" y="130" width="42.092" height="60"/>
+                <path class="measure" d="M214 130V190 M209 130H219 M209 190H219"/>
+                <text x="229" y="164" class="label">h′</text>
+            </svg>
+        </div>
+        <p class="formula" aria-label="Distance equals focal length times physical cone height divided by detected image height">d = f × h / h′</p>
+        <dl class="formula-key">
+            <div><dt>d</dt><dd>Straight-line distance along the camera axis, in meters.</dd></div>
+            <div><dt>f</dt><dd>The camera's focal length in pixels.</dd></div>
+            <div><dt>h</dt><dd>Real cone height in metres.</dd></div>
+            <div><dt>h′</dt><dd>Detected bounding-box height in pixels.</dd></div>
+        </dl>
+    </div>
+</div>

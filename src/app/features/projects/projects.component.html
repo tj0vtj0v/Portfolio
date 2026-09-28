@@ -1,5 +1,5 @@
 <header class="projects-intro"><h1>Things I'm building.</h1>
-    <p class="lead">A look at my bigger projects and the interesting concepts behind the tech.</p></header>
+    <p class="lead">A look at my bigger projects and the concepts behind them.</p></header>
 <section class="current" aria-labelledby="current-heading">
     <div class="section-heading"><h2 id="current-heading">Currently in development.</h2></div>
     <div class="project-index">
@@ -17,10 +17,20 @@
 <section class="section" id="web-tools" aria-labelledby="web-heading">
     <div class="split">
         <div><h2 id="web-heading">My own Website</h2>
-            <p class="lead">This website started as a place to try out what I was learning and became one of my
+            <p class="lead tags-lead">This website started as a place to try out what I was learning and became one of
+                my
                 longest-running projects. Today, I use it to share projects I'm proud of and explain the ideas behind
                 them. The Workspace brings together practical tools I use myself, open to anyone who wants to try them
-                for free.</p></div>
+                for free.</p>
+            <ul class="tags" aria-label="Web technologies">
+                <li>TypeScript</li>
+                <li>Docker</li>
+                <li>Angular</li>
+                <li>FastAPI</li>
+                <li>PostgreSQL</li>
+                <li>CI/CD</li>
+            </ul>
+        </div>
         <figure>
             <app-project-diagram kind="web"/>
             <figcaption>The three layers and their technologies.</figcaption>
@@ -62,18 +72,10 @@
             <p>Today, GitHub Actions automatically builds and deploys the frontend when changes reach the main branch.
                 Docker Compose manages the services and runs them together.</p></div>
     </div>
-    <ul class="tags" aria-label="Web technologies">
-        <li>Angular</li>
-        <li>TypeScript</li>
-        <li>FastAPI</li>
-        <li>PostgreSQL</li>
-        <li>Docker</li>
-        <li>CI/CD</li>
-    </ul>
 </section>
 <section class="section" id="formula-student" aria-labelledby="formula-heading">
     <div class="section-heading">
-        <div><h2 id="formula-heading">Formula Student</h2></div>
+        <div><h2 id="formula-heading">Fast Forest</h2></div>
         <a class="text-link" href="https://www.fast-forest.de/">Meet the team &nearr;</a></div>
     <figure>
         <app-portfolio-photo name="jenny" alt="Jenny racing between cones on a Formula Student course" ratio="2 / 1"
@@ -82,8 +84,19 @@
         <figcaption>Jenny15 GDX at FS Czech 2025.</figcaption>
     </figure>
     <div class="formula-copy split">
-        <div><p class="lead">Formula Student is an international engineering competition where students design, build,
-            and race their own cars each year. Fast Forest is the team at the Deggendorf Institute of Technology.</p>
+        <div><h3>Formula Student</h3>
+            <p class="lead">Formula Student is an international engineering competition where students design, build,
+                and race their own cars each year. Fast Forest is the team at the Deggendorf Institute of
+                Technology.</p>
+            <ul class="tags" aria-label="Driverless System technologies and tools">
+                <li>Jetson</li>
+                <li>C++</li>
+                <li>Python</li>
+                <li>Docker</li>
+                <li>CV</li>
+                <li>SLAM</li>
+                <li>Robotics</li>
+            </ul>
             <p>I joined Fast Forest's driverless department in April 2024. Since then, I've developed our camera
                 perception and global mapping systems and supervised the development of our LiDAR perception.
                 Together, they help the car perceive its surroundings and understand the track.</p>
@@ -108,7 +121,13 @@
 <section class="section" id="perception" aria-labelledby="perception-heading">
     <div class="split">
         <div><h2 id="perception-heading">Camera Perception</h2>
-            <p class="lead">From stereo images to cone positions relative to the car.</p>
+            <p class="lead tags-lead">From stereo images to cone positions relative to the car.</p>
+            <ul class="tags" aria-label="Perception technologies and tools">
+                <li>C++</li>
+                <li>TensorRT</li>
+                <li>OpenCV</li>
+                <li>YOLO26</li>
+            </ul>
             <p>The camera pipeline has two main tasks: the detection finds cones in the images, and the projection
                 converts those detections into positions the rest of the driverless stack can use.</p>
             <div id="onboard" class="camera-setup">
@@ -150,132 +169,165 @@
                 averaging their positions.</p></div>
         <figure>
             <app-projection-diagram/>
-            <figcaption>Pinhole projection: cones of the same size appear smaller as their distance increases, illustrated using only height for simplicity.</figcaption>
+            <figcaption>Pinhole projection: cones of the same size appear smaller as their distance increases,
+                illustrated using only height for simplicity.
+            </figcaption>
         </figure>
     </div>
-    <ul class="tags" aria-label="Technologies and tools">
-        <li>C++</li>
-        <li>TensorRT</li>
-        <li>OpenCV</li>
-        <li>YOLO26</li>
-        <li>Stereo projection</li>
-    </ul>
 </section>
 <section class="section" id="mapping" aria-labelledby="mapping-heading">
     <div class="split">
-        <div><h2 id="mapping-heading">Building a map<br>as the car explores.</h2>
-            <p class="lead">Graph SLAM connects the car's movements to the cones it observes along the way.</p>
-            <p>I'm developing a C++ mapping module with poses and cone landmarks connected by odometry and observation
-                constraints. Optimising the graph helps reconcile those measurements into a consistent map.</p>
-            <p>The drawings follow my visualiser: coloured cone landmarks, grey observation links, a highlighted recent
-                trajectory, and the vehicle's field of view. Select a stage to see how the graph grows.</p></div>
-        <div><h3>From observations to a shared map</h3>
-            <p>The implementation separates real-time localisation from the SLAM backend, exchanging measurements and
-                estimates between them. It includes landmark association, loop-closure constraints, and graph output for
-                debugging.</p>
-            <p class="note">Graph SLAM remains in development. These views use global map and graph data exported from
-                my simulator.</p></div>
+        <div><h2 id="mapping-heading">Mapping Module</h2>
+            <p class="lead tags-lead">Mapping the track. Keeping the car localised.</p>
+            <ul class="tags" aria-label="Mapping technologies and tools">
+                <li>C++</li>
+                <li>Graph SLAM</li>
+                <li>EKF</li>
+                <li>g2o</li>
+            </ul>
+            <p>The mapping module gives the drive controller a global map and the car's position within it.
+                It builds the map while driving, combining the cones seen by perception with odometry estimates
+                of how the car moves.</p>
+            <h3>Building and correcting the map</h3>
+            <p>Both inputs contain noise, and movement estimates can drift over time. The Graph SLAM connects past
+                vehicle
+                positions and cone landmarks in a graph. New observations help adjust earlier estimates,
+                keeping the map consistent as the car explores the track.</p>
+            <p>Each cycle optimises only a short window of recent history. Full graph optimisation runs only after
+                completed laps, when revisiting familiar cones helps correct drift across the track.</p></div>
+        <div><h3>Localisation in real time</h3>
+            <p>Correcting the map takes time, especially when the car completes a loop and connects its latest
+                observations to an earlier part of the track. A SLAM update can take 100 ms. At our top speed of
+                38 m/s, the car travels 3.8 metres in that time.</p>
+            <p>The drive controller cannot wait that long for a new position. An extended Kalman filter
+                handles localisation separately, using the latest SLAM map and incoming perception and odometry
+                updates while graph optimisation runs in the background.</p>
+            <h3>Current state of development</h3>
+            <p>SLAM remains in active development and has already been tested successfully on the car.
+                We currently plan on integrating a ground-speed sensor to simplify vehicle pose propagation and state
+                estimation.</p>
+        </div>
     </div>
     <div class="stage-controls" role="group"
-         aria-label="Map building stage">@for (stage of stages; track stage; let i = $index) {
-        <button type="button" [attr.aria-pressed]="mappingStage() === i" (click)="mappingStage.set(i)">{{ i + 1 }}
-            . {{ stage }}
+         aria-label="Map snapshot">@for (stage of stages; track stage; let i = $index) {
+        <button type="button" [attr.aria-pressed]="mappingStage() === i" (click)="mappingStage.set(i)">{{ stage }}
         </button>
     }</div>
     <figure class="wide-diagram">
         <app-project-diagram kind="mapping" [stage]="mappingStage()"/>
-        <figcaption>{{ stages[mappingStage()] }}. Recorded global map and graph. The pose history is approximated by
-            smooth splines; every third landmark observation is drawn. Fixed pose anchors remain marked. The FOV uses
-            simulator defaults (110 degrees, 10 m).
+        <figcaption><strong>{{ stages[mappingStage()] }}.</strong>
+            @if (mappingStage() === 0) {
+                New observations extend the map while recent vehicle poses and cone positions are optimised.
+                    The blue trail marks the active part of the graph being optimised.
+            } @else {
+                The cones remain fixed; only recent vehicle poses are adjusted to locate the car.
+                    After the second lap is complete, all but the most recent poses are removed from the graph.
+            }
         </figcaption>
     </figure>
-    <ul class="tags" aria-label="Technologies and tools">
-        <li>Graph SLAM</li>
-        <li>g2o</li>
-        <li>Eigen</li>
-        <li>Landmark association</li>
-    </ul>
+    <div class="engineering-notes mapping-stages">
+        <div><h3>1. Building</h3>
+            <p>With every new measurement, a vehicle pose and its newly observed cones are added to the graph.
+                The graph is optimised after each observation so the map and the vehicle's position fit the available
+                data as closely as possible.</p>
+            <p>This is used for the first lap on any unknown track.</p></div>
+        <div><h3>2. Refining</h3>
+            <p>After the first lap, only measurements of the existing cones are added, but no new landmarks are created.
+                These extra observations increase the graph's interconnectivity and give the optimisation
+                more information for optimization.</p>
+            <p>This stage is used only for the second Trackdrive lap.</p>
+        </div>
+        <div><h3>3. Finished</h3>
+            <p>The map is now fixed, and the car only has to localise itself within it. A short history of recent
+                measurements is kept to stabilise the position estimate and prevent jumps in repetitive sections of
+                the track.</p>
+            <p>This mode is used whenever the track is known, including the second Autocross run, Skidpad and most
+                Trackdrive laps.</p></div>
+    </div>
 </section>
 <section class="section split" id="localization" aria-labelledby="localization-heading">
     <figure>
         <app-project-diagram kind="localization"/>
-        <figcaption>Skidpad snapshot: global map, current pose, graph edges, fixed and active poses. The FOV uses
-            simulator defaults (110 degrees, 10 m).
+        <figcaption>Snapshot of a Skidpad run. The complete Skidpad map is visible, while the blue tail behind the car
+            shows its recent pose history.
         </figcaption>
     </figure>
-    <div><h2 id="localization-heading">Finding a place<br>in a map we already know.</h2>
-        <p>Mapping and localisation solve different parts of the problem. When a map already exists, the task is to
-            estimate where the car is within it, using its movement and the landmarks it can currently see.</p>
-        <p>The skidpad is a useful example: its known cone layout provides a reference for the vehicle's position. The
-            visualisation separates fixed landmarks, graph edges, fixed and active poses, and the field of view.</p>
-        <p>My module can load a predefined map and begin in its finished-map mode, so it can work with an existing map
-            as well as build a new one.</p></div>
+    <div><h2 id="localization-heading">Skidpad Localization</h2>
+        <p>The Skidpad layout is the only track completely defined by the rulebook. Previously, the localisation on the
+            Skidpad track was handled by a single EKF. With the SLAM architecture, we can load the known map and start
+            directly in the Graph's Finished mode.</p>
+        <p>By keeping a short history of measurements, the system avoids localisation jumps that caused failed
+            runs in the past. Since switching to SLAM-based localisation, these issues have not occurred anymore.</p>
+    </div>
 </section>
 <section class="section" id="drone-mapping" aria-labelledby="drone-heading">
     <div class="split">
-        <div><p class="eyebrow">Student associate &middot; completed</p>
-            <h2 id="drone-heading">From drone mission<br>to mapped fields.</h2>
-            <p class="lead">I built a pipeline that turns the data from a DJI drone mission into structured inputs for
-                automated mapping.</p>
-            <p>The client detects a completed flight on the removable storage, separates metadata, RGB, and
-                multispectral data, compresses the folders, and uploads them to Nextcloud over WebDAV. A server-side
-                listener picks up complete flights and passes the data to a WebODM container.</p></div>
-        <figure>
-            <app-project-diagram kind="pipeline"/>
-            <figcaption>Structured flight data moves through preprocessing, mapping, and cloud storage.</figcaption>
-        </figure>
-    </div>
-    <div class="drone-result split">
-        <figure>
+        <div><h2 id="drone-heading">Multispectral Aerial Mapping</h2>
+            <p class="lead tags-lead">A pipeline that turns multispectral drone data into georeferenced maps.</p>
+            <ul class="tags" aria-label="Drone mapping technologies and tools">
+                <li>DJI 3E</li>
+                <li>Python</li>
+                <li>WebODM</li>
+                <li>WebDAV</li>
+                <li>Docker</li>
+            </ul>
+            <h3>Processing on limited hardware</h3>
+            <p>The first part of the pipeline runs on a resource-constrained device close to the flight data. It
+                validates a completed mission, sorts the metadata, RGB and multispectral images, compresses the data,
+                and uploads it to Nextcloud over WebDAV.</p>
+            <p>A server then watches the WebDAV workspace for completed uploads. On a separate processing machine,
+                it downloads the data, runs the configured mapping jobs and uploads the results back to the cloud.</p>
+        </div>
+        <figure class="drone-image">
             <app-image-comparison leftSrc="/images/portfolio/drone-map.png" rightSrc="/images/portfolio/drone-ndvi.png"
                                   leftSrcset="/images/portfolio/responsive/drone-map-320.png 320w, /images/portfolio/responsive/drone-map-640.png 640w, /images/portfolio/responsive/drone-map-960.png 960w"
                                   rightSrcset="/images/portfolio/responsive/drone-ndvi-320.png 320w, /images/portfolio/responsive/drone-ndvi-640.png 640w, /images/portfolio/responsive/drone-ndvi-960.png 960w"
                                   sizes="(max-width: 800px) calc(100vw - 44px), (max-width: 1500px) calc(50vw - 150px), 600px"
                                   leftLabel="RGB" rightLabel="NDVI" aspectRatio="1193 / 1200" [width]="1193"
                                   [height]="1200"/>
-            <figcaption>Drag the divider to compare the RGB orthomosaic with its NDVI visualisation. Transparent pixels
-                are the TIFF's no-data area.
+            <figcaption>Drag the slider to compare the RGB orthomosaic with its NDVI visualisation.
             </figcaption>
         </figure>
-        <div><h3>Mapping as a repeatable handoff</h3>
-            <p>WebODM processes both visual and multispectral image sets. When processing finishes, the pipeline
-                combines the orthophotos, produces the requested image outputs, and uploads the mapping products back to
-                the same cloud workspace.</p>
-            <p class="note">NDVI is derived from the TIFF's multispectral red and near-infrared bands. Both views use
-                the same alpha mask and downscaled map extent.</p></div>
     </div>
-    <ul class="tags" aria-label="Technologies and tools">
-        <li>Python</li>
-        <li>DJI Mavic 3M</li>
-        <li>WebODM</li>
-        <li>Docker</li>
-        <li>WebDAV</li>
-        <li>Nextcloud</li>
-    </ul>
+    <div class="engineering-notes drone-details">
+        <div><h3>Mapping result</h3>
+            <p>WebODM is configured to produce similar output formats for the visual and multispectral imagery.
+                Our current setup cannot process both modalities in one simultaneous run, so the postprocessing
+                combines the two outputs into one complete GeoTIFF.</p>
+            <p>This creates a single result for the current workflow and leaves the data ready for further processing
+                in the future.</p>
+            <p>The NDVI is derived from the TIFF's multispectral red and near-infrared bands.</p></div>
+        <div><h3>Future application</h3>
+            <p>This pipeline is preparatory work for a possible application of research from the Applied AI group.
+                Their current work focuses on classifying minerals on Mars from satellite hyperspectral imagery,
+                including data from CRISM.</p>
+            <p>In the future, similar methods could support commercial applications on Earth when combined with this
+                mapping pipeline.</p></div>
+    </div>
 </section>
 <section class="section" id="vtol" aria-labelledby="vtol-heading">
     <div class="section-heading">
-        <div><h2 id="vtol-heading">A VTOL of my own.</h2>
-            <p class="lead">A planned research platform for robotics and aerial mapping.</p></div>
+        <div><h2 id="vtol-heading">A self-built VTOL</h2>
+            <p class="lead">A planned platform for robotics and aerial data acquisition.</p></div>
         <span class="status">Concept stage</span></div>
     <figure class="wide-diagram">
         <app-project-diagram kind="vtol"/>
-        <figcaption>Supplied VTOL concept, with neutral colours adapted for the page theme. The configuration is
-            illustrative; it is not a finished design.
+        <figcaption>VTOL concept drawing. Its size and exact design are still open as the concept develops.
         </figcaption>
     </figure>
     <div class="vtol-copy split">
         <div><h3>What is a VTOL?</h3>
             <p>VTOL means vertical take-off and landing. A fixed-wing VTOL combines vertical lift for take-off and
-                landing with a wing that carries the aircraft during forward flight. The idea is to explore longer
-                flights without needing a runway.</p>
-            <p>For me, it is a way to connect airframe design, electronics, robotics, and geoinformatics in one project
-                that I can build and understand from the ground up.</p></div>
+                landing with a wing for efficient forward flight. This should allow longer flights without a runway,
+                while the gliding cruise is more efficient than hovering.</p>
+            <p>For me, it is an opportunity to build a complete system from the ground up, combining airframe design
+                and construction, PCB design, electronics, robotics, and geoinformatics.</p></div>
         <div><h3>The scope</h3>
             <p>I want to design and manufacture the airframe, develop the PCBs, and integrate sensors such as cameras
-                and LiDAR. A Jetson Orin is a candidate for onboard computing.</p>
-            <p>The longer-term goal is a platform for autonomous flight experiments and aerial mapping. Airframe
-                construction, electronics integration, sensor processing, and flight experiments are separate parts of
-                that path; the project is currently at the concept stage.</p></div>
+                and LiDAR. The system also needs its own onboard power supply and a Jetson for edge computing and
+                later autonomous navigation.</p>
+            <p>The long-term goal is an autonomous aerial platform for data acquisition and experiments with different
+                sensors and workflows. The project is still at the concept stage: initial designs exist, while the
+                requirements and constraints are being defined.</p></div>
     </div>
 </section>

@@ -1,9 +1,8 @@
 import {afterNextRender, Component, DestroyRef, ElementRef, inject, NgZone, signal, ViewChild} from '@angular/core';
-import {RouterLink} from '@angular/router';
 import {CareerTimelineComponent} from './career-timeline.component';
 import {PortfolioPhotoComponent} from '../portfolio/portfolio-photo.component';
 
-@Component({selector: 'app-about', imports: [RouterLink, CareerTimelineComponent, PortfolioPhotoComponent], templateUrl: './about.component.html', styleUrls: ['../portfolio/portfolio.css', './about.component.css']})
+@Component({selector: 'app-about', imports: [CareerTimelineComponent, PortfolioPhotoComponent], templateUrl: './about.component.html', styleUrls: ['../portfolio/portfolio.css', './about.component.css']})
 export class AboutComponent {
     @ViewChild('skillsBands') private skillsBands?: ElementRef<HTMLElement>;
     private readonly destroyRef = inject(DestroyRef);
@@ -53,8 +52,9 @@ export class AboutComponent {
 
     protected readonly paused = signal(false);
     protected readonly skillRows = [
-        {label: 'Topics & algorithms', items: ['Computer vision', 'Graph SLAM', 'EKF', 'Path planning', 'Photogrammetry', 'Aerial mapping', 'Retrieval-augmented generation']},
-        {label: 'Languages & technologies', items: ['C++', 'Python', 'TypeScript', 'Angular', 'FastAPI', 'PostgreSQL', 'TensorRT', 'OpenCV']},
-        {label: 'Methods & organisation', items: ['Git', 'Docker', 'CI/CD', 'Agile development', 'Project management', 'Validation', 'Flight mission planning']}
+        ['C++', 'Python', 'TypeScript', 'Java'],
+        ['Robotics', 'Computer vision', 'Detection', 'Projection', 'Mapping', 'SLAM', 'EKF', 'Photogrammetry', 'YOLO', 'RAG'],
+        ['Angular', 'FastAPI', 'PostgreSQL', 'Jetson', 'TensorRT', 'OpenCV', 'g2o', 'Docker', 'CI/CD', 'WebODM', 'WebDAV', 'ZeroMQ', 'MQTT', 'Git', 'DJI Mavic 3E'],
+        ['Raspberry Pi', 'ESP32', 'Jetson', 'DJI Mavic 3E']
     ];
 }

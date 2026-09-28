@@ -1,3 +1,38 @@
+:host {
+    --projects-copy-color: var(--color-text-muted);
+    --projects-copy-size: 14px;
+    --projects-copy-line-height: 1.75;
+}
+
+:host p:not(.lead) {
+    color: var(--projects-copy-color);
+    font-size: var(--projects-copy-size);
+    line-height: var(--projects-copy-line-height);
+}
+
+:host figcaption,
+:host .note,
+:host .index-copy > span,
+:host .stage-controls button:not([aria-pressed='true']) {
+    color: var(--projects-copy-color);
+}
+
+:host .stage-controls button {
+    font-size: var(--projects-copy-size);
+}
+
+:host .tags {
+    margin: 0 0 24px;
+}
+
+:host .tags-lead {
+    margin-bottom: 8px;
+}
+
+:host .tags li {
+    padding-block: 3px;
+}
+
 .projects-intro { padding: 16px 0 40px; }
 .projects-intro h1 { margin-bottom: 24px; }
 .current { padding: 24px 0 56px; }
@@ -19,7 +54,11 @@
 .engineering-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-top: 36px; }
 .tool-links + .engineering-notes { margin-top: 56px; }
 .engineering-notes h3 { font-size: 22px; }
-#web-tools > .split p:not(.lead), .engineering-notes p, #perception > .split p { color: var(--color-text-muted); }
+.mapping-stages { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#mapping > .split { align-items: start; }
+#localization { border-top: 0; }
+#mapping { padding-bottom: 16px; }
+#localization { padding-top: 16px; }
 #perception h2, #perception h3 { color: var(--color-text); }
 #perception > .split { align-items: start; }
 .camera-setup { margin-top: 24px; }
@@ -34,8 +73,8 @@
 .pipeline { display: grid; justify-items: center; gap: 8px; padding: 24px; margin-top: 24px; background: var(--color-art-background); border: 1px solid var(--color-border); font: 13px var(--font-mono); color: var(--color-text-muted); }
 .vtol-art img { max-height: 540px; object-fit: contain; background: var(--color-art-background); }
 .vtol-copy { align-items: start; margin-top: 32px; }
-.drone-result { align-items: start; margin-top: 32px; }
-.drone-result app-image-comparison { max-height: 640px; }
+.drone-details { align-items: start; margin-top: 32px; }
+.drone-image app-image-comparison { max-height: 640px; }
 @media (max-width: 1100px) { .project-index { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 800px) { .project-index { gap: 12px; } .index-copy { padding: 16px; } .engineering-notes { grid-template-columns: minmax(0, 1fr); gap: 12px; } .formula-images > img, .formula-images > .jenny-frame { height: 300px; } }
 @media (max-width: 580px) { .project-index, .tool-links { grid-template-columns: minmax(0, 1fr); } .formula-images { gap: 10px; grid-template-columns: 1.5fr 0.7fr; } .formula-images > img, .formula-images > .jenny-frame { height: 240px; } #mapping > figure { order: 2; } }
