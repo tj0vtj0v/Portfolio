@@ -1,0 +1,38 @@
+:host { display: contents; }
+
+.working-orb-overlay {
+    position: fixed;
+    z-index: 1000;
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    background: color-mix(in srgb, var(--color-background) 48%, transparent);
+    backdrop-filter: blur(3px);
+    pointer-events: none;
+    transition: opacity 100ms ease, visibility 100ms ease;
+}
+
+.working-orb-overlay--visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    cursor: progress;
+}
+
+.working-orb {
+    position: static;
+    display: block;
+    width: 72px;
+    height: 72px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .working-orb-overlay { transition: none; }
+}

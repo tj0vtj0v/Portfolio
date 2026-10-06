@@ -1,4 +1,6 @@
 import type {EChartsCoreOption} from 'echarts';
+import {euroAmount} from '../../../shared/formatter/euro-amount';
+import {displayDate} from '../../../shared/formatter/display-date';
 import type {AccountingDashboardView} from './dashboard-data';
 
 export interface MonthlyComparison {
@@ -9,7 +11,7 @@ export interface MonthlyComparison {
 }
 
 /** Uses already-filtered records; partial months never pull in out-of-range transactions. */
-export function monthlyComparison(view: AccountingDashboardView, selectedTo = view.endDate): MonthlyComparison[] {
+export function monthlyComparison(view: AccountingDashboardView, selectedTo = view.endDate, hidden = false): MonthlyComparison[] {
     const records = [...view.filteredExpenses, ...view.filteredIncomes];
     const earliest = records.reduce<string | undefined>((date, record) => !date || record.date < date ? record.date : date, view.minMovementDate);
     const from = view.startDate ?? earliest;
@@ -32,7 +34,6 @@ export function monthlyComparison(view: AccountingDashboardView, selectedTo = vi
         if (++month > 12) { month = 1; year++; }
     }
     const maximum = months.reduce((max, month) => Math.max(max, month.expenses, month.income), 0) || 1;
-    const currency = new Intl.NumberFormat('en', {style: 'currency', currency: 'EUR'});
     return months.map(month => ({...month, options: {
         animation: false,
         legend: {show: false},
@@ -43,7 +44,7 @@ export function monthlyComparison(view: AccountingDashboardView, selectedTo = vi
             trigger: 'axis',
             appendTo: 'body',
             confine: false,
-            formatter: () => `${month.month}<br>Expenses: ${currency.format(month.expenses)}<br>Income: ${currency.format(month.income)}`
+            formatter: () => hidden ? `${displayDate(month.month, 'month')}<br>Expenses: --- €<br>Income: --- €` : `${displayDate(month.month, 'month')}<br>Expenses: ${euroAmount(month.expenses, 'en', 'suffix')}<br>Income: ${euroAmount(month.income, 'en', 'suffix')}`
         },
         series: [
             {name: 'Expenses', type: 'bar', data: [month.expenses], barMaxWidth: 16, barGap: '25%', itemStyle: {borderRadius: [4, 4, 0, 0]}, label: {show: false}},

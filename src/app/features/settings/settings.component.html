@@ -18,6 +18,5 @@
             <p class="danger-copy">Permanently delete your account and its associated access. This action requires confirmation.</p>
             <button data-variant="danger" type="button" (click)="delete()" [disabled]="deleting">{{ deleting ? 'Deleting…' : 'Delete account' }}</button>
         </div>
-        <app-ui-feedback *ngIf="statusMessage" kind="error" [message]="statusMessage" />
     </app-ui-panel>
 </div>

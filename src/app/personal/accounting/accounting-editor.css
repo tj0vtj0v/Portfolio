@@ -2,6 +2,9 @@
 .accounting-page { display: grid; min-width: 0; gap: var(--space-6); }
 app-ui-panel { display: block; min-width: 0; }
 .grid-panel { min-width: 0; }
+.grid-toolbar { display: flex; justify-content: flex-end; }
+.filter-reset { display: inline-flex; align-items: center; gap: var(--space-2); }
+.filter-reset span { font-size: 1.1em; line-height: 1; }
 .grid-wrap { min-width: 0; overflow-x: auto; }
 .grid-wrap ag-grid-angular { min-width: 620px; }
 .editor-copy { margin: 0 0 var(--space-5); color: var(--color-text-muted); }

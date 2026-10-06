@@ -1,3 +1,4 @@
+import {FeedbackMessage} from '../../shared/ui/feedback/feedback-message';
 import {FieldErrorDirective} from '../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../shared/forms/submission-state';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -9,7 +10,7 @@ import {safeReturnUrl} from '../../core/auth/return-url';
 import {UserService} from '../../shared/api/user.service';
 import {UiPageHeaderComponent} from '../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../shared/ui/panel/ui-panel.component';
-import {FeedbackKind, UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
+import {UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-authentication',
@@ -30,14 +31,12 @@ export class AuthenticationComponent {
     private readonly destroyRef = inject(DestroyRef);
     protected username: string = '';
     protected password: string = '';
-    protected statusMessage: string = '';
+    private readonly statusMessageState = new FeedbackMessage(message => message === 'Login successful' ? 'success' : message.startsWith('Login failed') || message.startsWith('Please') ? 'error' : 'info');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected returnUrl?: string;
     protected sessionCheckFailed = false;
 
-    protected get feedbackKind(): FeedbackKind {
-        if (this.statusMessage === 'Login successful') return 'success';
-        return this.statusMessage.startsWith('Login failed') || this.statusMessage.startsWith('Please') ? 'error' : 'info';
-    }
 
     constructor(protected userService: UserService, private route: ActivatedRoute, private router: Router) {
     }

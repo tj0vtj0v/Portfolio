@@ -1,0 +1,34 @@
+<div class="ui-date-input">
+    <button class="ui-date-input__trigger" type="button" [id]="id" [disabled]="isDisabled"
+        [attr.aria-expanded]="opened" [attr.aria-controls]="calendarId" [attr.aria-haspopup]="'dialog'"
+        [attr.aria-required]="required" [class.ui-date-input__placeholder]="!hasValue"
+        (click)="toggle($event)" (keydown)="onTriggerKeydown($event)">
+        <span class="ui-date-input__value">{{ displayValue }}</span>
+        <svg class="ui-date-input__icon" viewBox="0 0 24 24" width="18" height="18" fill="none"
+            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true" focusable="false">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M7 3v4M17 3v4M3 10h18M7 14h2M15 14h2M7 17h2M15 17h2" />
+        </svg>
+    </button>
+
+    <div *ngIf="opened" class="ui-date-input__calendar" [id]="calendarId" role="dialog" [attr.aria-label]="monthLabel">
+        <div class="ui-date-input__header">
+            <button type="button" aria-label="Previous month" (click)="previousMonth()">‹</button>
+            <strong>{{ monthLabel }}</strong>
+            <button type="button" aria-label="Next month" (click)="nextMonth()">›</button>
+        </div>
+        <div class="ui-date-input__weekdays" aria-hidden="true">
+            <span *ngFor="let weekday of weekdays">{{ weekday }}</span>
+        </div>
+        <div class="ui-date-input__days" role="grid">
+            <span *ngFor="let day of calendarDays" class="ui-date-input__empty" [class.ui-date-input__day]="!!day">
+                <button *ngIf="day" type="button" role="gridcell" [attr.aria-label]="day.date"
+                    [attr.aria-current]="day.isToday ? 'date' : null" [attr.aria-pressed]="isSelected(day)"
+                    [class.ui-date-input__day--today]="day.isToday" [class.ui-date-input__day--selected]="isSelected(day)"
+                    (click)="selectDay(day)">{{ day.day }}</button>
+            </span>
+        </div>
+        <button *ngIf="hasValue && !required" class="ui-date-input__clear" type="button" (click)="clear()">Clear date</button>
+    </div>
+</div>

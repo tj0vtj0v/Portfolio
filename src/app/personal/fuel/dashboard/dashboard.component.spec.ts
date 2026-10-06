@@ -32,7 +32,12 @@ describe('DashboardComponent', () => {
             car: {name: 'Car'}, fuel_type: {name: 'Fuel'}
         }));
         component.update({period: 'custom', from: '2026-02-01', to: '2026-02-02', observedTo: '2026-02-02'});
-        expect(dashboard.fuel_consumption_chart.series[0].data).toEqual([[4, 5, 6, 7, 8]]);
+        const boxes = dashboard.fuel_consumption_chart.series[0].data;
+        expect(boxes.length).toBe(1);
+        expect(boxes[0].length).toBe(5);
+        [4, 5, 6, 7, 8].forEach((value, index) => expect(boxes[0][index]).toBeCloseTo(value, 10));
+        expect(dashboard.travel_chart.series[0]).toEqual(jasmine.objectContaining({symbol: 'circle', showSymbol: true, symbolSize: 8, smooth: true, itemStyle: {opacity: 0}, emphasis: {scale: true, itemStyle: {opacity: 1}}}));
+        expect(dashboard.fuel_chart.series[0]).toEqual(jasmine.objectContaining({type: 'scatter', symbol: 'circle', symbolSize: 12, colorBy: 'series'}));
         component.update(null);
         expect(dashboard.fuel_consumption_chart.series[0].data).toEqual([]);
     });

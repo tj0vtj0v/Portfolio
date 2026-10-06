@@ -5,10 +5,12 @@ import {AuthService} from './core/auth/auth.service';
 import {safeReturnUrl} from './core/auth/return-url';
 import {NavigationLoadingService} from './core/layout/navigation-loading.service';
 import {UiSkeletonComponent} from './shared/ui/skeleton/ui-skeleton.component';
+import {NotificationStackComponent} from './shared/ui/feedback/notification-stack.component';
+import {NotificationService} from './shared/ui/feedback/notification.service';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, UiSkeletonComponent],
+    imports: [RouterOutlet, UiSkeletonComponent, NotificationStackComponent],
     templateUrl: './app.component.html',
     styles: '.initial-loading { max-width: var(--layout-workspace-max); margin: auto; padding: var(--space-8); }'
 })
@@ -18,7 +20,9 @@ export class AppComponent {
 
     constructor() {
         const router = inject(Router);
+        const notifications = inject(NotificationService);
         inject(AuthService).sessionEnded$.pipe(takeUntilDestroyed()).subscribe(() => {
+            notifications.clear();
             // Destroy the routed private view immediately, even while navigation is pending.
             if (safeReturnUrl(router.url) && this.outlet?.isActivated) {
                 const view = this.outlet.component as {deactivatePrivateContent?: () => void};

@@ -1,4 +1,4 @@
-import {afterRenderEffect, Component, DestroyRef, ElementRef, ViewChild, inject, signal} from '@angular/core';
+import {afterRenderEffect, Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {ActivatedRoute, NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {filter, startWith} from 'rxjs';
@@ -9,10 +9,12 @@ import {AppShell, isPortfolioDestination, isWorkspaceDestination, layoutContext,
 import {ProjectSwitcherComponent} from '../project-switcher/project-switcher.component';
 import {NavigationLoadingService} from '../navigation-loading.service';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
+import {RequestLoadingService} from '../request-loading.service';
+import {UiWorkingOrbComponent} from '../../../shared/ui/working-orb/ui-working-orb.component';
 
 @Component({
     selector: 'app-layout',
-    imports: [FooterComponent, HeaderComponent, PointerGridDirective, ProjectSwitcherComponent, RouterLink, RouterLinkActive, RouterOutlet, UiSkeletonComponent],
+    imports: [FooterComponent, HeaderComponent, PointerGridDirective, ProjectSwitcherComponent, RouterLink, RouterLinkActive, RouterOutlet, UiSkeletonComponent, UiWorkingOrbComponent],
     templateUrl: './app-layout.component.html',
     styleUrl: './app-layout.component.css'
 })
@@ -22,6 +24,8 @@ export class AppLayoutComponent {
     deactivatePrivateContent(): void { this.outlet?.deactivate(); }
 
     protected readonly navigation = inject(NavigationLoadingService);
+    private readonly requests = inject(RequestLoadingService);
+    protected readonly working = computed(() => this.navigation.pending() !== null || this.requests.active());
     private readonly router = inject(Router);
     private readonly route = inject(ActivatedRoute);
     protected readonly shell = signal<AppShell>('portfolio');

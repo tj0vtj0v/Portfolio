@@ -7,11 +7,13 @@ import {FuelService} from '../../../shared/api/fuel.service';
 import {FuelSetupState} from '../../../shared/api/fuel-setup-state.service';
 import {AuthService} from '../../auth/auth.service';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import {FormsModule} from '@angular/forms';
 import {WorkspaceProject, PROJECTS, ProjectNavigation} from '../layout-route-data';
+import {UiSelectComponent} from '../../../shared/ui/select/ui-select.component';
 
 @Component({
     selector: 'app-project-switcher',
-    imports: [RouterLink, RouterLinkActive],
+    imports: [RouterLink, RouterLinkActive, FormsModule, UiSelectComponent],
     templateUrl: './project-switcher.component.html',
     styleUrl: './project-switcher.component.css'
 })
@@ -56,8 +58,7 @@ export class ProjectSwitcherComponent implements AfterViewChecked, OnChanges {
         return this.projects.find(item => item.id === this.project);
     }
 
-    protected selectProject(event: Event): void {
-        const project = this.projects.find(item => item.id === (event.target as HTMLSelectElement).value);
+    protected selectProject(project?: ProjectNavigation): void {
         if (project) void this.router.navigateByUrl(project.root);
     }
 

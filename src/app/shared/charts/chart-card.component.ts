@@ -1,5 +1,5 @@
 import {Component, Input, computed, inject, signal} from '@angular/core';
-import {EChartsCoreOption} from 'echarts';
+import {EChartsCoreOption, ECharts} from 'echarts';
 import {NgxEchartsDirective, provideEchartsCore} from 'ngx-echarts';
 import {chartThemeForOptions, themedChartOptions, resolvedChartColors} from './chart-theme';
 import {ThemeService} from '../../core/theme/theme.service';
@@ -11,7 +11,7 @@ import {ThemeService} from '../../core/theme/theme.service';
     template: `
         <section class="chart-card">
             @if (chartHasData(options)) {
-                <div echarts [options]="presentationOptions" [merge]="themeOptions()" [autoResize]="true" class="chart"></div>
+                <div echarts [options]="presentationOptions" [merge]="themeOptions()" (chartInit)="onChartInit($event)" [autoResize]="true" class="chart"></div>
             } @else {
                 <p class="empty" role="status">{{ emptyMessage }}</p>
             }
@@ -25,11 +25,20 @@ import {ThemeService} from '../../core/theme/theme.service';
     `
 })
 export class ChartCardComponent {
+    private chart?: ECharts;
+    private readonly overrides = signal<EChartsCoreOption | undefined>(undefined);
+    /** Merge presentation changes without replacing legend/zoom interaction state. */
+    @Input() set presentationOverrides(value: EChartsCoreOption | undefined) {
+        if (this.chart && !this.chart.isDisposed()) this.chart.dispatchAction({type: 'hideTip'});
+        this.overrides.set(value);
+        if (!this.chart || this.chart.isDisposed()) this.presentationOptions = themedChartOptions(value ?? this.options, this.colors());
+    }
+    protected onChartInit(chart: ECharts): void { this.chart = chart; }
     private readonly dataOptions = signal<EChartsCoreOption>({});
     private readonly paletteTokens = signal<readonly string[]>([]);
     @Input() set colorTokens(value: readonly string[]) {
         this.paletteTokens.set(value);
-        this.presentationOptions = themedChartOptions(this.options, this.colors());
+        this.presentationOptions = themedChartOptions(this.overrides() ?? this.options, this.colors());
     }
     protected presentationOptions: EChartsCoreOption = {};
     @Input({required: true}) set options(value: EChartsCoreOption) {
@@ -41,7 +50,8 @@ export class ChartCardComponent {
     private readonly theme = inject(ThemeService);
     protected readonly themeOptions = computed(() => {
         this.theme.theme();
-        return chartThemeForOptions(this.dataOptions(), this.colors());
+        const overrides = this.overrides();
+        return overrides ? themedChartOptions(overrides, this.colors()) : chartThemeForOptions(this.dataOptions(), this.colors());
     });
     private colors() {
         const colors = resolvedChartColors();

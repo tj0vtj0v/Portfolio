@@ -1,3 +1,6 @@
+import {AmountPrivacyToggleComponent} from '../../../shared/privacy/amount-privacy-toggle.component';
+import {PrivateAmountCellComponent} from '../../../shared/privacy/private-amount.component';
+import {FeedbackMessage} from '../../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
 import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
@@ -9,8 +12,9 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {AgGridModule} from 'ag-grid-angular';
 import {Account} from '../../../shared/datatype/Account';
-import {ColDef, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, GridApi, GridReadyEvent, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
+import {GridFilterStateService} from '../../../shared/grid/grid-filter-state.service';
 import {NumberFormatterDirective} from '../../../shared/formatter/number-formatter.directive';
 import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
@@ -19,7 +23,7 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 @Component({
     selector: 'app-account',
     providers: [EditorGridFocus],
-    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
+    imports: [AmountPrivacyToggleComponent, UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
         GridFitDirective,
         NumberFormatterDirective,
         AgGridModule,
@@ -32,20 +36,28 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 export class AccountComponent {
     readonly submission = new SubmissionState();
     private readonly destroyRef = inject(DestroyRef);
+    private readonly gridFilterState = inject(GridFilterStateService);
+    private readonly gridFilterKey = 'accounting.accounts';
+    private gridApi?: GridApi;
     protected accounts: Account[] = [];
     protected account?: Account;
     protected accountName?: string;
     protected addingAccount: boolean = false;
-    protected statusMessage = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected loading = true;
     protected loadError = '';
     protected fieldErrors: Record<string, string> = {};
-    protected successMessage = '';
+    private readonly successMessageState = new FeedbackMessage('success');
+    protected get successMessage(): string { return this.successMessageState.value; }
+    protected set successMessage(message: string) { this.successMessageState.value = message; }
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Account', field: 'name', sortable: true, filter: true},
         {
             headerName: 'Balance', field: 'balance', sortable: true, filter: true,
+            cellRenderer: PrivateAmountCellComponent,
             valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         }
     ];
@@ -57,6 +69,23 @@ export class AccountComponent {
 
 
     ngOnInit(): void { this.load(); }
+
+    protected onGridReady(params: GridReadyEvent): void {
+        this.gridApi = params.api;
+        params.api.setFilterModel(this.gridFilterState.load(this.gridFilterKey) ?? null);
+        params.api.onFilterChanged();
+    }
+
+    protected saveGridFilters(api: GridApi): void {
+        this.gridFilterState.save(this.gridFilterKey, api.getFilterModel());
+    }
+
+    protected resetFilters(): void {
+        if (!this.gridApi) return;
+        this.gridApi.setFilterModel(null);
+        this.gridApi.onFilterChanged();
+        this.saveGridFilters(this.gridApi);
+    }
 
     protected load(): void {
         this.loading = true;

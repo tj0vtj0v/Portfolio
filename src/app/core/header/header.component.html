@@ -13,7 +13,7 @@
         </button>
 
         @if (auth.isLoggedIn()) {
-            <details class="account-menu">
+            <details #accountMenu class="account-menu">
                 <summary aria-label="Open account menu">Account</summary>
                 <div class="account-menu-panel">
                     <a routerLink="/settings">Settings</a>

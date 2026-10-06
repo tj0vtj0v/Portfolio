@@ -1,3 +1,4 @@
+import {DisplayDatePipe} from '../../shared/formatter/display-date.pipe';
 import {Component} from '@angular/core';
 
 type TimelineSide = 'work' | 'education';
@@ -6,7 +7,6 @@ type TimelineEntry = {
     side: TimelineSide;
     start: string;
     end: string;
-    dates: string;
     title: string;
     place: string;
     detail: string;
@@ -89,16 +89,16 @@ function calculateTimelineHeight(entries: PositionedTimelineEntry[], end: number
     return Math.ceil(Math.max(oldestMarker, lowestCard) + TIMELINE_BOTTOM_PADDING);
 }
 
-@Component({selector: 'app-career-timeline', templateUrl: './career-timeline.component.html', styleUrl: './career-timeline.component.css'})
+@Component({imports: [DisplayDatePipe], selector: 'app-career-timeline', templateUrl: './career-timeline.component.html', styleUrl: './career-timeline.component.css'})
 export class CareerTimelineComponent {
     private readonly end = displayEnd();
     private readonly entries: TimelineEntry[] = [
-        {side: 'work', start: '2024-04', end: '', dates: 'Apr 2024 – now', title: 'Driverless development', place: 'Fast Forest - Formula Student', detail: 'Camera perception, sensor fusion, and Graph SLAM.', order: 0, lane: 2, color: 'var(--color-chart-3)'},
-        {side: 'work', start: '2025-05', end: '2026-07', dates: 'May 2025 – Jul 2026', title: 'Student assistant', place: 'Deggendorf Institute of Technology', detail: 'Multispectral aerial mapping pipeline.', order: 1, lane: 1, color: 'var(--color-chart-2)'},
-        {side: 'work', start: '2022-09', end: '2027-03', dates: 'Sep 2022 – Mar 2027', title: 'Dual study programme', place: 'BMW Group Dingolfing', detail: 'Digitalization in quality management for parts.', order: 2, lane: 3, color: 'var(--color-chart-6)'},
-        {side: 'education', start: '2023-10', end: '2027-03', dates: 'Oct 2023 – Mar 2027', title: 'B.Sc. Artificial Intelligence', place: 'Deggendorf Institute of Technology', detail: 'Degree combined with vocational training.', order: 0, lane: 1, color: 'var(--color-chart-1)'},
-        {side: 'education', start: '2022-09', end: '2026-02', dates: 'Sep 2022 – Feb 2026', title: 'Vocational training IT specialist', place: 'Lower Bavaria Chamber of Industry and Commerce', detail: 'Specialisation in software development. Completed alongside the degree programme.', order: 1, lane: 2, color: 'var(--color-chart-4)'},
-        {side: 'education', start: '2014-09', end: '2022-07', dates: 'Sep 2014 – Jul 2022', title: 'High school diploma', place: 'Fürstenberg Gymnasium Donaueschingen', detail: 'General secondary education.', order: 2, lane: 3, color: 'var(--color-chart-5)'}
+        {side: 'work', start: '2024-04', end: '', title: 'Driverless development', place: 'Fast Forest - Formula Student', detail: 'Camera perception, sensor fusion, and Graph SLAM.', order: 0, lane: 2, color: 'var(--color-chart-3)'},
+        {side: 'work', start: '2025-05', end: '2026-07', title: 'Student assistant', place: 'Deggendorf Institute of Technology', detail: 'Multispectral aerial mapping pipeline.', order: 1, lane: 1, color: 'var(--color-chart-2)'},
+        {side: 'work', start: '2022-09', end: '2027-03', title: 'Dual study programme', place: 'BMW Group Dingolfing', detail: 'Digitalization in quality management for parts.', order: 2, lane: 3, color: 'var(--color-chart-6)'},
+        {side: 'education', start: '2023-10', end: '2027-03', title: 'B.Sc. Artificial Intelligence', place: 'Deggendorf Institute of Technology', detail: 'Degree combined with vocational training.', order: 0, lane: 1, color: 'var(--color-chart-1)'},
+        {side: 'education', start: '2022-09', end: '2026-02', title: 'Vocational training IT specialist', place: 'Lower Bavaria Chamber of Industry and Commerce', detail: 'Specialisation in software development. Completed alongside the degree programme.', order: 1, lane: 2, color: 'var(--color-chart-4)'},
+        {side: 'education', start: '2014-09', end: '2022-07', title: 'High school diploma', place: 'Fürstenberg Gymnasium Donaueschingen', detail: 'General secondary education.', order: 2, lane: 3, color: 'var(--color-chart-5)'}
     ];
     protected readonly history = positionEntries(this.entries, this.end);
     protected readonly years = buildYears(this.entries, this.end);

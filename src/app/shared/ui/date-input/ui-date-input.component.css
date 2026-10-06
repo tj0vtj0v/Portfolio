@@ -1,0 +1,63 @@
+:host {
+    position: relative;
+    display: block;
+    min-width: 0;
+}
+
+.ui-date-input { position: relative; }
+.ui-date-input__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: var(--control-min-height);
+    padding: 9px 12px;
+    border: 1px solid var(--color-control-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: var(--font-size-input);
+    text-align: left;
+}
+.ui-date-input__trigger:hover:not(:disabled) { background: var(--color-surface-soft); }
+.ui-date-input__placeholder { color: var(--color-text-muted); }
+.ui-date-input__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ui-date-input__icon { display: block; flex: 0 0 auto; color: var(--color-text-muted); }
+
+.ui-date-input__calendar {
+    position: absolute;
+    z-index: 40;
+    top: calc(100% + var(--space-1));
+    left: 0;
+    width: min(296px, 100vw - 32px);
+    padding: var(--space-3);
+    border: 1px solid var(--color-control-border);
+    border-radius: var(--radius-panel);
+    background: var(--color-surface);
+    box-shadow: 0 10px 24px rgb(0 0 0 / 18%);
+}
+.ui-date-input__header,
+.ui-date-input__weekdays,
+.ui-date-input__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--space-1); }
+.ui-date-input__header { grid-template-columns: 36px 1fr 36px; align-items: center; margin-bottom: var(--space-3); }
+.ui-date-input__header strong { text-align: center; }
+.ui-date-input__header button,
+.ui-date-input__clear { min-height: 34px; padding: 5px 8px; }
+.ui-date-input__weekdays { margin-bottom: var(--space-1); color: var(--color-text-muted); font-size: var(--font-size-label); font-weight: 700; text-align: center; }
+.ui-date-input__empty { min-height: 36px; }
+.ui-date-input__day { display: block; }
+.ui-date-input__day button {
+    width: 100%;
+    min-height: 36px;
+    padding: 5px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--color-text);
+}
+.ui-date-input__day button:hover { background: var(--color-surface-soft); }
+.ui-date-input__day--today { border-color: var(--color-primary) !important; }
+.ui-date-input__day--selected { background: var(--color-primary) !important; color: var(--color-on-primary) !important; }
+.ui-date-input__clear { width: 100%; margin-top: var(--space-3); }
+:host([aria-invalid='true']) .ui-date-input__trigger { border-color: var(--color-danger); }

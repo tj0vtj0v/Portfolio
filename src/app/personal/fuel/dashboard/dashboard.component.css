@@ -2,8 +2,12 @@
 .fuel-dashboard > * { min-width: 0; }
 .fuel-dashboard app-ui-panel { display: block; min-width: 0; overflow: hidden; }
 .fuel-dashboard app-ui-page-header { margin-bottom: calc(var(--space-8) * -1 + var(--space-6)); }
-.fuel-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
-@media (max-width: 980px) { .fuel-charts { grid-template-columns: minmax(0, 1fr); } }
+.fuel-charts { display: grid; gap: var(--space-5); }
+.fuel-primary-charts, .fuel-secondary-charts { display: grid; min-width: 0; gap: var(--space-5); }
+.fuel-primary-charts { grid-template-columns: minmax(0, 1fr); }
+.fuel-primary-charts app-chart-card { --chart-height: 400px; }
+.fuel-secondary-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 980px) { .fuel-secondary-charts { grid-template-columns: minmax(0, 1fr); } }
 
 .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
 .summary-grid article { min-width: 0; border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); padding: var(--space-5); }

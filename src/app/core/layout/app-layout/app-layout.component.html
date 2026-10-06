@@ -20,10 +20,11 @@
             <app-project-switcher [project]="project()" />
         }
         <main [class.workspace-content]="shell() === 'workspace'" [class.portfolio-content]="shell() === 'portfolio'" id="main-content">
+            <app-ui-working-orb [visible]="working()" />
             @if (navigation.pending(); as pending) {
                 <app-ui-skeleton [layout]="pending.layout" [pageHeader]="true" message="Loading page…" />
             }
-            <div [hidden]="navigation.pending() !== null"><router-outlet /></div>
+            <div class="route-content" [class.route-content--ready]="navigation.pending() === null" [hidden]="navigation.pending() !== null"><router-outlet /></div>
         </main>
     </div>
     <app-footer />

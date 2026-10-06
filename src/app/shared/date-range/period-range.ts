@@ -1,3 +1,6 @@
+import {displayDate} from '../formatter/display-date';
+
+// Keep the historical URL keys for saved links; 30/365 now mean complete calendar periods.
 export type PeriodPreset = 'month' | 'year' | '365' | '30' | 'all' | 'custom';
 
 export interface PeriodRange {
@@ -10,8 +13,8 @@ export interface PeriodRange {
 export const PERIOD_PRESETS: ReadonlyArray<{value: PeriodPreset; label: string}> = [
     {value: 'month', label: 'Current month'},
     {value: 'year', label: 'Current year'},
-    {value: '365', label: 'Last 365 days'},
-    {value: '30', label: 'Last 30 days'},
+    {value: '365', label: 'Last year'},
+    {value: '30', label: 'Last month'},
     {value: 'all', label: 'All time'},
     {value: 'custom', label: 'Custom range'}
 ];
@@ -42,13 +45,18 @@ export function periodRange(period: Exclude<PeriodPreset, 'custom'>, today = new
         ? new Date(localToday.getFullYear(), localToday.getMonth() + 1, 0)
         : period === 'year'
             ? new Date(localToday.getFullYear(), 11, 31)
-            : localToday);
+            : period === '30'
+                ? new Date(localToday.getFullYear(), localToday.getMonth(), 0)
+                : period === '365'
+                    ? new Date(localToday.getFullYear() - 1, 11, 31)
+                    : localToday);
     let from: string | undefined;
     if (period === 'month') from = formatLocalDate(new Date(localToday.getFullYear(), localToday.getMonth(), 1));
     if (period === 'year') from = `${localToday.getFullYear()}-01-01`;
-    if (period === '30') from = formatLocalDate(addCalendarDays(localToday, -29));
-    if (period === '365') from = formatLocalDate(addCalendarDays(localToday, -364));
-    return {period, from, to, observedTo: formatLocalDate(localToday)};
+    if (period === '30') from = formatLocalDate(new Date(localToday.getFullYear(), localToday.getMonth() - 1, 1));
+    if (period === '365') from = `${localToday.getFullYear() - 1}-01-01`;
+    const todayString = formatLocalDate(localToday);
+    return {period, from, to, observedTo: to < todayString ? to : todayString};
 }
 
 export function customPeriodRange(from: string, to: string, _today = new Date()): PeriodRange | undefined {
@@ -69,5 +77,5 @@ export function dateRange(range: Pick<PeriodRange, 'from' | 'observedTo'>): stri
 export function formatPeriodLabel(range: PeriodRange, earliest?: string): string {
     if (range.period === 'all' && !earliest) return 'All available data';
     const from = range.from ?? earliest;
-    return from ? `${from} – ${range.to}` : `Through ${range.to}`;
+    return from ? `${displayDate(from)} – ${displayDate(range.to)}` : `Through ${displayDate(range.to)}`;
 }

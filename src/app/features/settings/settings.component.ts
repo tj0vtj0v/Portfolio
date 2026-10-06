@@ -1,3 +1,4 @@
+import {FeedbackMessage} from '../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../shared/ui/skeleton/ui-skeleton.component';
 import {Component, DestroyRef, inject} from '@angular/core';
 import {NgIf} from '@angular/common';
@@ -23,7 +24,9 @@ export class SettingsComponent {
     deleting = false;
     loading = false;
     loadError = '';
-    statusMessage = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    get statusMessage(): string { return this.statusMessageState.value; }
+    set statusMessage(message: string) { this.statusMessageState.value = message; }
 
     constructor(
         private userService: UserService,

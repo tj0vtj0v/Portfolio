@@ -1,3 +1,4 @@
+import {NotificationService} from '../../shared/ui/feedback/notification.service';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ActivatedRoute, convertToParamMap, provideRouter, Router} from '@angular/router';
 import {of, Subject} from 'rxjs';
@@ -36,12 +37,13 @@ describe('AuthenticationComponent', () => {
         component.onLogin();
     }
 
-    it('opens Accounting when there is no return destination', () => {
+    it('opens Accounting when there is no return destination', async () => {
         const navigate = spyOn(TestBed.inject(Router), 'navigateByUrl').and.resolveTo(true);
         login();
         expect(navigate).toHaveBeenCalledWith('/accounting');
         fixture.detectChanges();
-        expect(fixture.nativeElement.textContent).toContain('Login successful');
+        await Promise.resolve();
+        expect(TestBed.inject(NotificationService).notifications().some(item => item.message === 'Login successful' && item.kind === 'success')).toBeTrue();
     });
 
     it('returns to a protected deep link after a successful login', () => {
@@ -75,7 +77,7 @@ describe('AuthenticationComponent', () => {
         expect(component.submission.pending).toBeFalse();
     });
 
-    it('keeps credentials available for retry after a temporary login failure', () => {
+    it('keeps credentials available for retry after a temporary login failure', async () => {
         const response = new Subject<void>();
         userService.login.and.returnValue(response);
         login();
@@ -85,7 +87,8 @@ describe('AuthenticationComponent', () => {
         expect((component as any).password).toBe('password');
         expect(component.submission.pending).toBeFalse();
         expect(fixture.nativeElement.querySelector('button[type="submit"]').disabled).toBeFalse();
-        expect(fixture.nativeElement.textContent).toContain('unable to reach the backend');
+        await Promise.resolve();
+        expect(TestBed.inject(NotificationService).notifications().some(item => item.message.includes('unable to reach the backend') && item.kind === 'error')).toBeTrue();
     });
 
     it('does not send a request for missing credentials', () => {

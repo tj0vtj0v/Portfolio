@@ -1,0 +1,11 @@
+<section #stack class="notification-stack" aria-label="Notifications" tabindex="-1">
+    @for (item of feedback.notifications(); track item.id) {
+        <div class="ui-feedback notification" [attr.data-kind]="item.kind" [class.notification--leaving]="item.leaving">
+            @if (item.count > 1) {
+                <span class="notification-count" [attr.aria-label]="item.count + ' occurrences'">({{ item.count }}x)</span>
+            }
+            <button type="button" class="notification-close" aria-label="Dismiss notification" (click)="feedback.dismiss(item.id)">&times;</button>
+            <p [attr.role]="item.kind === 'error' ? 'alert' : 'status'" aria-atomic="true">{{ item.message }}<span class="visually-hidden"> ({{ item.count }} occurrences)</span></p>
+        </div>
+    }
+</section>

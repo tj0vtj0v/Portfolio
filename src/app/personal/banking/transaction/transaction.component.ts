@@ -1,3 +1,5 @@
+import {DisplayDatePipe} from '../../../shared/formatter/display-date.pipe';
+import {displayDate} from '../../../shared/formatter/display-date';
 import {Subscription} from 'rxjs';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -15,7 +17,7 @@ import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-sta
 
 @Component({
     selector: 'app-transaction',
-    imports: [UiSkeletonComponent,
+    imports: [DisplayDatePipe, UiSkeletonComponent,
         GridFitDirective,
         AgGridModule,
         CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent
@@ -35,7 +37,7 @@ export class TransactionComponent {
     protected errorMessage = '';
 
     protected columnDefs: ColDef[] = [
-        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Date', field: 'date', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)},
         {headerName: 'Peer', field: 'peer', sortable: true, filter: true},
         {
             headerName: 'Amount', sortable: true, filter: true,

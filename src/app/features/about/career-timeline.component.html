@@ -7,7 +7,7 @@
     <ol>
         @for (item of history; track item.title) {
             <li [class.education]="item.side === 'education'" [style.--entry-color]="item.color" [style.top.px]="item.top" [style.--lane]="item.lane">
-                <article><p class="dates">{{ item.dates }}</p><h3>{{ item.title }}</h3><p class="institution">{{ item.place }}</p><p class="description">{{ item.detail }}</p></article>
+                <article><p class="dates">{{ item.start | displayDate:'month' }} – {{ item.end ? (item.end | displayDate:'month') : 'now' }}</p><h3>{{ item.title }}</h3><p class="institution">{{ item.place }}</p><p class="description">{{ item.detail }}</p></article>
             </li>
         }
     </ol>

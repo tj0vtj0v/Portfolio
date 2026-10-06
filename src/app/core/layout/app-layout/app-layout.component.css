@@ -1,6 +1,9 @@
 :host { display: block; }
 .app-surface { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
 .route-shell { flex: 1; }
+main { position: relative; }
+.route-content { min-width: 0; }
+.route-content--ready { animation: ui-display-reveal 100ms ease-out both; }
 
 .portfolio-sidebar { min-width: 0; padding: 36px var(--space-5); border-right: 1px solid var(--color-border); background: var(--color-sidebar-background); }
 .sidebar-label { margin: 0 0 var(--space-6); color: var(--color-text-muted); font: 600 var(--font-size-metadata)/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }

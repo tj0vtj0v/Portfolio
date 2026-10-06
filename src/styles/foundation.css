@@ -1,6 +1,8 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html { min-width: 320px; background: var(--color-background); }
+html.ui-loading-lock, html.ui-loading-lock body { overflow: hidden; }
+html.ui-loading-lock .portfolio-sidebar, html.ui-loading-lock app-project-switcher { overflow: hidden; }
 
 body {
     min-width: 320px;
@@ -94,13 +96,25 @@ app-accounting, app-banking, app-fuel { display: contents; }
 .ui-page-header__description { max-width: 70ch; margin: var(--space-3) 0 0; color: var(--color-text-muted); font-size: var(--font-size-reading); }
 .ui-page-header__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
+app-ui-page-header, app-ui-panel, app-ui-empty-state { display: block; }
+app-ui-page-header, app-ui-panel, app-ui-empty-state, .summary-grid, .account-details, .activity-table-wrap {
+    animation: ui-display-reveal 100ms ease-out both;
+}
+
+@keyframes ui-display-reveal {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .ui-panel {
     min-width: 0;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-panel);
     background: var(--color-surface);
 }
-.ui-panel__header { padding: var(--space-6) var(--space-6) 0; }
+.ui-panel__header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-6) var(--space-6) 0; }
+.ui-panel__copy { min-width: 0; }
+.ui-panel__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-left: auto; }
 .ui-panel h2 { font-size: var(--font-size-panel-heading); }
 .ui-panel__body { padding: var(--space-6); }
 
@@ -114,6 +128,48 @@ app-accounting, app-banking, app-fuel { display: contents; }
 .ui-empty-state { padding: var(--space-10) var(--space-6); text-align: center; }
 .ui-empty-state h2 { margin: 0 0 var(--space-2); font: var(--font-heading-weight) var(--font-size-panel-heading)/1.25 var(--font-heading); }
 .ui-empty-state p { max-width: 56ch; margin: 0 auto; color: var(--color-text-muted); }
+
+/* Keep AG Grid pagination readable when the application control styles are inherited. */
+.app-surface .ag-paging-panel {
+    min-height: 56px;
+    height: auto;
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface-soft);
+    overflow: visible;
+}
+.app-surface .ag-paging-panel-content {
+    width: 100%;
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+}
+.app-surface .ag-paging-panel-content > * { margin: 0; }
+.app-surface .ag-paging-page-size,
+.app-surface .ag-paging-row-summary-panel,
+.app-surface .ag-paging-page-summary-panel { display: inline-flex; align-items: center; gap: var(--space-2); }
+.app-surface .ag-paging-page-size .ag-wrapper { min-width: 84px; }
+.app-surface .ag-paging-page-size .ag-picker-field { min-height: 32px; }
+.app-surface .ag-paging-button,
+.app-surface .ag-paging-page-number {
+    min-width: 32px;
+    width: 32px;
+    min-height: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background: var(--color-surface);
+    color: var(--color-text);
+    display: inline-grid;
+    place-items: center;
+    line-height: 1;
+}
+.app-surface .ag-paging-button:hover:not(.ag-disabled),
+.app-surface .ag-paging-page-number:hover { border-color: var(--color-primary); background: var(--color-surface); }
+.app-surface .ag-paging-button.ag-disabled { border-color: transparent; background: transparent; opacity: .55; }
+.app-surface .ag-paging-page-number-current { border-color: var(--color-primary); background: var(--color-primary); color: var(--color-on-primary); }
 
 .form-page { width: min(100%, 760px); margin-inline: auto; }
 .form-page--narrow { max-width: 560px; }

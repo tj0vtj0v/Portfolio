@@ -1,14 +1,19 @@
+import {AmountPrivacyToggleComponent} from '../../../shared/privacy/amount-privacy-toggle.component';
+import {PrivateAmountCellComponent} from '../../../shared/privacy/private-amount.component';
+import {displayDate} from '../../../shared/formatter/display-date';
+import {FeedbackMessage} from '../../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
 import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../../shared/forms/submission-state';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {GridReadyEvent} from 'ag-grid-community';
+import {GridApi, GridReadyEvent} from 'ag-grid-community';
 import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
+import {GridFilterStateService} from '../../../shared/grid/grid-filter-state.service';
 import {Component, DestroyRef, inject} from '@angular/core';
 import {AgGridAngular} from 'ag-grid-angular';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgIf} from '@angular/common';
 import {Income} from '../../../shared/datatype/Income';
 import {Account} from '../../../shared/datatype/Account';
 import {ColDef, RowClickedEvent} from 'ag-grid-community';
@@ -21,18 +26,19 @@ import {accountingEditorRequest, clearAccountingEditorQuery} from '../accounting
 import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
 import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
+import {UiSelectComponent} from '../../../shared/ui/select/ui-select.component';
+import {UiDateInputComponent} from '../../../shared/ui/date-input/ui-date-input.component';
 
 @Component({
     selector: 'app-income',
     providers: [EditorGridFocus],
-    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
+    imports: [AmountPrivacyToggleComponent, UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
         GridFitDirective,
         NumberFormatterDirective,
         AgGridAngular,
         FormsModule,
-        NgForOf,
         NgIf,
-        ReactiveFormsModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent
+        ReactiveFormsModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiSelectComponent, UiDateInputComponent
     ],
     templateUrl: './income.component.html',
     styleUrl: './income.component.css'
@@ -40,24 +46,32 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 export class IncomeComponent {
     readonly submission = new SubmissionState();
     private readonly destroyRef = inject(DestroyRef);
+    private readonly gridFilterState = inject(GridFilterStateService);
     private readonly route = inject(ActivatedRoute, {optional: true});
     private readonly router = inject(Router, {optional: true});
+    private readonly gridFilterKey = 'accounting.incomes';
+    private gridApi?: GridApi;
     private handledRequest?: string;
     protected incomes: Income[] = [];
     protected accounts: Account[] = [];
     protected income?: Income;
     protected addingIncome = false;
-    protected statusMessage = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected loading = true;
     protected loadError = '';
     protected fieldErrors: Record<string, string> = {};
-    protected successMessage = '';
+    private readonly successMessageState = new FeedbackMessage('success');
+    protected get successMessage(): string { return this.successMessageState.value; }
+    protected set successMessage(message: string) { this.successMessageState.value = message; }
 
     protected columnDefs: ColDef[] = [
-        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Date', field: 'date', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)},
         {headerName: 'Reason', field: 'reason', sortable: true, filter: true},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
+            cellRenderer: PrivateAmountCellComponent,
             valueFormatter: (params) => `${params.value?.toFixed(2)} €`
         },
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true}
@@ -70,17 +84,20 @@ export class IncomeComponent {
 
 
     onGridReady(params: GridReadyEvent) {
-
-        const startOfMonth = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 0))
-
-        params.api.setFilterModel({
-            date: {
-                type: 'greaterThan',
-                dateFrom: startOfMonth.toISOString().split('T')[0]
-            }
-        })
-
+        this.gridApi = params.api;
+        params.api.setFilterModel(this.gridFilterState.load(this.gridFilterKey) ?? this.gridFilterState.currentMonthFilterModel());
         params.api.onFilterChanged();
+    }
+
+    protected saveGridFilters(api: GridApi): void {
+        this.gridFilterState.save(this.gridFilterKey, api.getFilterModel());
+    }
+
+    protected resetFilters(): void {
+        if (!this.gridApi) return;
+        this.gridApi.setFilterModel(this.gridFilterState.currentMonthFilterModel());
+        this.gridApi.onFilterChanged();
+        this.saveGridFilters(this.gridApi);
     }
 
     ngOnInit() {
