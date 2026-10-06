@@ -1,5 +1,5 @@
 <div class="settings-page">
-    <app-ui-page-header eyebrow="Workspace" heading="Account settings" description="Review your account details and manage your session." />
+    <app-ui-page-header eyebrow="Account" heading="Account settings" description="Review your account details and manage your session." />
     <app-ui-panel heading="Account details">
         <app-ui-skeleton *ngIf="loading" layout="form" message="Loading account details…" />
         <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />
@@ -18,6 +18,5 @@
             <p class="danger-copy">Permanently delete your account and its associated access. This action requires confirmation.</p>
             <button data-variant="danger" type="button" (click)="delete()" [disabled]="deleting">{{ deleting ? 'Deleting…' : 'Delete account' }}</button>
         </div>
-        <app-ui-feedback *ngIf="statusMessage" kind="error" [message]="statusMessage" />
     </app-ui-panel>
 </div>

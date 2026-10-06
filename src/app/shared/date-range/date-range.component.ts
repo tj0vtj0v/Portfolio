@@ -1,3 +1,4 @@
+import {DisplayDatePipe} from '../formatter/display-date.pipe';
 import {CommonModule} from '@angular/common';
 import {Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject} from '@angular/core';
 import {FormsModule} from '@angular/forms';
@@ -8,10 +9,11 @@ import {
 } from './period-range';
 import {isValidPeriodQuery, parsePeriodQuery, serializePeriodQuery} from './period-query';
 import {FieldErrorDirective} from '../ui/field-error.directive';
+import {UiDateInputComponent} from '../ui/date-input/ui-date-input.component';
 
 @Component({
     selector: 'app-date-range',
-    imports: [CommonModule, FormsModule, FieldErrorDirective],
+    imports: [DisplayDatePipe, CommonModule, FormsModule, FieldErrorDirective, UiDateInputComponent],
     template: `
         <section class="period-toolbar" aria-label="Dashboard period">
             <span class="period-label" id="dashboard-period-label">Period</span>
@@ -21,14 +23,14 @@ import {FieldErrorDirective} from '../ui/field-error.directive';
             </div>
             <div *ngIf="period === 'custom'" class="custom-range">
                 <label for="dashboard-from">From</label>
-                <input id="dashboard-from" name="from" type="date" [(ngModel)]="from" (ngModelChange)="applyCustom()" [appFieldError]="error">
+                <app-ui-date-input id="dashboard-from" name="from" [(ngModel)]="from" (ngModelChange)="applyCustom()" [appFieldError]="error" />
                 <label for="dashboard-to">To</label>
-                <input id="dashboard-to" name="to" type="date" [(ngModel)]="to" (ngModelChange)="applyCustom()" [appFieldError]="error">
+                <app-ui-date-input id="dashboard-to" name="to" [(ngModel)]="to" (ngModelChange)="applyCustom()" [appFieldError]="error" />
             </div>
             <p *ngIf="error" class="period-error" role="alert">{{ error }}</p>
             <p *ngIf="current" class="period-summary">
                 {{ label }}
-                <span *ngIf="current.observedTo < current.to">Data shown through {{ current.observedTo }}.</span>
+                <span *ngIf="current.observedTo < current.to">Data shown through {{ current.observedTo | displayDate }}.</span>
             </p>
         </section>
     `,
@@ -44,7 +46,7 @@ import {FieldErrorDirective} from '../ui/field-error.directive';
         .period-summary { color: var(--color-text-muted); }
         .period-summary span { margin-left: var(--space-2); }
         .period-error { color: var(--color-danger); }
-        @media (max-width: 580px) { select, .custom-range, .custom-range input { width: 100%; } .custom-range label { width: 100%; } }
+        @media (max-width: 580px) { select, .custom-range, .custom-range input, .custom-range app-ui-date-input { width: 100%; } .custom-range label { width: 100%; } }
     `
 })
 export class DateRangeComponent implements OnInit {

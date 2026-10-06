@@ -8,8 +8,11 @@ let panelSequence = 0;
         <section class="ui-panel" [attr.aria-labelledby]="heading ? headingId : null">
             @if (eyebrow || heading) {
                 <header class="ui-panel__header">
-                    @if (eyebrow) { <p class="ui-panel__eyebrow">{{ eyebrow }}</p> }
-                    @if (heading) { <h2 [id]="headingId">{{ heading }}</h2> }
+                    <div class="ui-panel__copy">
+                        @if (eyebrow) { <p class="ui-panel__eyebrow">{{ eyebrow }}</p> }
+                        @if (heading) { <h2 [id]="headingId">{{ heading }}</h2> }
+                    </div>
+                    <div class="ui-panel__actions"><ng-content select="[panel-actions]" /></div>
                 </header>
             }
             <div class="ui-panel__body"><ng-content /></div>

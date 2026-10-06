@@ -1,4 +1,5 @@
 <router-outlet #route="outlet"></router-outlet>
+<app-notification-stack />
 @if (!route.isActivated && navigation.pending(); as pending) {
     <div class="initial-loading"><app-ui-skeleton [layout]="pending.layout" [pageHeader]="true" message="Loading page…" /></div>
 }

@@ -1,15 +1,20 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, inject} from '@angular/core';
+import {FeedbackKind, NotificationService} from './notification.service';
 
-export type FeedbackKind = 'info' | 'pending' | 'success' | 'warning' | 'error';
+export type {FeedbackKind} from './notification.service';
 
 @Component({
     selector: 'app-ui-feedback',
-    template: '<div class="ui-feedback" [attr.data-kind]="kind" [attr.role]="role" [attr.aria-live]="kind === \'error\' ? \'assertive\' : \'polite\'"><p>{{ message }}</p></div>'
+    template: '',
+    styles: ':host { display: none; }'
 })
-export class UiFeedbackComponent {
+export class UiFeedbackComponent implements OnChanges, OnDestroy {
+    private readonly notifications = inject(NotificationService);
     @Input() kind: FeedbackKind = 'info';
     @Input({required: true}) message = '';
-    protected get role(): 'alert' | 'status' {
-        return this.kind === 'error' ? 'alert' : 'status';
+    ngOnChanges(): void {
+        this.notifications.release(this);
+        this.notifications.show(this.message, this.kind, this);
     }
+    ngOnDestroy(): void { this.notifications.release(this); }
 }

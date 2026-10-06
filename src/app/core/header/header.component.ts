@@ -1,9 +1,9 @@
-import {Component, Input, inject} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, ViewChild, inject} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import {AuthService} from '../auth/auth.service';
 import {ThemeService} from '../theme/theme.service';
 import {AppShell} from '../layout/layout-route-data';
-import {isWorkspaceDestination} from '../layout/layout-route-data';
+import {isPortfolioDestination, isWorkspaceDestination} from '../layout/layout-route-data';
 
 @Component({
     selector: 'app-header',
@@ -17,9 +17,15 @@ export class HeaderComponent {
     protected readonly auth = inject(AuthService);
     protected readonly theme = inject(ThemeService);
     private readonly router = inject(Router);
+    @ViewChild('accountMenu') private accountMenu?: ElementRef<HTMLDetailsElement>;
 
     @Input({required: true}) shell: AppShell = 'portfolio';
     @Input() workspaceTarget = '/accounting';
+    @Input() portfolioTarget = '/home';
+
+    protected get portfolioLink() {
+        return this.router.parseUrl(isPortfolioDestination(this.portfolioTarget) ? this.portfolioTarget : '/home');
+    }
 
     protected get workspaceLink() {
         return this.router.parseUrl(isWorkspaceDestination(this.workspaceTarget) ? this.workspaceTarget : '/accounting');
@@ -28,5 +34,11 @@ export class HeaderComponent {
     protected logout(): void {
         this.auth.logout();
         void this.router.navigateByUrl('/login');
+    }
+
+    @HostListener('document:click', ['$event'])
+    protected closeAccountMenu(event: MouseEvent): void {
+        const menu = this.accountMenu?.nativeElement;
+        if (menu?.open && !menu.contains(event.target as Node)) menu.open = false;
     }
 }

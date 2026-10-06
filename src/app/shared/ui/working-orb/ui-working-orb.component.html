@@ -1,0 +1,4 @@
+<div #overlay class="working-orb-overlay" [class.working-orb-overlay--visible]="visible" [attr.aria-hidden]="visible ? null : 'true'" role="status" aria-live="polite">
+    <canvas #canvas class="working-orb" width="72" height="72" aria-hidden="true"></canvas>
+    <span class="visually-hidden">Connecting…</span>
+</div>

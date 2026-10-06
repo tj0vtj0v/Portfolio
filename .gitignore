@@ -21,6 +21,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+AGENTS.md
 
 # Visual Studio Code
 .vscode/*
@@ -38,6 +39,11 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+
+# Local documentation, utility scripts, and development proxy
+/docs/
+/scripts/
+/proxy.conf.cjs
 
 # System files
 .DS_Store

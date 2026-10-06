@@ -1,3 +1,5 @@
+import {AmountPrivacyToggleComponent} from '../../../shared/privacy/amount-privacy-toggle.component';
+import {FeedbackMessage} from '../../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
 import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
@@ -6,8 +8,9 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
 import {Component, DestroyRef, inject} from '@angular/core';
 import {Category} from '../../../shared/datatype/Category';
-import {ColDef, RowClickedEvent} from 'ag-grid-community';
+import {ColDef, GridApi, GridReadyEvent, RowClickedEvent} from 'ag-grid-community';
 import {AccountingService} from '../../../shared/api/accounting.service';
+import {GridFilterStateService} from '../../../shared/grid/grid-filter-state.service';
 import {AgGridModule} from 'ag-grid-angular';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -18,7 +21,7 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 @Component({
     selector: 'app-category',
     providers: [EditorGridFocus],
-    imports: [UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
+    imports: [AmountPrivacyToggleComponent, UiSkeletonComponent, GridActivateDirective, FieldErrorDirective,
         GridFitDirective,
         AgGridModule,
         FormsModule,
@@ -30,15 +33,22 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 export class CategoryComponent {
     readonly submission = new SubmissionState();
     private readonly destroyRef = inject(DestroyRef);
+    private readonly gridFilterState = inject(GridFilterStateService);
+    private readonly gridFilterKey = 'accounting.categories';
+    private gridApi?: GridApi;
     protected categories: Category[] = [];
     protected category?: Category;
     protected categoryName?: string;
     protected addingCategory: boolean = false;
-    protected statusMessage = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected loading = true;
     protected loadError = '';
     protected fieldErrors: Record<string, string> = {};
-    protected successMessage = '';
+    private readonly successMessageState = new FeedbackMessage('success');
+    protected get successMessage(): string { return this.successMessageState.value; }
+    protected set successMessage(message: string) { this.successMessageState.value = message; }
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Name', field: 'name', sortable: true, filter: true}
@@ -51,6 +61,23 @@ export class CategoryComponent {
 
 
     ngOnInit(): void { this.load(); }
+
+    protected onGridReady(params: GridReadyEvent): void {
+        this.gridApi = params.api;
+        params.api.setFilterModel(this.gridFilterState.load(this.gridFilterKey) ?? null);
+        params.api.onFilterChanged();
+    }
+
+    protected saveGridFilters(api: GridApi): void {
+        this.gridFilterState.save(this.gridFilterKey, api.getFilterModel());
+    }
+
+    protected resetFilters(): void {
+        if (!this.gridApi) return;
+        this.gridApi.setFilterModel(null);
+        this.gridApi.onFilterChanged();
+        this.saveGridFilters(this.gridApi);
+    }
 
     protected load(): void {
         this.loading = true;

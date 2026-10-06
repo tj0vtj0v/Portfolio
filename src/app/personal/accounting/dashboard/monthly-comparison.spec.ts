@@ -15,7 +15,9 @@ describe('monthly comparison', () => {
             {month: '2026-01', expenses: 0, income: 0},
             {month: '2026-02', expenses: 0, income: 80}
         ]);
-        expect(result.map(row => row.options['yAxis'].max)).toEqual([80, 80, 80]);
+        for (const row of result) {
+            expect(row.options['yAxis']).withContext(row.month).toEqual(jasmine.objectContaining({max: 80}));
+        }
         expect(monthlyComparison(view).map(row => row.expenses)).toEqual([30, 0, 0]);
     });
 
@@ -23,7 +25,9 @@ describe('monthly comparison', () => {
         const view = {startDate: '2026-01-01', endDate: '2026-09-09', filteredExpenses: [], filteredIncomes: []} as unknown as AccountingDashboardView;
         const result = monthlyComparison(view, '2026-12-31');
         expect(result.length).toBe(12);
-        expect(result.every(row => row.options['yAxis'].max === 1)).toBeTrue();
+        for (const row of result) {
+            expect(row.options['yAxis']).withContext(row.month).toEqual(jasmine.objectContaining({max: 1}));
+        }
         expect(monthlyComparison({...view, startDate: '2027-01-01'})).toEqual([]);
     });
 });

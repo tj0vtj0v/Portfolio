@@ -1,3 +1,4 @@
+import {FeedbackMessage} from '../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../shared/ui/skeleton/ui-skeleton.component';
 import {FieldErrorDirective} from '../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../shared/forms/submission-state';
@@ -11,7 +12,7 @@ import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {UiPageHeaderComponent} from '../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../shared/ui/panel/ui-panel.component';
-import {FeedbackKind, UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
+import {UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-account',
@@ -37,14 +38,13 @@ export class AccountComponent {
     };
     changePassword: boolean = false;
     repeatPassword?: string = undefined;
-    statusMessage: string = '';
+    private readonly statusMessageState = new FeedbackMessage(message => message === 'Edited successfully' ? 'success' : 'error');
+    get statusMessage(): string { return this.statusMessageState.value; }
+    set statusMessage(message: string) { this.statusMessageState.value = message; }
     success: boolean = false;
     loading = false;
     loadError = '';
 
-    get feedbackKind(): FeedbackKind {
-        return this.success ? 'success' : 'error';
-    }
 
     constructor(
         private userService: UserService

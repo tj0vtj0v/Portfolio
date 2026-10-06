@@ -1,9 +1,12 @@
+import {DisplayDatePipe} from '../../../shared/formatter/display-date.pipe';
+import {EuroAmountPipe} from '../../../shared/formatter/euro-amount';
+import {displayDate} from '../../../shared/formatter/display-date';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {Car} from '../../../shared/datatype/Car';
 import {Refuel} from '../../../shared/datatype/Refuel';
 import {FuelType} from '../../../shared/datatype/FuelType';
@@ -18,7 +21,7 @@ import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.compo
 
 @Component({
     selector: 'app-dashboard',
-    imports: [UiSkeletonComponent, RouterLink,
+    imports: [EuroAmountPipe, DisplayDatePipe, UiSkeletonComponent, RouterLink,
         ChartCardComponent,
         CommonModule,
         DateRangeComponent,
@@ -118,7 +121,7 @@ export class DashboardComponent {
             });
         });
 
-        const refinedData: { name: string, type: string, showSymbol: boolean, data: [string, number][] }[] = [];
+        const refinedData: { name: string, type: string, symbol: string, showSymbol: boolean, symbolSize: number, smooth: boolean, itemStyle: { opacity: number }, emphasis: { scale: boolean, itemStyle: { opacity: number } }, data: [string, number][] }[] = [];
         carMap.forEach((refuels, car) => {
             refuels = [...refuels].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -143,7 +146,12 @@ export class DashboardComponent {
             refinedData.push({
                 name: car,
                 type: 'line',
-                showSymbol: false,
+                symbol: 'circle',
+                showSymbol: true,
+                symbolSize: 8,
+                smooth: true,
+                itemStyle: {opacity: 0},
+                emphasis: {scale: true, itemStyle: {opacity: 1}},
                 data: refuels.map(entry => [entry.date, entry.distance])
             });
         });
@@ -152,7 +160,7 @@ export class DashboardComponent {
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
-                    const date = new DatePipe("en-US").transform(new Date(params[0].value[0]), 'dd.MM.yyyy');
+                    const date = displayDate(params[0].value[0]);
                     const content = params.map((param: any) => {
                         const value = parseFloat(param.value[1]).toFixed(0);
                         return `${tooltipText(param.seriesName)}: ${value} km`
@@ -162,6 +170,8 @@ export class DashboardComponent {
             },
             xAxis: {
                 type: 'time',
+                axisLabel: {formatter: (value: number) => displayDate(value)},
+                axisPointer: {label: {formatter: (params: any) => displayDate(params.value)}},
                 name: 'Date',
                 min: this.range?.from,
                 max: this.range?.to,
@@ -170,9 +180,11 @@ export class DashboardComponent {
                 type: 'value',
                 name: 'Cumulative Distance (km)',
             },
+            grid: {left: 150, right: 24, top: 24, bottom: 48, containLabel: true},
             legend: {
                 orient: 'vertical',
                 left: 'left',
+                top: 'middle',
                 selectedMode: 'multiple',
             },
             series: refinedData
@@ -180,12 +192,16 @@ export class DashboardComponent {
     }
 
     private build_fuel_chart(): void {
-        const seriesData: { name: string, type: string, data: [number, number, number][] }[] = [];
+        const seriesData: { name: string, type: string, symbol: string, symbolSize: number, colorBy: string, itemStyle: { opacity: number }, data: [number, number, number][] }[] = [];
         this.carRefuelMap.forEach((refuels: Refuel[], car: string) => {
 
             seriesData.push({
                 name: car,
                 type: 'scatter',
+                symbol: 'circle',
+                symbolSize: 12,
+                colorBy: 'series',
+                itemStyle: {opacity: 0.9},
                 data: refuels.map(entry => [entry.distance, entry.consumption, entry.cost])
             });
         });
@@ -208,9 +224,11 @@ export class DashboardComponent {
                 type: 'value',
                 name: 'Consumed Fuel'
             },
+            grid: {left: 150, right: 24, top: 24, bottom: 48, containLabel: true},
             legend: {
                 orient: 'vertical',
                 left: 'left',
+                top: 'middle',
                 selectedMode: 'multiple',
             },
             series: seriesData
@@ -218,7 +236,7 @@ export class DashboardComponent {
     }
 
     private build_consumption_chart(): void {
-        const seriesData: { name: string, type: string, data: [number, number, number, number, number][] }[] = [];
+        const seriesData: { name: string, type: string, colorBy: string, itemStyle: { opacity: number, borderWidth: number }, data: [number, number, number, number, number][] }[] = [];
         this.carRefuelMap.forEach((refuels: Refuel[], car: string) => {
             if (refuels.length < 5) return;
 
@@ -234,6 +252,8 @@ export class DashboardComponent {
             seriesData.push({
                 name: car,
                 type: 'boxplot',
+                colorBy: 'series',
+                itemStyle: {opacity: 0.9, borderWidth: 2},
                 data: [[min, q1, median, q3, max]],
             });
         });
@@ -254,6 +274,7 @@ export class DashboardComponent {
                 type: 'category',
                 data: seriesData.map(s => s.name)
             },
+            grid: {left: 150, right: 24, top: 24, bottom: 48, containLabel: true},
             legend: {
                 orient: 'vertical',
                 left: 'left',
@@ -306,6 +327,7 @@ export class DashboardComponent {
             series: [{
                 type: 'boxplot',
                 colorBy: 'data',
+                itemStyle: {opacity: 0.9, borderWidth: 2},
                 data: refinedData.map(s => s.data[0])
             }]
         };

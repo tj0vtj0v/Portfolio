@@ -1,3 +1,4 @@
+import {displayDate} from '../../../shared/formatter/display-date';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridFitDirective} from '../../../shared/grid/grid-fit.directive';
 import {Component} from '@angular/core';
@@ -27,7 +28,7 @@ export class HistoryComponent {
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Account', field: 'account.name', sortable: true, filter: true},
-        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Date', field: 'date', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)},
         {
             headerName: 'Amount', field: 'amount', sortable: true, filter: true,
             valueFormatter: (params) => `${params.value.toFixed(2)} €`

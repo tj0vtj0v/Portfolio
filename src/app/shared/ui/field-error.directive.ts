@@ -2,8 +2,8 @@ import {Directive, ElementRef, Input, OnChanges, OnDestroy, Renderer2, inject} f
 
 let nextErrorId = 0;
 
-/** Native control with a feature-owned validation message and associated inline text. */
-@Directive({selector: 'input[appFieldError], select[appFieldError], textarea[appFieldError]'})
+/** Form control with a feature-owned validation message and associated inline text. */
+@Directive({selector: 'input[appFieldError], select[appFieldError], textarea[appFieldError], app-ui-select[appFieldError], app-ui-date-input[appFieldError]'})
 export class FieldErrorDirective implements OnChanges, OnDestroy {
     @Input() appFieldError?: string;
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -12,7 +12,10 @@ export class FieldErrorDirective implements OnChanges, OnDestroy {
     private message?: HTMLElement;
 
     ngOnChanges(): void {
-        const ids = (this.host.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(id => id && id !== this.id);
+        const targets = this.targets();
+        const ids = new Set(targets.flatMap(target => (target.getAttribute('aria-describedby') ?? '').split(/\s+/)));
+        ids.delete('');
+        ids.delete(this.id);
         if (this.appFieldError) {
             if (!this.message) {
                 this.message = this.renderer.createElement('span');
@@ -21,19 +24,26 @@ export class FieldErrorDirective implements OnChanges, OnDestroy {
                 this.renderer.insertBefore(this.host.parentNode, this.message, this.host.nextSibling);
             }
             this.renderer.setProperty(this.message, 'textContent', this.appFieldError);
-            ids.push(this.id);
-            this.renderer.setAttribute(this.host, 'aria-invalid', 'true');
+            ids.add(this.id);
+            targets.forEach(target => this.renderer.setAttribute(target, 'aria-invalid', 'true'));
         } else {
             this.removeMessage();
-            this.renderer.removeAttribute(this.host, 'aria-invalid');
+            targets.forEach(target => this.renderer.removeAttribute(target, 'aria-invalid'));
         }
-        if (ids.length) this.renderer.setAttribute(this.host, 'aria-describedby', ids.join(' '));
-        else this.renderer.removeAttribute(this.host, 'aria-describedby');
+        targets.forEach(target => {
+            if (ids.size) this.renderer.setAttribute(target, 'aria-describedby', [...ids].join(' '));
+            else this.renderer.removeAttribute(target, 'aria-describedby');
+        });
     }
 
     ngOnDestroy(): void { this.removeMessage(); }
     private removeMessage(): void {
         if (this.message?.parentNode) this.renderer.removeChild(this.message.parentNode, this.message);
         this.message = undefined;
+    }
+
+    private targets(): HTMLElement[] {
+        const control = this.host.querySelector<HTMLButtonElement>('button');
+        return control ? [this.host, control] : [this.host];
     }
 }

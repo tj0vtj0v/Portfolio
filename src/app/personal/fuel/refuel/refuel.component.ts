@@ -1,3 +1,5 @@
+import {displayDate} from '../../../shared/formatter/display-date';
+import {FeedbackMessage} from '../../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
 import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
@@ -19,6 +21,8 @@ import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-head
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
 import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-state.component';
+import {UiSelectComponent} from '../../../shared/ui/select/ui-select.component';
+import {UiDateInputComponent} from '../../../shared/ui/date-input/ui-date-input.component';
 
 @Component({
     selector: 'app-refuel',
@@ -28,7 +32,7 @@ import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-sta
         NumberFormatterDirective,
         AgGridModule,
         FormsModule,
-        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent
+        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent, UiSelectComponent, UiDateInputComponent
     ],
     templateUrl: './refuel.component.html',
     styleUrl: './refuel.component.css'
@@ -41,14 +45,18 @@ export class RefuelComponent {
     protected fuel_types: FuelType[] = [];
     protected refuel?: Refuel;
     protected addingRefuel: boolean = false;
-    protected statusMessage: string = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected fieldErrors: Record<string, string> = {};
-    protected successMessage = '';
+    private readonly successMessageState = new FeedbackMessage('success');
+    protected get successMessage(): string { return this.successMessageState.value; }
+    protected set successMessage(message: string) { this.successMessageState.value = message; }
     protected loading = true;
     protected loadError = '';
 
     protected columnDefs: ColDef[] = [
-        {headerName: 'Date', field: 'date', sortable: true, filter: true},
+        {headerName: 'Date', field: 'date', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)},
         {
             headerName: 'L/100km', sortable: true, filter: false,
             valueGetter: (params) => {

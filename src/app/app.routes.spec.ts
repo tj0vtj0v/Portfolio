@@ -6,11 +6,12 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {routes} from './app.routes';
 import {AuthService} from './core/auth/auth.service';
 import {ChartCardComponent} from './shared/charts/chart-card.component';
+import {NEVER} from 'rxjs';
 
 describe('Lazy feature navigation', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting(),
-            {provide: AuthService, useValue: {ensureSession: () => Promise.resolve(true), isLoggedIn: () => true, logout: () => undefined}}]});
+            {provide: AuthService, useValue: {ensureSession: () => Promise.resolve(true), isLoggedIn: () => true, logout: () => undefined, sessionEnded$: NEVER}}]});
         TestBed.overrideComponent(ChartCardComponent, {set: {template: '', imports: [], providers: []}});
     });
 
@@ -47,9 +48,9 @@ describe('Lazy feature navigation', () => {
         TestBed.inject(HttpTestingController).match(() => true).forEach(request => request.flush([]));
         harness.detectChanges();
         const switches = harness.routeNativeElement!.querySelectorAll('.view-switch a');
-        expect(switches.length).toBe(1);
-        expect(switches[0].getAttribute('href')).toBe('/fuel/cars');
-        expect(switches[0].getAttribute('aria-current')).toBe('page');
+        expect(switches.length).toBe(2);
+        expect(switches[1].getAttribute('href')).toBe('/fuel/cars');
+        expect(switches[1].getAttribute('aria-current')).toBe('page');
         const projectSelect = harness.routeNativeElement!.querySelector('select[aria-label="Workspace project"]') as HTMLSelectElement;
         expect(projectSelect.value).toBe('fuel');
         expect(harness.routeNativeElement!.querySelectorAll('.project-nav a.active').length).toBe(1);
@@ -67,17 +68,36 @@ describe('Lazy feature navigation', () => {
         TestBed.inject(HttpTestingController).expectNone(() => true);
     });
 
-    it('redirects the entry and former portfolio pages into the guarded workspace', async () => {
+    it('opens portfolio pages anonymously without requesting private data, while guarding Workspace', async () => {
+        const auth = TestBed.inject(AuthService);
+        spyOn(auth, 'ensureSession').and.resolveTo(false);
+        spyOn(auth, 'isLoggedIn').and.returnValue(false);
         const harness = await RouterTestingHarness.create();
         for (const url of ['/', '/home', '/about', '/projects', '/contact']) {
             await harness.navigateByUrl(url);
-            TestBed.inject(HttpTestingController).match(() => true).forEach(request => request.flush([]));
-            expect(TestBed.inject(Router).url.split('?')[0]).toBe('/accounting');
+            harness.detectChanges();
+            expect(TestBed.inject(Router).url).toBe(url === '/' ? '/home' : url);
+            expect(harness.routeNativeElement!.querySelectorAll('h1').length).toBe(1);
+            expect(harness.routeNativeElement!.querySelector('.project-sidebar')).toBeNull();
+            expect(harness.routeNativeElement!.querySelector('.portfolio-nav a.active')!.getAttribute('href')).toBe(url === '/' ? '/home' : url);
         }
-        const auth = TestBed.inject(AuthService);
-        spyOn(auth, 'ensureSession').and.resolveTo(false);
-        await harness.navigateByUrl('/login');
-        await harness.navigateByUrl('/');
+        TestBed.inject(HttpTestingController).expectNone(() => true);
+        expect(auth.ensureSession).not.toHaveBeenCalled();
+        await harness.navigateByUrl('/accounting');
         expect(TestBed.inject(Router).url).toContain('/login?returnUrl=%2Faccounting');
+    });
+
+    it('remembers the public project section when moving between site areas', async () => {
+        const harness = await RouterTestingHarness.create();
+        await harness.navigateByUrl('/projects#mapping');
+        await harness.navigateByUrl('/fuel/cars');
+        TestBed.inject(HttpTestingController).match(() => true).forEach(request => request.flush([]));
+        harness.detectChanges();
+        const portfolioLink = harness.routeNativeElement!.querySelector('.view-switch a')!;
+        expect(portfolioLink.getAttribute('href')).toBe('/projects#mapping');
+        (portfolioLink as HTMLAnchorElement).click();
+        await harness.fixture.whenStable();
+        expect(TestBed.inject(Router).url).toBe('/projects#mapping');
+        TestBed.inject(HttpTestingController).verify();
     });
 });

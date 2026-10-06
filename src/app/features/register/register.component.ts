@@ -1,3 +1,4 @@
+import {FeedbackMessage} from '../../shared/ui/feedback/feedback-message';
 import {FieldErrorDirective} from '../../shared/ui/field-error.directive';
 import {SubmissionState} from '../../shared/forms/submission-state';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -9,7 +10,7 @@ import {FormsModule} from '@angular/forms';
 import {RouterLink} from '@angular/router';
 import {UiPageHeaderComponent} from '../../shared/ui/page-header/ui-page-header.component';
 import {UiPanelComponent} from '../../shared/ui/panel/ui-panel.component';
-import {FeedbackKind, UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
+import {UiFeedbackComponent} from '../../shared/ui/feedback/ui-feedback.component';
 
 @Component({
     selector: 'app-register',
@@ -36,12 +37,11 @@ export class RegisterComponent {
         password: ''
     };
     repeatPassword: string = '';
-    statusMessage: string = '';
+    private readonly statusMessageState = new FeedbackMessage(message => message.startsWith('Registered successfully') ? 'success' : 'error');
+    get statusMessage(): string { return this.statusMessageState.value; }
+    set statusMessage(message: string) { this.statusMessageState.value = message; }
     success = false;
 
-    get feedbackKind(): FeedbackKind {
-        return this.statusMessage.startsWith('Registered successfully') ? 'success' : 'error';
-    }
 
     constructor(
         private userService: UserService

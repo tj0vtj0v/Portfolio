@@ -1,6 +1,6 @@
 # Personal Portfolio
 
-Angular workspace for Accounting and Fuel. Portfolio designs are archived for future implementation; Banking and Proximity are currently unavailable.
+Angular portfolio for Tjorven Burdorf, with public Home, About, Projects, and Contact pages and a protected Accounting and Fuel workspace. Banking and Proximity are currently unavailable.
 
 ## Approved design and implementation handoff
 
@@ -9,8 +9,15 @@ Angular workspace for Accounting and Fuel. Portfolio designs are archived for fu
 - [Ready-to-paste model prompt](docs/design/MODEL-PROMPT.md)
 - [Design tokens](docs/design/tokens.json)
 
-Run `npm start -- --host 127.0.0.1 --port 4200` to open the guarded workspace.
-The portfolio source and visual references are preserved in
+Install dependencies with `npm ci`, then run `npm start -- --host 127.0.0.1 --port 4200` to open the public portfolio.
+The npm scripts invoke Angular through Node directly, and `.npmrc` disables binary
+links so installation works on exFAT drives shared between Linux and Windows.
+Angular may warn that its optional `lmdb` disk cache is unavailable because its
+install script requires those links; builds still work without it.
+Run `npm ci` again when switching operating systems.
+The Portfolio / Workspace switch connects the public pages and guarded tools.
+Current content sources are recorded in [portfolio content notes](docs/design/PORTFOLIO-CONTENT.md).
+Earlier visual experiments remain preserved in
 [future portfolio designs](docs/design/future-portfolio/README.md).
 Shared implementation patterns
 are documented in [the component guide](docs/design/COMPONENT-GUIDE.md), with
@@ -33,7 +40,6 @@ This avoids retaining chart/grid component state across template replacements.
 Restart `npm start` after changing this setting and reload any already-open tabs.
 Live reload resets unsaved input, so finish or save edits before changing source files.
 
-To check populated chart and grid rendering with intercepted fixture data, run
-`node scripts/check-design-browser.cjs --widgets-only --url=http://127.0.0.1:4200`
-against a running development server. This checks actual canvases/grid rows and
-captures Angular console errors as well as uncaught exceptions.
+Public portfolio images and diagram data are included in `public/` and `src/`.
+Running or building the website does not require local image-generation or
+browser-review scripts.

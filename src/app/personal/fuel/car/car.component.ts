@@ -1,3 +1,5 @@
+import {displayDate} from '../../../shared/formatter/display-date';
+import {FeedbackMessage} from '../../../shared/ui/feedback/feedback-message';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {GridActivateDirective, EditorGridFocus} from '../../../shared/grid/grid-activate.directive';
 import {FieldErrorDirective} from '../../../shared/ui/field-error.directive';
@@ -15,6 +17,7 @@ import {UiPageHeaderComponent} from '../../../shared/ui/page-header/ui-page-head
 import {UiPanelComponent} from '../../../shared/ui/panel/ui-panel.component';
 import {UiFeedbackComponent} from '../../../shared/ui/feedback/ui-feedback.component';
 import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-state.component';
+import {UiDateInputComponent} from '../../../shared/ui/date-input/ui-date-input.component';
 
 @Component({
     selector: 'app-car',
@@ -23,7 +26,7 @@ import {UiEmptyStateComponent} from '../../../shared/ui/empty-state/ui-empty-sta
         GridFitDirective,
         AgGridModule,
         FormsModule,
-        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent
+        CommonModule, UiPageHeaderComponent, UiPanelComponent, UiFeedbackComponent, UiEmptyStateComponent, UiDateInputComponent
     ],
     templateUrl: './car.component.html',
     styleUrl: './car.component.css'
@@ -35,16 +38,20 @@ export class CarComponent {
     protected car?: Car;
     protected carName?: string;
     protected addingCar: boolean = false;
-    protected statusMessage: string = '';
+    private readonly statusMessageState = new FeedbackMessage('error');
+    protected get statusMessage(): string { return this.statusMessageState.value; }
+    protected set statusMessage(message: string) { this.statusMessageState.value = message; }
     protected fieldErrors: Record<string, string> = {};
-    protected successMessage = '';
+    private readonly successMessageState = new FeedbackMessage('success');
+    protected get successMessage(): string { return this.successMessageState.value; }
+    protected set successMessage(message: string) { this.successMessageState.value = message; }
     protected loading = true;
     protected loadError = '';
 
     protected columnDefs: ColDef[] = [
         {headerName: 'Name', field: 'name', sortable: true, filter: true},
-        {headerName: 'Usage start', field: 'usage_start', sortable: true, filter: true},
-        {headerName: 'Usage end', field: 'usage_end', sortable: true, filter: true}
+        {headerName: 'Usage start', field: 'usage_start', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)},
+        {headerName: 'Usage end', field: 'usage_end', sortable: true, filter: true, valueFormatter: params => displayDate(params.value)}
     ];
 
     constructor(

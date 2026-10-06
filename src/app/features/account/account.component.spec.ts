@@ -1,3 +1,4 @@
+import {NotificationService} from '../../shared/ui/feedback/notification.service';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AccountComponent} from './account.component';
@@ -32,13 +33,14 @@ describe('AccountComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('keeps edited values and enables retry when saving fails', () => {
+    it('keeps edited values and enables retry when saving fails', async () => {
         component.user.first_name = 'Edited';
         component.onUpdate();
         update.error({status: 503});
         fixture.detectChanges();
         expect(component.user.first_name).toBe('Edited');
         expect(component.submission.pending).toBeFalse();
-        expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('Edit failed');
+        await Promise.resolve();
+        expect(TestBed.inject(NotificationService).notifications().some(item => item.message === 'Edit failed' && item.kind === 'error')).toBeTrue();
     });
 });

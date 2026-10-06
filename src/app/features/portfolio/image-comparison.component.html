@@ -1,0 +1,11 @@
+<div #frame class="comparison-frame" role="group" [attr.aria-label]="leftLabel + ' and ' + rightLabel + ' image comparison'" [style.aspect-ratio]="aspectRatio" (pointermove)="drag($event)" (pointerup)="stopDrag()" (pointercancel)="stopDrag()">
+    <img class="comparison-image" [src]="leftSrc" [attr.srcset]="leftSrcset || null" [attr.sizes]="sizes" [alt]="leftLabel" [attr.width]="width" [attr.height]="height" draggable="false" loading="lazy">
+    <div class="right-image" [style.clip-path]="'inset(0 0 0 ' + split() + '%)'">
+        <img class="comparison-image" [src]="rightSrc" [attr.srcset]="rightSrcset || null" [attr.sizes]="sizes" [alt]="rightLabel" [attr.width]="width" [attr.height]="height" draggable="false" loading="lazy">
+    </div>
+    <span class="image-label left-label" [class.label-hidden]="leftLabelHidden()" [attr.aria-hidden]="leftLabelHidden() ? 'true' : null">{{ leftLabel }}</span>
+    <span class="image-label right-label" [class.label-hidden]="rightLabelHidden()" [attr.aria-hidden]="rightLabelHidden() ? 'true' : null">{{ rightLabel }}</span>
+    <button class="comparison-handle" type="button" role="separator" tabindex="0" [style.left]="split() + '%'" [attr.aria-label]="'Drag to compare ' + leftLabel + ' and ' + rightLabel" [attr.aria-valuenow]="split()" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuetext]="valueText()" (pointerdown)="startDrag($event)" (keydown)="keydown($event)">
+        <span class="handle-arrows" aria-hidden="true"><span>&lsaquo;</span><span>&rsaquo;</span></span>
+    </button>
+</div>

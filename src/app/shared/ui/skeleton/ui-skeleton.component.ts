@@ -22,7 +22,7 @@ export type SkeletonLayout = 'accounting' | 'banking' | 'fuel' | 'table' | 'form
                 <div class="panel"><i class="bar short"></i><div class="chart" style="height: 96px"></div></div>
             }
             @if (isDashboard) {
-                <div class="charts" [class.single]="layout === 'banking'" [class.accounting]="layout === 'accounting'">
+                <div class="charts" [class.single]="layout === 'banking'" [class.accounting]="layout === 'accounting'" [class.fuel]="layout === 'fuel'">
                     @for (item of chartSlots; track $index) {
                         <div class="panel"><i class="bar short"></i><div class="chart"></div></div>
                     }

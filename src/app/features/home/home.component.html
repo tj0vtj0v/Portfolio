@@ -1,0 +1,32 @@
+<section class="hero split" aria-labelledby="hello">
+    <div>
+        <h1 id="hello">Hi, I'm Tjorven.</h1>
+        <p class="lead">I study artificial intelligence and like turning ideas into things that actually work. I found
+            my way into robotics through Formula Student, where I saw how concepts and algorithms can leave the screen
+            and make a difference in the real world. Since then, I’ve been drawn to development, research, and projects
+            that give me the chance to try something new and build towards a clear goal.</p>
+        <div class="actions"><a class="button" data-variant="primary" routerLink="/projects">View projects</a><a
+            class="text-link" routerLink="/about">A little about me</a></div>
+    </div>
+    <figure class="portrait">
+        <app-portfolio-photo name="tjorven" alt="Tjorven Burdorf wearing a Fast Forest team shirt" [priority]="true"
+                             ratio="4 / 5" position="50% 40%"/>
+        <figcaption>That's me, after the rollout of Jenny15 GDX</figcaption>
+    </figure>
+</section>
+<section class="section split" aria-labelledby="featured-project">
+    <figure>
+        <app-portfolio-photo name="jenny" alt="Fast Forest's Jenny on a Formula Student course" ratio="1.45"
+                             [crop]="true"/>
+        <figcaption>Jenny15 GDX at FSCzech 2025</figcaption>
+    </figure>
+    <div><h2 id="featured-project">Building an<br>autonomous Racecar</h2>
+        <p class="lead">At Fast Forest, I developed the camera-perception system for our driverless Formula Student car.
+            Right now, I’m working on a mapping algorithm to enable global driving and a new approach for making the car
+            faster by using the information of the entire track. Here, I got my experience in robotics, computer vision,
+            and software development in a team.</p><a class="text-link" routerLink="/projects"
+                                                      fragment="formula-student">Explore the project</a></div>
+</section>
+<section class="section">
+    <app-project-gallery/>
+</section>

@@ -1,0 +1,27 @@
+@if (kind === 'vtol') {
+    <img class="vtol-cutout" src="/images/portfolio/vtol-cutout.png" alt="VTOL aircraft concept shown from the side, above and in perspective" width="1536" height="1024" loading="lazy">
+} @else if (kind === 'perception') {
+    <app-perception-diagram [compact]="compact" />
+} @else if (kind === 'mapping' || kind === 'localization') {
+    <app-slam-diagram [compact]="compact" [localization]="kind === 'localization'" [stage]="stage" />
+} @else {
+<svg viewBox="0 0 720 440" role="img" [attr.aria-label]="kind === 'web' ? 'Three-layer architecture: Angular presentation, FastAPI application logic, PostgreSQL persistence.' : kind === 'pipeline' ? 'Drone mapping pipeline: DJI mission data is structured and sent to a WebODM container, then the mapping outputs are saved to Nextcloud over WebDAV.' : 'Web application diagram.'">
+    <rect class="surface" width="720" height="440" />
+    @switch (kind) {
+        @case ('web') {
+            <g class="boxes"><rect x="170" y="48" width="380" height="90" rx="8"/><rect x="170" y="176" width="380" height="90" rx="8"/><rect x="170" y="304" width="380" height="90" rx="8"/></g>
+            <g text-anchor="middle"><text class="simple-heading" x="360" y="86">Frontend</text><text class="simple-caption" x="360" y="116">Angular</text><text class="simple-heading" x="360" y="214">Backend</text><text class="simple-caption" x="360" y="244">FastAPI</text><text class="simple-heading" x="360" y="342">Database</text><text class="simple-caption" x="360" y="372">PostgreSQL</text></g>
+            <path class="arrow" d="M360 143v26m-6-8 6 8 6-8M360 271v26m-6-8 6 8 6-8"/>
+        }
+        @case ('pipeline') {
+            <text class="diagram-title" x="36" y="42">DRONE MAPPING / PIPELINE</text>
+            <g class="boxes"><rect x="28" y="112" width="154" height="180" rx="8"/><rect x="202" y="112" width="154" height="180" rx="8"/><rect x="376" y="112" width="154" height="180" rx="8"/><rect x="550" y="112" width="142" height="180" rx="8"/></g>
+            <g class="pipeline-icons" aria-hidden="true"><path d="M74 168l31-16 31 16v35l-31 16-31-16zM105 152v35m-31-19 31 19 31-19"/><path d="M243 183h68M243 205h52M243 227h61"/><path d="M414 177h78v58h-78zM427 164h52v13M431 193h44M431 211h44M431 229h30"/><path d="M592 169h58v72h-58zM603 158h36v11M606 187h30M606 207h30M606 227h19"/></g>
+            <g text-anchor="middle"><text class="simple-heading" x="105" y="265">DJI mission</text><text class="simple-caption" x="105" y="284">RGB &middot; multispectral</text><text class="simple-heading" x="279" y="265">Structure</text><text class="simple-caption" x="279" y="284">sort &middot; compress</text><text class="simple-heading" x="453" y="265">WebODM</text><text class="simple-caption" x="453" y="284">container mapping</text><text class="simple-heading" x="621" y="265">Nextcloud</text><text class="simple-caption" x="621" y="284">WebDAV archive</text></g>
+            <path class="arrow" d="M186 202h12m-7-6 7 6-7 6M360 202h12m-7-6 7 6-7 6M534 202h12m-7-6 7 6-7 6"/>
+            <text class="pipeline-note" x="360" y="355" text-anchor="middle">structured inputs → mapped products → automatic cloud storage</text>
+        }
+
+    }
+</svg>
+}

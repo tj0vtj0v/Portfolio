@@ -22,7 +22,6 @@
                 <a routerLink="/settings">Back to settings</a>
             </div>
         </form>
-        <app-ui-feedback *ngIf="statusMessage" [kind]="feedbackKind" [message]="statusMessage" />
         <a *ngIf="success" class="button primary" data-variant="primary" routerLink="/settings">Back to settings</a>
     </app-ui-panel>
 </div>

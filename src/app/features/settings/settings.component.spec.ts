@@ -1,3 +1,4 @@
+import {NotificationService} from '../../shared/ui/feedback/notification.service';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '@angular/router';
 import {of, Subject} from 'rxjs';
@@ -43,7 +44,7 @@ describe('SettingsComponent', () => {
         expect(navigate).toHaveBeenCalledWith(['/home']);
     });
 
-    it('preserves the session and displays an error when deletion fails', () => {
+    it('preserves the session and displays an error when deletion fails', async () => {
         spyOn(window, 'confirm').and.returnValue(true);
         const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
         component.delete();
@@ -52,7 +53,8 @@ describe('SettingsComponent', () => {
         expect(userService.logout).not.toHaveBeenCalled();
         expect(navigate).not.toHaveBeenCalled();
         expect(component.deleting).toBeFalse();
-        expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain('deletion failed');
+        await Promise.resolve();
+        expect(TestBed.inject(NotificationService).notifications().some(item => item.message.includes('deletion failed') && item.kind === 'error')).toBeTrue();
     });
 
     it('does not delete when confirmation is cancelled', () => {

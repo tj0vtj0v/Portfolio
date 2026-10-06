@@ -26,12 +26,14 @@ describe('DateRangeComponent', () => {
 
     it('selects presets through buttons and opens custom date inputs', () => {
         const buttons = Array.from(fixture.nativeElement.querySelectorAll('.period-presets button')) as HTMLButtonElement[];
-        expect(buttons.find(button => button.textContent?.includes('Last 30'))?.getAttribute('aria-pressed')).toBe('true');
+        expect(buttons.find(button => button.textContent?.includes('Last month'))?.getAttribute('aria-pressed')).toBe('true');
+        buttons.find(button => button.textContent?.includes('Last year'))!.click();
+        expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({queryParams: {period: '365', from: null, to: null}}));
         buttons.find(button => button.textContent?.includes('Current month'))!.click();
-        expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({queryParams: {period: 'month'}}));
+        expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({queryParams: {period: 'month', from: null, to: null}}));
         buttons.find(button => button.textContent?.includes('Custom'))!.click();
         fixture.detectChanges();
-        expect(fixture.nativeElement.querySelectorAll('input[type="date"]').length).toBe(2);
+        expect(fixture.nativeElement.querySelectorAll('app-ui-date-input').length).toBe(2);
     });
 
     it('defaults custom To to the start of the month and preserves explicit dates', () => {
@@ -60,7 +62,7 @@ describe('DateRangeComponent', () => {
         query.next(convertToParamMap({period: 'custom', from: '2026-02-01', to: '2026-02-02'}));
         fixture.detectChanges();
         expect((fixture.componentInstance as any).from).toBe('2026-02-01');
-        expect(fixture.nativeElement.textContent).toContain('2026-02-01 – 2026-02-02');
+        expect(fixture.nativeElement.textContent).toContain('01.02.2026 – 02.02.2026');
     });
 
     it('keeps invalid custom drafts visible and emits an empty state', () => {

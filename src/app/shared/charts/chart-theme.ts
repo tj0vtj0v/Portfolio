@@ -1,4 +1,5 @@
 import {EChartsCoreOption} from 'echarts';
+import {lerp} from 'zrender/lib/tool/color';
 
 export interface ChartColors {
     palette?: string[];
@@ -13,6 +14,7 @@ export interface ChartColors {
 }
 
 const CHART_PALETTE = ['#2c6557', '#b26135', '#4b72a6', '#95608d', '#92751d', '#3b8790', '#b14e60', '#718342'];
+const BOXPLOT_FILL_SURFACE_MIX = 0.8;
 
 const FALLBACKS: ChartColors = {
     text: '#263e37', muted: '#667062', primary: '#2c6557', secondary: '#b5c2a2',
@@ -60,9 +62,40 @@ export function chartThemeOptions(colors = resolvedChartColors()): EChartsCoreOp
 export function chartThemeForOptions(options: EChartsCoreOption, colors = resolvedChartColors()): EChartsCoreOption {
     const theme = chartThemeOptions(colors);
     const series = options['series'];
-    if (series) theme['series'] = (Array.isArray(series) ? series : [series]).map(() => ({
-        label: {color: colors.text}, emphasis: {label: {color: colors.text}}
-    }));
+    if (series) {
+        const palette = colors.palette ?? [colors.primary];
+        theme['series'] = (Array.isArray(series) ? series : [series]).map((entry, seriesIndex) => {
+            const seriesOption = entry as Record<string, unknown>;
+            const presentation: Record<string, unknown> = {
+                label: {color: colors.text},
+                emphasis: {label: {color: colors.text}}
+            };
+            if (seriesOption['type'] === 'boxplot') {
+                const colorByData = seriesOption['colorBy'] === 'data';
+                const data = seriesOption['data'];
+                if (Array.isArray(data) && data.length) {
+                    presentation['data'] = data.map((value, dataIndex) => {
+                        const index = colorByData ? dataIndex : seriesIndex;
+                        const outlineColor = palette[index % palette.length];
+                        const sourceItem = value && typeof value === 'object' && !Array.isArray(value)
+                            ? value as Record<string, unknown>
+                            : {};
+                        const rawValue = sourceItem['value'] ?? value;
+                        return {
+                            ...sourceItem,
+                            value: rawValue,
+                            itemStyle: {
+                                ...(sourceItem['itemStyle'] as Record<string, unknown> | undefined),
+                                color: lerp(BOXPLOT_FILL_SURFACE_MIX, [outlineColor, colors.surface]),
+                                borderColor: outlineColor
+                            }
+                        };
+                    });
+                }
+            }
+            return presentation;
+        });
+    }
     if (!options['xAxis']) delete theme['xAxis'];
     if (!options['yAxis']) delete theme['yAxis'];
     return theme;
@@ -73,7 +106,13 @@ export function themedChartOptions(options: EChartsCoreOption, colors = resolved
     const merge = (data: any, style: any): any => {
         if (Array.isArray(style)) {
             const entries = Array.isArray(data) ? data : data ? [data] : [];
-            return style.map((item, index) => merge(entries[index], item));
+            return style.map((item, index) => {
+                const entry = entries[index];
+                if (item && typeof item === 'object' && !Array.isArray(item) && 'value' in item && Array.isArray(entry)) {
+                    return {...item, value: item['value'] ?? entry};
+                }
+                return merge(entry, item);
+            });
         }
         if (!style || typeof style !== 'object') return style;
         if (Array.isArray(data)) return data.map(item => merge(item, style));

@@ -1,17 +1,30 @@
 <div class="app-surface" appPointerGrid [attr.data-shell]="shell()">
     <app-header
         [shell]="shell()"
+        [portfolioTarget]="portfolioTarget()"
         [workspaceTarget]="workspaceTarget()" />
 
     <div class="route-shell" [class.workspace-shell]="shell() === 'workspace'" [class.portfolio-shell]="shell() === 'portfolio'">
+        @if (shell() === 'portfolio') {
+            <aside class="portfolio-sidebar">
+                <p class="sidebar-label">Portfolio</p>
+            <nav class="portfolio-nav" aria-label="Portfolio pages">
+                <a routerLink="/home" routerLinkActive="active" ariaCurrentWhenActive="page">Home</a>
+                <a routerLink="/projects" routerLinkActive="active" ariaCurrentWhenActive="page">Projects</a>
+                <a routerLink="/about" routerLinkActive="active" ariaCurrentWhenActive="page">About</a>
+                <a routerLink="/contact" routerLinkActive="active" ariaCurrentWhenActive="page">Contact</a>
+            </nav>
+            </aside>
+        }
         @if (shell() === 'workspace') {
             <app-project-switcher [project]="project()" />
         }
         <main [class.workspace-content]="shell() === 'workspace'" [class.portfolio-content]="shell() === 'portfolio'" id="main-content">
+            <app-ui-working-orb [visible]="working()" />
             @if (navigation.pending(); as pending) {
                 <app-ui-skeleton [layout]="pending.layout" [pageHeader]="true" message="Loading page…" />
             }
-            <div [hidden]="navigation.pending() !== null"><router-outlet /></div>
+            <div class="route-content" [class.route-content--ready]="navigation.pending() === null" [hidden]="navigation.pending() !== null"><router-outlet /></div>
         </main>
     </div>
     <app-footer />

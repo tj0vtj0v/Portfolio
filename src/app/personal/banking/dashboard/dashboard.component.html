@@ -1,5 +1,5 @@
 <div class="banking-dashboard">
-    <app-ui-page-header eyebrow="Workspace" heading="Banking" description="Review imported bank balances and transactions. Banking data is read-only here." />
+    <app-ui-page-header heading="Banking" description="Review imported bank balances and transactions. Banking data is read-only here." />
     <app-date-range (rangeChange)="update($event)" />
     <app-ui-skeleton *ngIf="loading" layout="banking" message="Loading banking data…" />
     <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />

@@ -1,6 +1,20 @@
 :host { display: block; }
-.legal-page { max-width: 850px; }
-.legal-page section { border-top: 1px solid var(--color-border); padding: var(--space-6) 0; font-size: var(--font-size-reading); line-height: var(--line-height-reading); }
-.legal-page h2 { margin: var(--space-8) 0 var(--space-2); font: var(--font-heading-weight) var(--font-size-panel-heading)/1.25 var(--font-heading); }
-.legal-page section h2:first-child { margin-top: 0; }
-.legal-page p { margin: 0 0 var(--space-5); }
+.imprint-page { max-width: 920px; }
+.imprint-content { max-width: 800px; }
+.legal-section { display: grid; grid-template-columns: minmax(140px, .36fr) minmax(0, 1fr); gap: var(--space-8); border-top: 1px solid var(--color-border); padding: var(--space-8) 0 var(--space-10); }
+.legal-section--provider { padding-top: var(--space-4); }
+.legal-section h2 { margin: 0; font: var(--font-heading-weight) var(--font-size-panel-heading)/1.25 var(--font-heading); }
+.legal-copy { min-width: 0; }
+.legal-copy p { max-width: 68ch; margin: 0 0 var(--space-5); font-size: var(--font-size-reading); line-height: var(--line-height-reading); }
+.legal-copy p:last-child { margin-bottom: 0; }
+.legal-copy address { margin: 0; font-size: var(--font-size-reading); font-style: normal; line-height: var(--line-height-reading); }
+.legal-copy address strong { font-weight: 650; }
+.legal-reference { color: var(--color-text-muted); font-size: var(--font-size-label) !important; line-height: var(--line-height-body) !important; }
+.contact-details { max-width: 480px; border-top: 1px solid var(--color-border); }
+.contact-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: baseline; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+.contact-label { color: var(--color-text-muted); font-size: var(--font-size-label); font-weight: 600; }
+.contact-row a { overflow-wrap: anywhere; }
+@media (max-width: 650px) {
+    .legal-section { grid-template-columns: 1fr; gap: var(--space-3); padding-block: var(--space-6) var(--space-8); }
+    .legal-section--provider { padding-top: var(--space-4); }
+}

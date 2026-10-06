@@ -1,9 +1,10 @@
+import {displayDate} from '../../../shared/formatter/display-date';
 import {UiSkeletonComponent} from '../../../shared/ui/skeleton/ui-skeleton.component';
 import {bankingHistory} from './banking-history';
 import {tooltipText} from '../../../shared/charts/tooltip-text';
 import {Component} from '@angular/core';
 import {ChartCardComponent} from '../../../shared/charts/chart-card.component';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {History} from '../../../shared/datatype/History';
 import {Transaction} from '../../../shared/datatype/Transaction';
 import {EChartsCoreOption} from 'echarts';
@@ -99,7 +100,7 @@ export class DashboardComponent {
                 trigger: 'axis',
                 formatter: (params: any) => {
                     const content = params.map((item: any) => `${tooltipText(item.seriesName)}: ${parseFloat(item.data[1]).toFixed(2)} €`).join('<br/>');
-                    const date = new DatePipe("en-US").transform(new Date(params[0].data[0]), 'dd.MM.yyyy');
+                    const date = displayDate(params[0].data[0]);
                     return `${date}<br>${content}`
                 }
             },
@@ -109,6 +110,8 @@ export class DashboardComponent {
             },
             xAxis: {
                 type: 'time',
+                axisLabel: {formatter: (value: number) => displayDate(value)},
+                axisPointer: {label: {formatter: (params: any) => displayDate(params.value)}},
                 name: 'Date'
             },
             yAxis: {

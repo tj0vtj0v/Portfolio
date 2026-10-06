@@ -1,0 +1,17 @@
+<div class="ui-select">
+    <button #trigger class="ui-select__trigger" type="button" [id]="id" [disabled]="isDisabled"
+        [attr.aria-expanded]="opened" [attr.aria-controls]="listId" [attr.aria-haspopup]="'listbox'"
+        [attr.aria-required]="required" [class.ui-select__placeholder]="!hasValue" (click)="toggle($event)"
+        (keydown)="onTriggerKeydown($event)">
+        <span class="ui-select__value">{{ selectedLabel }}</span>
+        <span class="ui-select__chevron" aria-hidden="true">&#9662;</span>
+    </button>
+
+    <div *ngIf="opened" class="ui-select__menu" [id]="listId" role="listbox" [attr.aria-label]="name || placeholder">
+        <button #optionButton *ngFor="let option of options; let index = index" class="ui-select__option" type="button"
+            role="option" [attr.aria-selected]="isSelected(option)" [class.ui-select__option--active]="activeIndex === index"
+            (mouseenter)="activeIndex = index" (click)="choose(option)" (keydown)="onOptionKeydown($event)">
+            {{ labelFor(option) }}
+        </button>
+    </div>
+</div>
