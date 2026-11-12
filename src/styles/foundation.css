@@ -84,7 +84,7 @@ app-accounting, app-banking, app-fuel { display: contents; }
 
 .ui-page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-6); margin-bottom: var(--space-8); }
 .ui-page-header__copy { min-width: 0; }
-.ui-page-header__eyebrow, .ui-panel__eyebrow {
+.ui-panel__eyebrow {
     margin: 0 0 var(--space-2);
     color: var(--color-text-muted);
     font: 600 var(--font-size-metadata)/1.4 var(--font-mono);

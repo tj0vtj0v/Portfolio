@@ -1,5 +1,5 @@
 <div class="accounting-page">
-    <app-ui-page-header heading="Income" description="Manage your incoming money."><app-amount-privacy-toggle title-actions />
+    <app-ui-page-header heading="Income"><app-amount-privacy-toggle title-actions />
         <button *ngIf="!(income || addingIncome) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add income</button>
     </app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading incomes..." />

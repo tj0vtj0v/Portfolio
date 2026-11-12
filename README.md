@@ -10,6 +10,12 @@ Angular portfolio for Tjorven Burdorf, with public Home, About, Projects, and Co
 - [Design tokens](docs/design/tokens.json)
 
 Install dependencies with `npm ci`, then run `npm start -- --host 127.0.0.1 --port 4200` to open the public portfolio.
+The checked-in `proxy.conf.cjs` enables API forwarding when `API_PROXY_TARGET`
+is set to your backend origin. For example, on Linux/macOS:
+`API_PROXY_TARGET=http://127.0.0.1:8000 npm start` (replace the example port
+with your backend's port). Requests retain their `/api/` prefix. Without this
+variable, the public portfolio runs without a proxy; backend-dependent workspace
+features require a backend. Restart the dev server after changing the variable.
 The npm scripts invoke Angular through Node directly, and `.npmrc` disables binary
 links so installation works on exFAT drives shared between Linux and Windows.
 Angular may warn that its optional `lmdb` disk cache is unavailable because its

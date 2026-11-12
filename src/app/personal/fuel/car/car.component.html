@@ -1,5 +1,5 @@
 <div class="fuel-page">
-    <app-ui-page-header eyebrow="Fuel Tracker" heading="Vehicles" description="Manage the vehicles available for refuelling.">
+    <app-ui-page-header heading="Vehicles">
         <button *ngIf="!(car || addingCar) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add vehicle</button>
     </app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading vehicles…" />

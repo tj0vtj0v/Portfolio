@@ -1,5 +1,7 @@
 :host { display: block; width: 100%; }
 .vtol-cutout { display: block; width: 100%; height: auto; filter: var(--art-concept-filter); }
+:host(.project-tile) .vtol-frame { aspect-ratio: 720 / 440; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-art-background); }
+:host(.project-tile) .vtol-cutout { height: 100%; object-fit: contain; }
 svg { display: block; width: 100%; height: auto; border: 1px solid var(--color-border); border-radius: var(--radius-panel); }
 .surface { fill: var(--color-art-background); }
 text { fill: var(--color-text-muted); font: 14px var(--font-body); }

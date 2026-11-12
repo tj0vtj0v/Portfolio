@@ -1,5 +1,5 @@
 <div class="form-page form-page--narrow">
-    <app-ui-page-header eyebrow="Account" heading="Login" description="Sign in to open your private workspace." />
+    <app-ui-page-header heading="Login" description="Sign in to open your private workspace." />
     <app-ui-panel>
         <a class="retry-link" *ngIf="returnUrl && (sessionCheckFailed || userService.isLoggedIn())" [routerLink]="returnUrl">Retry opening your page</a>
         <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Signing in…" />

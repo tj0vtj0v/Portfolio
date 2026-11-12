@@ -58,7 +58,7 @@ function positionEntries(entries: TimelineEntry[], end: number): PositionedTimel
     // Only the offsets are fixed; the live axis still ends at today + six months.
     const referenceEnd = monthPosition(new Date(2027, 2, 28));
     const positions: Record<TimelineSide, number[]> = {
-        work: [0, 240, 720],
+        work: [0, 420, 200, 720],
         education: [165, 520, 950]
     };
 
@@ -91,11 +91,18 @@ function calculateTimelineHeight(entries: PositionedTimelineEntry[], end: number
 
 @Component({imports: [DisplayDatePipe], selector: 'app-career-timeline', templateUrl: './career-timeline.component.html', styleUrl: './career-timeline.component.css'})
 export class CareerTimelineComponent {
+    protected isOngoing(end: string): boolean {
+        const today = new Date();
+        const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        return !end || end > currentMonth;
+    }
+
     private readonly end = displayEnd();
     private readonly entries: TimelineEntry[] = [
-        {side: 'work', start: '2024-04', end: '', title: 'Driverless development', place: 'Fast Forest - Formula Student', detail: 'Camera perception, sensor fusion, and Graph SLAM.', order: 0, lane: 2, color: 'var(--color-chart-3)'},
-        {side: 'work', start: '2025-05', end: '2026-07', title: 'Student assistant', place: 'Deggendorf Institute of Technology', detail: 'Multispectral aerial mapping pipeline.', order: 1, lane: 1, color: 'var(--color-chart-2)'},
-        {side: 'work', start: '2022-09', end: '2027-03', title: 'Dual study programme', place: 'BMW Group Dingolfing', detail: 'Digitalization in quality management for parts.', order: 2, lane: 3, color: 'var(--color-chart-6)'},
+        {side: 'work', start: '2026-11', end: '2027-10', title: '1st Chairman', place: 'Fast Forest', detail: 'Oversight of membership, contracts, finances, and compliance.', order: 0, lane: 4, color: 'var(--color-chart-5)'},
+        {side: 'work', start: '2024-04', end: '2028-05', title: 'Driverless development', place: 'Fast Forest', detail: 'Camera perception, sensor fusion, and Graph SLAM.', order: 1, lane: 2, color: 'var(--color-chart-3)'},
+        {side: 'work', start: '2025-05', end: '2026-07', title: 'Student assistant', place: 'Deggendorf Institute of Technology', detail: 'Multispectral aerial mapping pipeline.', order: 2, lane: 1, color: 'var(--color-chart-2)'},
+        {side: 'work', start: '2022-09', end: '2027-03', title: 'Dual study programme', place: 'BMW Group Dingolfing', detail: 'Digitalization in quality management for parts.', order: 3, lane: 3, color: 'var(--color-chart-6)'},
         {side: 'education', start: '2023-10', end: '2027-03', title: 'B.Sc. Artificial Intelligence', place: 'Deggendorf Institute of Technology', detail: 'Degree combined with vocational training.', order: 0, lane: 1, color: 'var(--color-chart-1)'},
         {side: 'education', start: '2022-09', end: '2026-02', title: 'Vocational training IT specialist', place: 'Lower Bavaria Chamber of Industry and Commerce', detail: 'Specialisation in software development. Completed alongside the degree programme.', order: 1, lane: 2, color: 'var(--color-chart-4)'},
         {side: 'education', start: '2014-09', end: '2022-07', title: 'High school diploma', place: 'Fürstenberg Gymnasium Donaueschingen', detail: 'General secondary education.', order: 2, lane: 3, color: 'var(--color-chart-5)'}

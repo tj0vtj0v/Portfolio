@@ -5,7 +5,6 @@ import {Component, Input} from '@angular/core';
     template: `
         <header class="ui-page-header">
             <div class="ui-page-header__copy">
-                @if (eyebrow) { <p class="ui-page-header__eyebrow">{{ eyebrow }}</p> }
                 <div class="ui-page-header__title"><h1>{{ heading }}</h1><ng-content select="[title-actions]" /></div>
                 @if (description) { <p class="ui-page-header__description">{{ description }}</p> }
             </div>
@@ -16,6 +15,5 @@ import {Component, Input} from '@angular/core';
 })
 export class UiPageHeaderComponent {
     @Input({required: true}) heading = '';
-    @Input() eyebrow = '';
     @Input() description = '';
 }

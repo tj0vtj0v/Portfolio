@@ -40,10 +40,9 @@ AGENTS.md
 testem.log
 /typings
 
-# Local documentation, utility scripts, and development proxy
+# Local documentation and utility scripts
 /docs/
 /scripts/
-/proxy.conf.cjs
 
 # System files
 .DS_Store
