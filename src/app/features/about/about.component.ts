@@ -54,7 +54,7 @@ export class AboutComponent {
     protected readonly skillRows = [
         ['C++', 'Python', 'TypeScript', 'Java'],
         ['Robotics', 'Computer vision', 'Detection', 'Projection', 'Mapping', 'SLAM', 'EKF', 'Photogrammetry', 'YOLO', 'RAG'],
-        ['Angular', 'FastAPI', 'PostgreSQL', 'Jetson', 'TensorRT', 'OpenCV', 'g2o', 'Docker', 'CI/CD', 'WebODM', 'WebDAV', 'ZeroMQ', 'MQTT', 'Git', 'DJI Mavic 3E'],
+        ['Angular', 'FastAPI', 'PostgreSQL', 'Jetson', 'TensorRT', 'OpenCV', 'g2o', 'Docker', 'Docker Compose', 'CI/CD', 'WebODM', 'WebDAV', 'ZeroMQ', 'MQTT', 'Git', 'DJI Mavic 3E'],
         ['Raspberry Pi', 'ESP32', 'Jetson', 'DJI Mavic 3E']
     ];
 }

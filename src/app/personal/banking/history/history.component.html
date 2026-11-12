@@ -1,5 +1,5 @@
 <div class="banking-page">
-    <app-ui-page-header eyebrow="Banking" heading="Balance history" description="Read-only imported account balances over time." />
+    <app-ui-page-header heading="Balance history" description="Read-only imported account balances over time." />
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading banking history…" />
     <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
     <button *ngIf="errorMessage" type="button" (click)="loadData()">Retry</button>

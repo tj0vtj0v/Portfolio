@@ -1,5 +1,5 @@
 <div class="accounting-page">
-    <app-ui-page-header heading="Expenses" description="Manage your spending."><app-amount-privacy-toggle title-actions />
+    <app-ui-page-header heading="Expenses"><app-amount-privacy-toggle title-actions />
         <button *ngIf="!(expense || addingExpense) && !loading && !loadError" data-variant="primary" type="button" (click)="onAdd()">Add expense</button>
     </app-ui-page-header>
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading expenses..." />

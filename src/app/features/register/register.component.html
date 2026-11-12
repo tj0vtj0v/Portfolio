@@ -1,5 +1,5 @@
 <div class="form-page">
-    <app-ui-page-header eyebrow="Account" heading="Register" description="Create an account for access to the private workspace." />
+    <app-ui-page-header heading="Register" description="Create an account for access to the private workspace." />
     <app-ui-panel>
         <app-ui-feedback *ngIf="submission.pending" kind="pending" message="Creating account…" />
         <form [attr.aria-busy]="submission.pending" (ngSubmit)="onRegister()" *ngIf="!success">

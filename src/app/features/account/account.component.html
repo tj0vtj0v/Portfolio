@@ -1,5 +1,5 @@
 <div class="form-page">
-    <app-ui-page-header eyebrow="Account" heading="Edit profile" description="Update your name, email address, or password." />
+    <app-ui-page-header heading="Edit profile" description="Update your name, email address, or password." />
     <app-ui-panel>
         <app-ui-skeleton *ngIf="loading" layout="form" message="Loading profile details…" />
         <app-ui-feedback *ngIf="loadError" kind="error" [message]="loadError" />

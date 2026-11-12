@@ -108,7 +108,7 @@ describe('Notifications', () => {
         expect(host.querySelector('img')).toBeNull();
         expect(host.querySelector('[role="alert"]')?.textContent).toContain('<img');
         expect(host.querySelector('[role="status"]')?.textContent).toContain('Saved');
-        expect([...host.querySelectorAll('.notification-count')].map(node => node.textContent)).toEqual(['(2x)']);
+        expect([...host.querySelectorAll('.notification-count')].map(node => node.textContent)).toEqual(['2x']);
         host.querySelector<HTMLButtonElement>('button')!.click();
         tick(1_000);
         fixture.detectChanges();

@@ -1,5 +1,5 @@
 <div class="banking-page">
-    <app-ui-page-header eyebrow="Banking" heading="Transactions" description="Read-only imported transactions. Open a row with a click, Enter, or Space to see every available field." />
+    <app-ui-page-header heading="Transactions" description="Read-only imported transactions. Open a row with a click, Enter, or Space to see every available field." />
     <app-ui-skeleton *ngIf="loading" layout="table" message="Loading transactions…" />
     <app-ui-feedback *ngIf="detailLoading" kind="pending" message="Loading transaction details…" />
     <app-ui-feedback *ngIf="errorMessage" kind="error" [message]="errorMessage" />
